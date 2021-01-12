@@ -9,9 +9,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.6.3/rxjs.umd.min.js"></script>
-  <script src="https://unpkg.com/@youwol/flux-view@0.0.0/dist/@youwol/flux-view.js"></script>
+  <script src="https://unpkg.com/@youwol/flux-view@0.0.1/dist/@youwol/flux-view.js"></script>
 
-  <link rel="stylesheet" href="https://unpkg.com/@youwol/flux-view@0.0.0/src/demos/todo/src/style.css"
+  <link rel="stylesheet" href="https://unpkg.com/@youwol/flux-view@0.0.1/src/demos/todo/src/style.css"
     crossorigin="anonymous">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -22,21 +22,20 @@
 
 <body class="px-5">
 
-  <h1> TODO example </h1>
 
-  <p>
-    An example that try to mimic the
-    <a href='https://codesandbox.io/s/github/vuejs/vuejs.org/tree/master/src/v2/examples/vue-20-todomvc?from-embed'>Vue
-      one</a>
+  <div id='flux-view' class="py-5"></div>
+
+  <p class='text-center'>
+    Double click on an item to edit.
+  </p>
+  <p class='text-center'>
+    This is a reproduction of the <a href='https://codesandbox.io/s/github/vuejs/vuejs.org/tree/master/src/v2/examples/vue-20-todomvc?from-embed'>todos example of Vue</a>.
+
   </p>
 
-  <div id='flux-view' class="py-5">
 
-  </div>
 
   <script>
-    let rxjs = window['rxjs']
-    let operators = window['rxjs']['operators']
     let flux = window['@youwol/flux-view']
 
     let classes = {
@@ -46,10 +45,11 @@
       itemDelete: 'delete fas fa-times text-danger float-right px-3',
       itemSuccess: 'fas fa-check mx-auto text-success'
     }
-
-    ALL = 1
-    ACTIVE = 2
-    COMPLETED = 3
+    let Filter = {
+      ALL: 1,
+      ACTIVE: 2,
+      COMPLETED: 3 
+    }
 
     class AppState {
 
@@ -61,10 +61,10 @@
           localStorage.setItem(AppState.STORAGE_KEY, JSON.stringify(items));
         })
         this.completed$ = this.items$.pipe(
-          operators.map(items => items.reduce((acc, item) => acc && item.done, true))
+          rxjs.operators.map(items => items.reduce((acc, item) => acc && item.done, true))
           )
         this.remaining$ = this.items$.pipe(
-          operators.map(items => items.filter((item) => item.done))
+          rxjs.operators.map(items => items.filter((item) => item.done))
           )
       }
 
@@ -103,14 +103,14 @@
       constructor(state) {
 
         this.state = state
-        this.filterMode$ = new rxjs.BehaviorSubject(ALL)
+        this.filterMode$ = new rxjs.BehaviorSubject(Filter.ALL)
         this.filterFcts = {
-          [ALL]: (item) => true,
-          [ACTIVE]: (item) => !item.done,
-          [COMPLETED]: (item) => item.done
+          [Filter.ALL]: (item) => true,
+          [Filter.ACTIVE]: (item) => !item.done,
+          [Filter.COMPLETED]: (item) => item.done
         }
         this.selectedItems$ = rxjs.combineLatest([state.items$, this.filterMode$]).pipe(
-          operators.map(([items, mode]) => items.filter(item => this.filterFcts[mode](item)))
+          rxjs.operators.map(([items, mode]) => items.filter(item => this.filterFcts[mode](item)))
         )
       }
 
@@ -219,16 +219,16 @@
               class: 'd-flex align-items-center mx-auto',
               children: [
                 {
-                  tag: 'a', innerText: 'All', class: class$(ALL), href: '#/all',
-                  onclick: () => appView.setFilter(ALL)
+                  tag: 'a', innerText: 'All', class: class$(Filter.ALL), href: '#/all',
+                  onclick: () => appView.setFilter(Filter.ALL)
                 },
                 {
-                  tag: 'a', innerText: 'Active', class: class$(ACTIVE), href: '#/active',
-                  onclick: () => appView.setFilter(ACTIVE)
+                  tag: 'a', innerText: 'Active', class: class$(Filter.ACTIVE), href: '#/active',
+                  onclick: () => appView.setFilter(Filter.ACTIVE)
                 },
                 {
-                  tag: 'a', innerText: 'Completed', class: class$(COMPLETED), href: '#/completed',
-                  onclick: () => appView.setFilter(COMPLETED)
+                  tag: 'a', innerText: 'Completed', class: class$(Filter.COMPLETED), href: '#/completed',
+                  onclick: () => appView.setFilter(Filter.COMPLETED)
                 }
               ]
             }
