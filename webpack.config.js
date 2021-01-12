@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const pkg = require('./package.json');
 const ROOT = path.resolve(__dirname, 'src');
 const DESTINATION = path.resolve(__dirname, 'dist');
 /*const path = require('path');
@@ -17,11 +18,15 @@ module.exports = {
         'main': './index.ts'
     },
     output: {
-        filename: 'main.bundle.js',
-        path: DESTINATION
+        path: DESTINATION,
+        libraryTarget: 'umd',
+        umdNamedDefine: true,
+        library: pkg.name,
+        filename: pkg.name + ".js",
+        globalObject: `(typeof self !== 'undefined' ? self : this)`
     },
     resolve: {
-        extensions: ['.ts', '.js'],
+        extensions: ['.ts', 'tsx', '.js'],
         modules: [
             ROOT,
             'node_modules'
@@ -34,10 +39,16 @@ module.exports = {
     module: {
         rules: [
             {
+                enforce: 'pre',
+                test: /\.js$/,
+                use: 'source-map-loader'
+            },
+            {
                 test: /\.ts$/,
                 exclude: [/node_modules/],
                 use: 'awesome-typescript-loader'
             }
         ],
-    }
+    },
+    devtool: 'source-map'
 };

@@ -1,4 +1,4 @@
-import { Observable, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { Stream$, _$} from "./core";
 import { render, VirtualDOM } from "./vdom";
 

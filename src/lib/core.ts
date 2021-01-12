@@ -1,5 +1,8 @@
 import { Observable, Subscription } from "rxjs";
-import { map } from "rxjs/operators";
+
+// hack until figuring out how to properly bind 'rxjs/oprators' as external in webpack
+//import { map } from "rxjs/operators";
+let operators = window['rxjs']['operators']
 import { HTMLPlaceHolderElement } from "./html-elements";
 import { render, VirtualDOM } from "./vdom";
 
@@ -27,7 +30,7 @@ export class Stream$<T0, T1 = T0> {
     subscribe( fct : (T,...args:any[]) => any, ...withData ) {
 
         let stream$ = this.map 
-            ? this.stream$.pipe( map( (d: any, ...args:any[]) => this.map(d,...withData) ))
+            ? this.stream$.pipe( operators.map( (d: any, ...args:any[]) => this.map(d,...withData) ))
             : this.stream$
         
         if( this.untilFirst ){
@@ -54,7 +57,7 @@ export function child$<TData>(
       ){
 
     return new Stream$<VirtualDOM>(
-        stream$.pipe(map((data: TData) => vDomMap(data))), 
+        stream$.pipe(operators.map((data: TData) => vDomMap(data))), 
         {untilFirst, wrapper, sideEffects})
 }
 

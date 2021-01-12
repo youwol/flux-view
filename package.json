@@ -1,5 +1,5 @@
 {
-  "name": "@youwol-public/flux-view",
+  "name": "@youwol/flux-view",
   "keywords": [
     "html",
     "reactive-programming",
@@ -7,15 +7,15 @@
     "view"
   ],
   "version": "0.0.0",
-  "description": "Rxjs based HTML renderer",
+  "description": "A library to enable reactive programming to create HTML document",
   "author": "Guillaume Reinisch",
   "license": "MIT",
   "homepage": "",
-  "main": "dist/flux-view.js",
+  "main": "dist/@youwol/flux-view.js",
   "scripts": {
     "build": "yarn build:dev",
     "build:dev": "webpack --mode development",
-    "build:prod": "del-cli dist && webpack --mode production"
+    "build:prod": "webpack --mode production"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "awesome-typescript-loader": "5.2.1",
+    "rxjs": "6.x",
     "rxjs-spy": "7.5.3",
     "@types/node": "14.14.16",
     "eslint": "7.16.0",
