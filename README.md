@@ -61,7 +61,7 @@ Few things to higlight:
 
 
 More elaborated example are provided in *codesandbox*:
-- <a href='https://codesandbox.io/s/github/youwol/flux-view/blob/master/src/demos/todo?file=/index.html'>Todos application</a>: A todo application copied from the example of the *Vue* library and 'translated' into *flux-view*. The original code can be found <a href='https://codesandbox.io/s/github/vuejs/vuejs.org/tree/master/src/v2/examples/vue-20-todomvc?from-embed=&file=/index.html:63-108'>here</a>.
+- <a href='https://codesandbox.io/s/github/youwol/flux-view/blob/master/src/demos/todos?file=/index.html'>Todos application</a>: A todo application copied from the example of the *Vue* library and 'translated' into *flux-view*. The original code can be found <a href='https://codesandbox.io/s/github/vuejs/vuejs.org/tree/master/src/v2/examples/vue-20-todomvc?from-embed=&file=/index.html:63-108'>here</a>.
 
 Their sources are in the folder */src/demos* (opening index.html in a browser will do the work)
 
