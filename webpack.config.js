@@ -3,15 +3,7 @@ const webpack = require('webpack');
 const pkg = require('./package.json');
 const ROOT = path.resolve(__dirname, 'src');
 const DESTINATION = path.resolve(__dirname, 'dist');
-/*const path = require('path');
-const pkg = require('./package.json');
 
-// Those cannot be delegated to common config
-const SRC = path.resolve('src');
-const DIST = path.resolve('dist');
-
-module.exports = (env) => require(`../config/webpack.config.base.js`)(env, pkg, SRC, DIST)
-*/
 module.exports = {
     context: ROOT,
     entry: {
@@ -34,7 +26,11 @@ module.exports = {
     },
     externals: [{
         'rxjs': "rxjs",
-        'rxjs/operators': 'rxjs/operators'
+        'rxjs/operators': {
+            commonjs:'rxjs/operators',
+            commonjs2:'rxjs/operators',
+            root:['rxjs','operators']
+        }
     }],
     module: {
         rules: [
@@ -45,8 +41,10 @@ module.exports = {
             },
             {
                 test: /\.ts$/,
-                exclude: [/node_modules/],
-                use: 'awesome-typescript-loader'
+                use: [
+                    { loader: 'awesome-typescript-loader' },
+                  ],
+                  exclude: /node_modules/,
             }
         ],
     },
