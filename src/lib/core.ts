@@ -1,77 +1,42 @@
-import { Observable, Subscription } from "rxjs";
-
-// hack until figuring out how to properly bind 'rxjs/oprators' as external in webpack
-//import { map } from "rxjs/operators";
-let operators = window['rxjs']['operators']
-import { HTMLPlaceHolderElement } from "./html-elements";
-import { render, VirtualDOM } from "./vdom";
+import { Subscription } from "rxjs";
+import { CustomElementsMap} from "./factory";
+import { AttributeType, Stream$ } from "./stream$";
 
 
 
-export class Stream$<T0, T1 = T0> {
+export interface VirtualDOM{
 
-    public readonly untilFirst
-    public readonly wrapper
-    public readonly map
-    public readonly sideEffects
+    tag?: string
+    [key:string]: any
+}
 
-    constructor(
-        public readonly stream$: Observable<T0>,
-        { untilFirst, wrapper, map, sideEffects }: 
-        { untilFirst?: T1, wrapper?: (T1) => T1, map?: (T0,...args:any[])=>T1 , 
-          sideEffects?: (T1, T0) => void } = {}) {
 
-        this.untilFirst = untilFirst
-        this.wrapper = wrapper
-        this.map = map
-        this.sideEffects = sideEffects
+class HTMLElement$ extends _$(HTMLElement){
+}
+
+
+class HTMLPlaceHolderElement extends HTMLElement{
+
+    private currentElement: HTMLElement
+    constructor() {
+        super();
     }
 
-    subscribe( fct : (T,...args:any[]) => any, ...withData ) {
+    initialize( stream$: Stream$<VirtualDOM> ): Subscription {
 
-        let stream$ = this.map 
-            ? this.stream$.pipe( operators.map( (d: any, ...args:any[]) => this.map(d,...withData) ))
-            : this.stream$
-        
-        if( this.untilFirst ){
-            let vWrapped = this.wrapper ? this.wrapper(this.untilFirst) : this.untilFirst
-            let v1 = fct(vWrapped)
-            this.sideEffects && this.sideEffects(vWrapped, v1)
-            this.wrapper ? fct(this.wrapper(this.untilFirst)) : fct(this.untilFirst)
+        this.currentElement = this
+
+        let apply = (vDom:VirtualDOM) => {
+            let div = render(vDom)
+            this.currentElement.replaceWith(div)
+            this.currentElement = div
+            return div
         }
         
-        return stream$.subscribe( (v:T1) => {
-            let vWrapped = this.wrapper ? this.wrapper(v) : v
-            let v1 = fct(vWrapped)
-            this.sideEffects && this.sideEffects(vWrapped, v1)
-        })
+        return stream$.subscribe( (vDom:VirtualDOM) => { return apply(vDom) })
     }
 }
 
-
-export function child$<TData>(
-    stream$: Observable<TData>,
-    vDomMap: (T) => VirtualDOM,
-    { untilFirst, wrapper, sideEffects }: 
-    { untilFirst?: VirtualDOM, wrapper?: (VirtualDOM) => VirtualDOM, sideEffects?: (TData, HTMLElement) => void  } = {},
-      ){
-
-    return new Stream$<VirtualDOM>(
-        stream$.pipe(operators.map((data: TData) => vDomMap(data))), 
-        {untilFirst, wrapper, sideEffects})
-}
-
-export type AttributeType = number | string | boolean | {[key:string]:  number | string | boolean }
-
-export function attr$<TData>(
-    stream$: Observable<TData>,
-    attrMap: (TData,  ...args: any[]) => AttributeType,
-    { untilFirst, wrapper }: { untilFirst?: AttributeType, wrapper?: (AttrType) => AttributeType } = {}){
-
-    return new Stream$<TData, AttributeType>(
-        stream$, 
-        {untilFirst, wrapper, map: (data: TData, ...args:any[]) => attrMap(data, ...args) })
-}
 
 
 type Constructor<T extends HTMLElement> = new (...args: any[]) => T;
@@ -84,7 +49,7 @@ const specialBindings = {
     }
 }
 
-export function _$<T extends Constructor<HTMLElement>>(Base: T) {
+function _$<T extends Constructor<HTMLElement>>(Base: T) {
 
     return class extends Base {
 
@@ -140,3 +105,41 @@ export function _$<T extends Constructor<HTMLElement>>(Base: T) {
         }
     }
 }
+
+
+function factory(tag: string = 'div'):  HTMLElement${
+
+    if(!CustomElementsMap[tag])
+        throw Error(`The element ${tag} is not registered in flux-view's factory`)
+
+    let div = document.createElement(tag,{ is:`fv-${tag}` } ) as any
+    return div as  HTMLElement$
+}
+
+
+export function render( vDom:VirtualDOM ) :  HTMLElement$ {
+
+    let element = factory(vDom.tag)
+    element.initialize(vDom)
+    return element
+}
+
+
+function registerElement( tag: string, BaseClass ){
+
+    class ExtendedClass$ extends _$(BaseClass){
+        constructor() {super();}
+    }
+    customElements.define( `fv-${tag}`, ExtendedClass$ as any, { extends: tag })    
+}
+
+function register() {
+    
+    customElements.define('fv-placeholder', HTMLPlaceHolderElement);
+    
+    Object.entries(CustomElementsMap).forEach( ([tag, HTMLElementClass]) => {
+       registerElement(tag, HTMLElementClass)
+    }) 
+}
+
+register()

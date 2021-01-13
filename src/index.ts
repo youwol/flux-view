@@ -2,6 +2,5 @@
  * Public API Surface of flux-lib-core
  */
 
-export * from './lib/core';
-export * from "./lib/vdom"
-
+export {attr$, child$} from "./lib/stream$"
+export {render, VirtualDOM} from "./lib/core"
