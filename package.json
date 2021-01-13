@@ -12,10 +12,13 @@
   "license": "MIT",
   "homepage": "",
   "main": "dist/@youwol/flux-view.js",
+  "types": "src/index.ts",
   "scripts": {
     "build": "yarn build:dev",
     "build:dev": "webpack --mode development",
-    "build:prod": "webpack --mode production"
+    "build:prod": "webpack --mode production",
+    "test": "jest -c ./jest.config.js --rootDir .",
+    "test-coverage": "jest -c ./jest.config.js --rootDir . --collect-coverage --collectCoverageFrom=./src/lib/**/*.ts --coverageDirectory=./coverage/$TARGET --runInBand"
   },
   "repository": {
     "type": "git",
@@ -34,6 +37,9 @@
     "eslint-loader": "4.0.2",
     "typescript": "4.1.3",
     "webpack": "^4.12.0",
-    "webpack-cli": "4.3.0"
+    "webpack-cli": "4.3.0",
+    "jest": "26.6.3",
+    "jest-junit": "12.0.0",
+    "ts-jest": "26.4.4"
   }
 }
