@@ -2,9 +2,6 @@
 
 <p>
     <img alt="Version" src="https://img.shields.io/badge/version-0.0.0-blue.svg?cacheSeconds=2592000" />
-    <a href="https://github.com/kefranabg/readme-md-generator#readme" target="_blank">
-        <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
-    </a>
     <a href="https://github.com/kefranabg/readme-md-generator/graphs/commit-activity" target="_blank">
         <img alt="Maintenance" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" />
     </a>
@@ -13,19 +10,20 @@
     </a>
 </p>
 
-> Flux-view is a tiny library to render HTML documents using reactive programing primitives.
-Tiny meaning less than 10kB uncompressed - rxjs not included.
+> 
 
 
-# Presentation
+## What is it?
 
+Flux-view is a tiny library to render HTML documents using reactive programing primitives
+(tiny meaning less than 10kB uncompressed - rxjs not included).
 The library core concept is to allow binding DOM's attributes and children to RxJS streams in an HTML document:
 
 ```typescript
 
 import { interval } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { render, attr$ } from 'flux-view'
+import { render, attr$ } from '@youwol/flux-view'
 
 const nCount = 10
 // timer$: tick 10 times every seconds
@@ -55,43 +53,56 @@ Few things to higlight:
 - the DOM is represented by a JSON data-structure (called virtual DOM or vDOM). All regular attributes of the DOM exist along with the *children* attributes to list children of the node.
 - any attribute can be defined either by plain data or a stream (be it combination of multiple streams)
 
-> For those having knowledge of RxJS and HTML, learning how to use the library will take a couple of minutes: the all API contains only three functions : *render*, *attr$*, and *child$*; the two latters are here essentially the same, they are differentiated as syntactic sugar. If not the case, learning how to use the library is learning reactive programming and HTML5 (which won't be a waste of time if you ask me).
+> For those having knowledge of RxJS and HTML, learning how to use the library will take a couple of minutes: the all API contains only three functions : *render*, *attr$*, and *child$*; the two latters are here essentially the same, they are differentiated as syntactic sugar. If not the case, learning how to use the library is learning reactive programming and HTML5.
 
-# More elaborated examples
-
+## More elaborated examples
 
 More elaborated example are provided in *codesandbox*:
-- <a href='https://codesandbox.io/s/github/youwol/flux-view/blob/master/src/demos/todos?file=/index.html'>Todos application</a>: A todo application copied from the example of the *Vue* library and 'translated' into *flux-view*. The original code can be found <a href='https://codesandbox.io/s/github/vuejs/vuejs.org/tree/master/src/v2/examples/vue-20-todomvc?from-embed=&file=/index.html:63-108'>here</a>.
+- <a href='https://codesandbox.io/s/github/youwol/flux-view/blob/master/src/demos/todos?file=/index.html'>Todos application</a>: A todo application copied from the example of the *Vue* library and 'translated' into *flux-view*. The original code of the *View* version can be found <a href='https://codesandbox.io/s/github/vuejs/vuejs.org/tree/master/src/v2/examples/vue-20-todomvc?from-embed=&file=/index.html:63-108'>here</a>.
+- <a href='https://codesandbox.io/s/github/youwol/flux-view/blob/master/src/demos/timer?file=/index.html'>Count down</a>: A simple count down, includes some reactivity regarding mouse move.
 
-Their sources are in the folder */src/demos* (opening index.html in a browser will do the work)
+Demos sources are in the folder */src/demos* (opening index.html in a browser will do the work).
 
-# A note about performances
 
-Most of the popular frameworks (e.g. *React*, *Angular*, *Vue*) use an approach 
-that bind a state to a virtual dom and automagically identify and update relevant portions of the DOM that actually change when the state modification. This magic is at the price of a more complex API and at some undesired redrawing if care is not taken.
+# Install
 
-In *flux-view*, the user is in charge to chose how the binding between DOM's 
-attributes/children and observables is realized. 
-For instance, in the previous example, there is only the attribute *innerText* of the 
-inner div that is actually updated: when timer$ emit a new value, only this property is updated. A less efficient implementation would be:
-
- ```typescript
-let vDom = { 
-    tag:'div', innerText: 'count down:', 
-    children:[
-        child$(
-            timer$, 
-            (countDown:number) => ({ tag: 'div', innerText:`Remaining: ${countDown} s`})
-        ) 
-    ]
-}
+Using npm:
+```sh
+npm install @youwol/flux-view
 ```
-In this case, the entire inner div is re-rendered when *timer$* emit a new value.
+Using yarn:
+```sh
+yarn add @youwol/flux-view
+```
 
-There is yet one performance issue with *flux-view* that arises when a binding between
-an observable of a collection and the children of a node is desired. 
-At that time the library force to use the *child$* function wich in turn redraw the all collection, even if only one item has been added/removed/modified. This issue will be solved soon in upcoming versions (by exposing a *children$' that will provide required features). 
+And import the functions in your code:
 
+```typescript
+import {attr$, child$, render} from "@youwol/flux-view"
+```
+
+Or you can start scratching an index.html using CDN ressources like that:
+```html
+<html>
+    <head>
+        <script src="https://unpkg.com/rxjs@6/bundles/rxjs.umd.min.js">
+        </script>
+        <script src="https://unpkg.com/@youwol/flux-view@0.0.2/dist/@youwol/flux-view.js">
+        </script>
+    </head>
+
+    <body id="container">
+
+        <script>
+            let [flux, rxjs] = [window['@youwol/flux-view'], window['rxjs']]  
+
+            let vDom = { innerText: flux.attr$( rxjs.of("Hi! Happy fluxing!"), (d)=>d) }  
+
+            document.getElementById("container").appendChild(flux.render(vDom))
+        </script>
+    </body>
+</html>
+```
 # API
 
 ## Virtual DOM & render function
@@ -100,7 +111,7 @@ The virtual DOM (vDOM) is described by a JSON data-structure:
 -  The tag of a node is defined using the 'tag' attribute 
 -  All regular attributes of HTMLElement can be set
 -  The children are defined as a list using the 'children' attribute 
--  the attribute 'style' can be used to set some style attributes (provide as a Map<string, string)>)
+-  the attribute 'style' can be used to set some styles (provide as a Map<string, string)>)
 
 Any of those attributes but the tag can be: 
 - a plain value (with a type consistent to the corresponding type used by the HTMLElement)
@@ -170,6 +181,7 @@ let vDom = {
 - sideEffects is a function that provides a handle to execute side effects once the
 attribute/child as been set/added; both the domain's data and the rendered HTMLElement are provided to this function. For instance, a common use case is to focus an input after being dynamically added to the DOM.
 
+# Technical details
 
 ## Lifecycle
 
@@ -178,3 +190,31 @@ Behind the scene, one central task of *flux-view*  is to keep track of internal 
 The rule is straightforward: only the subscriptions related to DOM elements included 
 in the document are kept alive. When an element is removed (in any ways), all the 
 related streams are unsubscribed recursively. Latter on, if the element is reinserted in the document, all the related streams are resuscribed.
+
+
+## A note about performances
+
+Most of the popular frameworks (e.g. *React*, *Angular*, *Vue*) use an approach 
+that bind a state to a virtual dom and automagically identify and update relevant portions of the DOM that actually change when the state modification. This magic is at the price of a more complex API and at some undesired redrawing if care is not taken.
+
+In *flux-view*, the user is in charge to chose how the binding between DOM's 
+attributes/children and observables is realized. 
+For instance, in the previous example, there is only the attribute *innerText* of the 
+inner div that is actually updated: when timer$ emit a new value, only this property is updated. A less efficient implementation would be:
+
+ ```typescript
+let vDom = { 
+    tag:'div', innerText: 'count down:', 
+    children:[
+        child$(
+            timer$, 
+            (countDown:number) => ({ tag: 'div', innerText:`Remaining: ${countDown} s`})
+        ) 
+    ]
+}
+```
+In this case, the entire inner div is re-rendered when *timer$* emit a new value.
+
+There is yet one performance issue with *flux-view* that arises when a binding between
+an observable of a collection and the children of a node is desired. 
+At that time the library force to use the *child$* function wich in turn redraw the all collection, even if only one item has been added/removed/modified. This issue will be solved soon in upcoming versions (by exposing a *children$' that will provide required features). 
