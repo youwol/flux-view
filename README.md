@@ -218,3 +218,8 @@ In this case, the entire inner div is re-rendered when *timer$* emit a new value
 There is yet one performance issue with *flux-view* that arises when a binding between
 an observable of a collection and the children of a node is desired. 
 At that time the library force to use the *child$* function wich in turn redraw the all collection, even if only one item has been added/removed/modified. This issue will be solved soon in upcoming versions (by exposing a *children$' that will provide required features). 
+
+## Coverage
+
+Until a better solution is found, coverage results are presented 
+<a href="https://codesandbox.io/s/github/youwol/flux-view/blob/master/coverage/lcov-report"> here</a> 
