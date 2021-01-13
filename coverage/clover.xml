@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1610550374461" clover="3.2.0">
+  <project timestamp="1610550374461" name="All files">
+    <metrics statements="67" coveredstatements="67" conditionals="20" coveredconditionals="20" methods="33" coveredmethods="33" elements="120" coveredelements="120" complexity="0" loc="67" ncloc="67" packages="1" files="3" classes="3"/>
+    <file name="core.ts" path="/home/greinisch/Projects/platform/packages/flux-view/src/lib/core.ts">
+      <metrics statements="47" coveredstatements="47" conditionals="13" coveredconditionals="13" methods="26" coveredmethods="26"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="22" count="1" type="stmt"/>
+      <line num="27" count="1" type="stmt"/>
+      <line num="29" count="1" type="stmt"/>
+      <line num="30" count="1" type="stmt"/>
+      <line num="31" count="1" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+      <line num="33" count="1" type="stmt"/>
+      <line num="36" count="1" type="stmt"/>
+      <line num="45" count="1" type="stmt"/>
+      <line num="46" count="4" type="stmt"/>
+      <line num="48" count="1" type="stmt"/>
+      <line num="54" count="118" type="stmt"/>
+      <line num="57" count="5" type="stmt"/>
+      <line num="60" count="5" type="stmt"/>
+      <line num="64" count="5" type="stmt"/>
+      <line num="68" count="16" type="cond" truecount="2" falsecount="0"/>
+      <line num="69" count="16" type="cond" truecount="2" falsecount="0"/>
+      <line num="71" count="5" type="stmt"/>
+      <line num="72" count="11" type="stmt"/>
+      <line num="74" count="5" type="stmt"/>
+      <line num="75" count="3" type="stmt"/>
+      <line num="76" count="4" type="stmt"/>
+      <line num="80" count="5" type="cond" truecount="2" falsecount="0"/>
+      <line num="82" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="83" count="1" type="stmt"/>
+      <line num="84" count="1" type="stmt"/>
+      <line num="85" count="1" type="stmt"/>
+      <line num="90" count="1" type="stmt"/>
+      <line num="91" count="1" type="stmt"/>
+      <line num="97" count="5" type="stmt"/>
+      <line num="102" count="15" type="stmt"/>
+      <line num="112" count="6" type="cond" truecount="2" falsecount="0"/>
+      <line num="113" count="1" type="stmt"/>
+      <line num="115" count="5" type="stmt"/>
+      <line num="116" count="5" type="stmt"/>
+      <line num="120" count="1" type="stmt"/>
+      <line num="122" count="6" type="stmt"/>
+      <line num="123" count="5" type="stmt"/>
+      <line num="124" count="5" type="stmt"/>
+      <line num="131" count="5" type="stmt"/>
+      <line num="133" count="117" type="stmt"/>
+      <line num="138" count="1" type="stmt"/>
+      <line num="140" count="1" type="stmt"/>
+      <line num="141" count="117" type="stmt"/>
+      <line num="145" count="1" type="stmt"/>
+    </file>
+    <file name="factory.ts" path="/home/greinisch/Projects/platform/packages/flux-view/src/lib/factory.ts">
+      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <line num="4" count="1" type="stmt"/>
+    </file>
+    <file name="stream$.ts" path="/home/greinisch/Projects/platform/packages/flux-view/src/lib/stream$.ts">
+      <metrics statements="19" coveredstatements="19" conditionals="7" coveredconditionals="7" methods="7" coveredmethods="7"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="12" count="4" type="stmt"/>
+      <line num="13" count="4" type="stmt"/>
+      <line num="18" count="4" type="stmt"/>
+      <line num="19" count="4" type="stmt"/>
+      <line num="20" count="4" type="stmt"/>
+      <line num="21" count="4" type="stmt"/>
+      <line num="26" count="4" type="stmt"/>
+      <line num="28" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="30" count="4" type="stmt"/>
+      <line num="31" count="4" type="stmt"/>
+      <line num="36" count="5" type="cond" truecount="2" falsecount="0"/>
+      <line num="37" count="5" type="stmt"/>
+      <line num="38" count="5" type="cond" truecount="2" falsecount="0"/>
+      <line num="50" count="4" type="stmt"/>
+      <line num="52" count="4" type="stmt"/>
+      <line num="58" count="1" type="stmt"/>
+      <line num="59" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>
