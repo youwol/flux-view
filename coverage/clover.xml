@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1610550374461" clover="3.2.0">
-  <project timestamp="1610550374461" name="All files">
+<coverage generated="1610635240194" clover="3.2.0">
+  <project timestamp="1610635240194" name="All files">
     <metrics statements="67" coveredstatements="67" conditionals="20" coveredconditionals="20" methods="33" coveredmethods="33" elements="120" coveredelements="120" complexity="0" loc="67" ncloc="67" packages="1" files="3" classes="3"/>
-    <file name="core.ts" path="/home/greinisch/Projects/platform/packages/flux-view/src/lib/core.ts">
+    <file name="core.ts" path="/home/greinisch/Projects/flux-view/src/lib/core.ts">
       <metrics statements="47" coveredstatements="47" conditionals="13" coveredconditionals="13" methods="26" coveredmethods="26"/>
       <line num="2" count="1" type="stmt"/>
       <line num="3" count="1" type="stmt"/>
@@ -52,11 +52,11 @@
       <line num="141" count="117" type="stmt"/>
       <line num="145" count="1" type="stmt"/>
     </file>
-    <file name="factory.ts" path="/home/greinisch/Projects/platform/packages/flux-view/src/lib/factory.ts">
+    <file name="factory.ts" path="/home/greinisch/Projects/flux-view/src/lib/factory.ts">
       <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <line num="4" count="1" type="stmt"/>
     </file>
-    <file name="stream$.ts" path="/home/greinisch/Projects/platform/packages/flux-view/src/lib/stream$.ts">
+    <file name="stream$.ts" path="/home/greinisch/Projects/flux-view/src/lib/stream$.ts">
       <metrics statements="19" coveredstatements="19" conditionals="7" coveredconditionals="7" methods="7" coveredmethods="7"/>
       <line num="2" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>

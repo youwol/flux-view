@@ -6,7 +6,7 @@
     "rxjs",
     "view"
   ],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Tiny library to render HTML documents using reactive programing primitives",
   "author": "Guillaume Reinisch",
   "license": "MIT",
@@ -18,7 +18,8 @@
     "build:dev": "webpack --mode development",
     "build:prod": "webpack --mode production",
     "test": "jest -c ./jest.config.js --rootDir .",
-    "test-coverage": "jest -c ./jest.config.js --rootDir . --collect-coverage --collectCoverageFrom=./src/lib/**/*.ts --coverageDirectory=./coverage/$TARGET --runInBand"
+    "test-coverage": "jest -c ./jest.config.js --rootDir . --collect-coverage --collectCoverageFrom=./src/lib/**/*.ts --coverageDirectory=./coverage/$TARGET --runInBand",
+    "publish-npm-public": "yarn build:prod && yarn test-coverage && yarn publish --access public"
   },
   "repository": {
     "type": "git",
