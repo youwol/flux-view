@@ -8,6 +8,8 @@ export interface VirtualDOM{
 
     tag?: string
     [key:string]: any
+    connectedCallback?: (d) => void
+    disconnectedCallback?: (d) => void
 }
 
 
@@ -91,10 +93,12 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                     this.appendChild(div)
                 }
             })
+            this.vDom.connectedCallback && this.vDom.connectedCallback(this)
         };
 
         disconnectedCallback() {
             this.subscriptions.forEach( s => s.unsubscribe())
+            this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this)
         }
 
         private applyAttribute(name: string, value: AttributeType){

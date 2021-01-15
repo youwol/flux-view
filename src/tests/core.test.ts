@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { create } from 'rxjs-spy'
 import { tag } from 'rxjs-spy/cjs/operators';
 import { SnapshotPlugin } from 'rxjs-spy/cjs/plugin';
@@ -92,6 +92,54 @@ test('attr$', () => {
     expect(subs.class$).toEqual(0)
 })
 
+
+test('attr$ & external subscription', () => {
+
+    spy.flush();
+    
+    let sideEffects = []
+
+    let class$ = new BehaviorSubject<string>('default')
+    let userSubs = class$.pipe(tag('class2$'))
+    let vDom = {
+        id:'root',
+        class:attr$(
+            class$.pipe(tag('class$')), 
+            (c) => c
+        ),
+        connectedCallback: (element) => {
+            element.subscriptions.push(userSubs.subscribe( c => sideEffects.push(c)))
+        },
+        disconnectedCallback: (element) => {
+            sideEffects = []
+        }
+    }
+    let div = render(vDom)
+    document.body.appendChild(div)
+    let root = document.getElementById("root")
+    expect(root).toBeTruthy()
+    expect(root.innerText).toBeFalsy()
+    expect(root.classList.toString()).toEqual('default')
+    expect(sideEffects.length).toEqual(1)
+    expect(sideEffects[0]).toEqual('default')
+
+
+    let subs = getOpenSubscriptions()
+    expect(subs.class$).toEqual(1)
+    expect(subs.class2$).toEqual(1)
+    div.remove()
+    subs = getOpenSubscriptions()
+    expect(subs.class$).toEqual(0)
+    expect(subs.class2$).toEqual(0)
+
+    document.body.appendChild(div)
+    root = document.getElementById("root")
+    expect(root).toBeTruthy()
+    expect(root.innerText).toBeFalsy()
+    expect(root.classList.toString()).toEqual('default')
+    expect(sideEffects.length).toEqual(1)
+    expect(sideEffects[0]).toEqual('default')
+})
 
 test('simple attr$ & child$ ', () => {
 
