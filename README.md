@@ -1,7 +1,6 @@
 <h1 align="center">Flux-view 👋</h1>
 
 <p>
-    <img alt="Version" src="https://img.shields.io/badge/version-0.0.0-blue.svg?cacheSeconds=2592000" />
     <a href="https://github.com/kefranabg/readme-md-generator/graphs/commit-activity" target="_blank">
         <img alt="Maintenance" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" />
     </a>
@@ -20,7 +19,6 @@ Flux-view is a tiny library to render HTML documents using reactive programing p
 The library core concept is to allow binding DOM's attributes and children to RxJS streams in an HTML document:
 
 ```typescript
-
 import { interval } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { render, attr$ } from '@youwol/flux-view'
@@ -107,18 +105,47 @@ Or you can start scratching an index.html using CDN ressources like that:
 
 ## Virtual DOM & render function
 
-The virtual DOM (vDOM) is described by a JSON data-structure:
--  The tag of a node is defined using the 'tag' attribute 
--  All regular attributes of HTMLElement can be set
+The virtual DOM (vDOM) is described by a JSON data-structure with following attributes (all are optionals):
+-  The tag of a node is defined using the 'tag' attribute - default to 'div'
+-  All regular attributes of HTMLElement that can be set can be used
 -  The children are defined as a list using the 'children' attribute 
 -  the attribute 'style' can be used to set some styles (provide as a Map<string, string)>)
+-  the attribute 'connectedCallback' allows to provide a function that will be executed when
+the element is actually added to the document. It takes as argument the corresponding HTMLElement. 
+-  the attribute 'disconnectedCallback' allows to provide a function that will be executed when
+the element is removed from the document. It takes as argument the corresponding HTMLElement. 
 
-Any of those attributes but the tag can be: 
+Any of those attributes but 'tag', 'connectedCallback' and 'disconnectedCallback' can be: 
 - a plain value (with a type consistent to the corresponding type used by the HTMLElement)
 - an observable to a plain value (using *attr$* or *child$* - described hereafter).
 
-To turn a vDOM into a regular HTMLElement, use the function *render*.
+To turn a vDOM into a regular HTMLElement, use the function *render*:
 
+```typescript
+import { BehaviorSubject } from 'rxjs';
+import { render } from '@youwol/flux-view'
+
+let option$ = new BehaviorSubject<string>('option0')
+let sub = option$.subscribe( option => {/*some behavior*/})
+let vDom = {
+    class:'d-flex justify-content-center',
+    children:[
+        {
+            tag:'select',
+            children:[
+                {tag:'option', innerText:'option 1'},
+                {tag:'option', innerText:'option 2'},
+            ],
+            onchange: (ev) => option$.next( ev.target.value)
+        }
+    ],
+    connectedCallback: (elem) => {        
+        /* pushing into elem.subscriptions make the subscription managed by the DOM, see part 'Lifecycle' */
+        elem.subscriptions.push(sub)
+    }
+}
+let div = render(vDOom)
+```
 ## *attr$* & *child$* functions
 
 The functions *attr$* and *child$* are actually the same, they differ only by the type used
