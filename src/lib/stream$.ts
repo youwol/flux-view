@@ -57,3 +57,4 @@ export type AttributeType = number | string | boolean | {[key:string]:  number |
 
 export let child$ = stream$ // this would be type specialization for TDom = VirtualDom
 export let attr$ = stream$  // this would be type specialization for TDom = AttributeType
+export let children$ = stream$ // this would be type specialization for TDom = Array<VirtualDom>

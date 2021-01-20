@@ -1,10 +1,10 @@
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, interval, Subject } from 'rxjs';
 import { create } from 'rxjs-spy'
 import { tag } from 'rxjs-spy/cjs/operators';
 import { SnapshotPlugin } from 'rxjs-spy/cjs/plugin';
 import * as Match from 'rxjs-spy/cjs/match';
 
-import { attr$, child$, render} from '../index';
+import { attr$, child$, children$, render} from '../index';
 import { filter } from 'rxjs/operators';
 
 const spy = create();
@@ -189,6 +189,51 @@ test('simple attr$ & child$ ', () => {
     subs = getOpenSubscriptions()
     expect(subs.class$).toEqual(0)
     expect(subs.file$).toEqual(0)
+})
+
+test('children$', () => { 
+
+    let inner_stream$ = new BehaviorSubject("a")
+    let data = ["hello","world"]
+    let array_data$ = new BehaviorSubject(data)
+
+    let view= (text) => {
+        return { tag:'span', innerText:text, class:attr$(inner_stream$.pipe( tag( 'class$' )), (d) => d)} 
+    }
+
+    let vDom = {
+        id:'browser',
+        children:children$( array_data$.pipe( tag( 'children$' )), (array) => array.map( view ) )
+    }
+
+    let check = (root, data, c) => {
+        expect(root.children.length).toEqual(data.length)
+        data.forEach( (d,i) => {
+            expect(root.children[i]['innerText']).toEqual(d)
+            expect(root.children[i]['classList'].toString()).toEqual(c)
+        })
+    }
+
+    let div = render(vDom)
+    document.body.appendChild(div)
+    let root = document.getElementById("browser")
+    expect(root).toBeTruthy()
+    check(root, data, 'a')
+    
+    data = ["tata", "toto", "tutu"]
+    array_data$.next(["tata", "toto", "tutu"])
+    check(root, data, 'a')
+
+    inner_stream$.next('b')
+    check(root, data, 'b')
+
+    let subs = getOpenSubscriptions()
+    expect(subs.children$).toEqual(1)
+    expect(subs.class$).toEqual(1)
+    div.remove()
+    subs = getOpenSubscriptions()
+    expect(subs.children$).toEqual(0)
+    expect(subs.class$).toEqual(0)
 })
 
 

@@ -78,8 +78,28 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                     attr$.subscribe( (v) => this.applyAttribute(k,v) , this ) 
                 )
             })
+            if(this.vDom.children && Array.isArray(this.vDom.children))
+                this.renderChildren(this.vDom.children)
 
-            this.vDom.children && this.vDom.children.forEach( (child) => {
+            if(this.vDom.children && this.vDom.children instanceof Stream$){
+                this.subscriptions.push(
+                    this.vDom.children.subscribe( (children) =>{
+                        this.textContent = ''
+                        this.renderChildren(children)
+                    })
+                )
+            }
+            this.vDom.connectedCallback && this.vDom.connectedCallback(this)
+        };
+
+        disconnectedCallback() {
+            this.subscriptions.forEach( s => s.unsubscribe())
+            this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this)
+        }
+
+        private renderChildren( children : Array<VirtualDOM> ){
+
+            children.forEach( (child) => {
     
                 if(child instanceof Stream$){
                     let placeHolder = document.createElement('fv-placeholder') as HTMLPlaceHolderElement
@@ -93,12 +113,6 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                     this.appendChild(div)
                 }
             })
-            this.vDom.connectedCallback && this.vDom.connectedCallback(this)
-        };
-
-        disconnectedCallback() {
-            this.subscriptions.forEach( s => s.unsubscribe())
-            this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this)
         }
 
         private applyAttribute(name: string, value: AttributeType){
