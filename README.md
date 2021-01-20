@@ -51,7 +51,7 @@ Few things to higlight:
 - the DOM is represented by a JSON data-structure (called virtual DOM or vDOM). All regular attributes of the DOM exist along with the *children* attributes to list children of the node.
 - any attribute can be defined either by plain data or a stream (be it combination of multiple streams)
 
-> For those having knowledge of RxJS and HTML, learning how to use the library will take a couple of minutes: the all API contains only three functions : *render*, *attr$*, and *child$*; the two latters are here essentially the same, they are differentiated as syntactic sugar. If not the case, learning how to use the library is learning reactive programming and HTML5.
+> For those having knowledge of RxJS and HTML, learning how to use the library will take a couple of minutes: the all API contains only 4 functions : *render*, *attr$*, *child$*, *children$*; the three latters are here essentially the same, they are differentiated as syntactic sugar. If not the case, learning how to use the library is learning reactive programming and HTML5.
 
 ## More elaborated examples
 
@@ -117,7 +117,7 @@ the element is removed from the document. It takes as argument the corresponding
 
 Any of those attributes but 'tag', 'connectedCallback' and 'disconnectedCallback' can be: 
 - a plain value (with a type consistent to the corresponding type used by the HTMLElement)
-- an observable to a plain value (using *attr$* or *child$* - described hereafter).
+- an observable to a plain value (using *attr$*, *child$* or *children* - described hereafter).
 
 To turn a vDOM into a regular HTMLElement, use the function *render*:
 
@@ -146,11 +146,12 @@ let vDom = {
 }
 let div = render(vDOom)
 ```
-## *attr$* & *child$* functions
+## *attr$*, *child$* & *children$* functions
 
-The functions *attr$* and *child$* are actually the same, they differ only by the type used
+The functions *attr$*, *child$* and *children$* are actually the same, they differ only by the type used
 in their definition.
-Both follows this type's definition (the third arguments is optional):
+
+It follows this common type's definition (the third arguments is optional):
  ```typescript
 function ( 
     stream$: Observable<TData>,
@@ -168,8 +169,10 @@ function (
 ```
 where:
 - *stream$* is the domain's data stream defined as a RxJS observable
-- *viewMap* is a function that convert the domain's data to a vDOM attribute. In the case of the function *attr$* the type *TResult* correspond to the type
-of the target attibute, while in the function *child$*, *TResult* is a vDOM 
+- *viewMap* is a function that convert the domain's data to a vDOM attribute. 
+In the case of the function *attr$*, *TResult* is the type of the target attibute.
+In the case of the function *child$*, *TResult* is *VirtualDOM*. 
+In the case of the function *children$*, *TResult* is *Array\<VirtualDOM\>*. 
 - *untilFirst* is the data that will be used until the first emitted element in *stream$* is obtained. If not provided, the attribute/child does not exist until first emission.
     In such case, using a *BehaviorSubject* of RxJS (observable that directly emit a predifined value) is an alternative that can also be used.
 
@@ -243,8 +246,8 @@ let vDom = {
 In this case, the entire inner div is re-rendered when *timer$* emit a new value.
 
 There is yet one performance issue with *flux-view* that arises when a binding between
-an observable of a collection and the children of a node is desired. 
-At that time the library force to use the *child$* function wich in turn redraw the all collection, even if only one item has been added/removed/modified. This issue will be solved soon in upcoming versions (by exposing a *children$' that will provide required features). 
+an observable of a collection and the children of a node is desired using *children$*. 
+At that time the library redraw the all collection, even if only one item has been added/removed/modified. This issue will be solved soon in upcoming versions (somehow by allowing more granularity when using *children$' to provide required features). 
 
 ## Coverage
 
