@@ -1,5 +1,12 @@
 
-// taken from lib.dom.ts HTMLElementTagNameMap
+// taken from lib.dom.ts (HTMLElementTagNameMap); 
+
+/**
+ * Taken from lib.dom.ts (HTMLElementTagNameMap); following element are **not supported** (instantiation failed for them, no idea):
+ * -    applet (HTMLAppletElement)
+ * -    basefont: (HTMLBaseFontElement)
+ * 
+*/
 
 export let CustomElementsMap = {
     "a": HTMLAnchorElement,
@@ -121,4 +128,4 @@ export let CustomElementsMap = {
     "var": HTMLElement,
     "video": HTMLVideoElement,
     "wbr": HTMLElement
-}
+   }

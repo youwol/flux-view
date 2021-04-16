@@ -1,13 +1,31 @@
 import { Observable } from "rxjs"
 import { map } from "rxjs/operators"
+import { VirtualDOM } from "./core"
 
-
+/**
+ * A RxJs observable that represents a DOM's attribute, child or children.
+ * 
+ * @param T0 the domain data type
+ * @param T1 the DOM data type: either :
+ *     - [[AttributeType]] for attributes (see [[attr$]])
+ *     - [[VirtualDOM]] for child (see [[child$]])
+ *     - Array<[[VirtualDOM]]> for children (see [[children$]])
+ */
 export class Stream$<T0, T1 = T0> {
 
     public readonly untilFirst
     public readonly wrapper
     public readonly sideEffects
 
+    /**
+    * @param stream$  domain's data stream defined as a RxJS observable
+    * @param vDomMap function that convert the domain's data to a vDOM attribute
+    * @param untilFirst is the data that will be used until the first emitted element in *stream$* is obtained.
+    *  If not provided, the attribute/child does not exist until first emission.
+    * @param wrapper is a function that is used to alter the data returned by *vDomMap*. 
+    * @param sideEffects is a function that provides a handle to execute side effects once the
+    * attribute/child as been set/added; both the domain's data and the rendered HTMLElement are provided to this function.
+     */
     constructor(
         public readonly stream$: Observable<T0>,
         public readonly map:  (T0,...args:any[])=>T1,
@@ -21,6 +39,9 @@ export class Stream$<T0, T1 = T0> {
         this.sideEffects = sideEffects
     }
 
+    /**
+     * Implementation function that supposed to be called only by [[HTMLElement$]].
+     */
     subscribe( fct : (T,...args:any[]) => any, ...withData ) {
 
         let stream$ = this.stream$.pipe( map( (d: any, ...args:any[]) => this.map(d,...withData) ))
@@ -39,8 +60,26 @@ export class Stream$<T0, T1 = T0> {
     }
 }
 
-
-function stream$<TDomain,TDom>(
+/**
+ * Create a stream of DOM understable element (attribute, child or children) from a RxJS observable.
+ * It is most of the times called indirectly using [[attr$]], [[child$]] or [[children$]].
+ * 
+ * @param stream$  domain's data stream defined as a RxJS observable
+ * @param vDomMap function that convert the domain's data to a vDOM attribute: 
+ * -    in the case of the function [[attr$]], *TDom* is [[AttributeType]].
+ * -    in the case of the function [[child$]], *TDom* is [[VirtualDOM]]. 
+ * -    in the case of the function [[children$]], *TDom* is Array<[[VirtualDOM]]>. 
+ * @param untilFirst is the data that will be used until the first emitted element in *stream$* is obtained.
+ *  If not provided, the attribute/child does not exist until first emission.
+ *  In such case, using a *BehaviorSubject* of RxJS (observable that directly emit a predifined value) is an alternative that can also be used.
+ * @param wrapper is a function that is used to alter the data returned by *vDomMap*. 
+ * It is often used to factorize part of the viewMap function that are 'constant' with respect to the data in $stream$*
+ * @param sideEffects is a function that provides a handle to execute side effects once the
+ * attribute/child as been set/added; both the domain's data and the rendered HTMLElement are provided to this function. 
+ * For instance, a use case would be to focus an input after being dynamically added to the DOM.
+ * @returns a stream usable in [[VirtualDOM]]
+ */
+export function stream$<TDomain=unknown,TDom = AttributeType | VirtualDOM | Array<VirtualDOM>>(
     stream$: Observable<TDomain>,
     vDomMap: (TDomain, ...args: any[]) => TDom,
     { untilFirst, wrapper, sideEffects }: 
@@ -53,8 +92,69 @@ function stream$<TDomain,TDom>(
         {untilFirst, wrapper, sideEffects })
 }
 
+/**
+ * Type alias for attributes in [[VirtualDOM]]
+ */
 export type AttributeType = number | string | boolean | {[key:string]:  number | string | boolean }
 
-export let child$ = stream$ // this would be type specialization for TDom = VirtualDom
-export let attr$ = stream$  // this would be type specialization for TDom = AttributeType
-export let children$ = stream$ // this would be type specialization for TDom = Array<VirtualDom>
+/**
+ * Type specialization of [[stream$]] for TDom = [[VirtualDOM]]
+ * 
+ * ``` typescript
+ * let domain$ : Observable<{name:string}>
+ * 
+ * let vDOM = {
+ *      tag: 'div', 
+ *      children:[ 
+ *          child$( 
+ *              domain$,
+ *              ({name}) => ({innerText: 'Hello '+ name}),
+ *              {   sideEffects: (vDom, htmlElem) => console.log(vDom, htmlElem),
+ *                  untilFirst: ({innerText: 'No name available yet'})
+ *              }
+ *          )
+ *     )
+ * }
+ * ```
+ */
+export let child$ = stream$
+
+/**
+ * Type specialization of [[stream$]] for TDom = [[AttributeType]]
+ * 
+ * ``` typescript
+ * let domain$ : Observable<{name:string}>
+ * 
+ * let vDOM = {
+ *      tag: 'div', 
+ *      innerText: attr$( 
+ *          domain$,
+ *          ({name}) => name,
+ *          {   wrapper: (name) => 'Hello '+ name,
+ *              sideEffects: (vDom, htmlElem) => console.log(vDom, htmlElem),
+ *              untilFirst: 'No name available yet'
+ *          }
+ *      )
+ * }
+ * ```
+ */
+export let attr$ = stream$
+
+/**
+ * Type specialization of [[stream$]] for TDom = Array<[[VirtualDOM]]>
+ * 
+ * ``` typescript
+ * let domain$ : Observable<{name:string}>
+ * 
+ * let vDOM = {
+ *      tag: 'div', 
+ *      children: children(
+ *          domains$,
+ *          ({name}) => [{innerText: 'Hello'}, {innerText: name}),
+*           {   sideEffects: (vDom, htmlElem) => console.log(vDom, htmlElem),
+*               untilFirst: []
+*           }
+ *      )
+ * }
+ */
+export let children$ = stream$
