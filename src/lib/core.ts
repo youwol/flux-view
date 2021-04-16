@@ -10,10 +10,44 @@ export interface VirtualDOM{
     [key:string]: any
     connectedCallback?: (d) => void
     disconnectedCallback?: (d) => void
+export interface InterfaceHTMLElement${
+
+    /**
+     * The provided subscription get owned by the element: 
+     * it will be unsubscribed when the element is removed from the DOM.
+     * 
+     * Typically:
+     *  * ``` typescript
+     * let clicked$ = new rxjs.BehaviorSubject({clicked: false})
+     * let vDOM = {
+     *      tag: 'div', 
+     *      connectedCallback: (elem: HTMLElement$) => {
+     *          // the ownership of sub0 is given to the VirtualDOM
+     *          // => it will be unsubscribed when element is actually removed from the view
+     *          elem.ownSubscription(clicked$.subscribe( (d) => console.log(d)))
+     *      }
+     *      children: [
+     *          {
+     *              tag:'button',
+     *              innerText: 'hello flux view',
+     *              onclick: () => clicked$.next({clicked: true})
+     *          }]
+     * }
+     * ```
+     * @param sub subscription
+     */
+    ownSubscription(sub: Subscription)
 }
 
+/**
+ * The actual element associated to a [[VirtualDOM]].
+ * It implements the *regular* constructor of the target element on top of wich the flux-view logic is added,
+ * the added public interface is described [[InterfaceHTMLElements$ | here]].
+ * 
+ * > 🧐 The implementation is based on [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
+ */
+export class HTMLElement$ extends _$(HTMLElement){
 
-class HTMLElement$ extends _$(HTMLElement){
 }
 
 
@@ -53,7 +87,7 @@ const specialBindings = {
 
 function _$<T extends Constructor<HTMLElement>>(Base: T) {
 
-    return class extends Base {
+    return class extends Base implements InterfaceHTMLElement$ {
 
         vDom: VirtualDOM;
         subscriptions = new Array<Subscription>()
@@ -89,15 +123,15 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                     })
                 )
             }
-            this.vDom.connectedCallback && this.vDom.connectedCallback(this)
+            this.vDom.connectedCallback && this.vDom.connectedCallback(this as unknown as HTMLElement$)
         };
 
         disconnectedCallback() {
             this.subscriptions.forEach( s => s.unsubscribe())
-            this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this)
+            this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this as unknown as  HTMLElement$)
         }
 
-        private renderChildren( children : Array<VirtualDOM> ){
+        renderChildren( children : Array<VirtualDOM> ){
 
             children.forEach( (child) => {
     
@@ -115,11 +149,14 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             })
         }
 
-        private applyAttribute(name: string, value: AttributeType){
+        applyAttribute(name: string, value: AttributeType){
 
             specialBindings[name] 
                 ? specialBindings[name](this, value) 
                 : this[name] = value
+        }
+        ownSubscription(sub: Subscription){
+            this.subscriptions.push(sub)
         }
     }
 }

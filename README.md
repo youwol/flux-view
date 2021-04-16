@@ -1,4 +1,4 @@
-<h1 align="center">Flux-view 👋</h1>
+<h1 align="center">Flux-view</h1>
 
 <p>
     <a href="https://github.com/kefranabg/readme-md-generator/graphs/commit-activity" target="_blank">
@@ -9,7 +9,7 @@
     </a>
 </p>
 
-> 
+
 
 
 ## What is it?
@@ -140,8 +140,8 @@ let vDom = {
         }
     ],
     connectedCallback: (elem) => {        
-        /* pushing into elem.subscriptions make the subscription managed by the DOM, see part 'Lifecycle' */
-        elem.subscriptions.push(sub)
+        /*This makes the subscription managed by the DOM, see part 'Lifecycle' */
+        elem.ownSubscription(sub)
     }
 }
 let div = render(vDOom)
