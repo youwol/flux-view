@@ -109,7 +109,7 @@ test('attr$ & external subscription', () => {
         ),
         connectedCallback: (element) => {
             let sub = userSubs.subscribe( c => sideEffects.push(c))
-            element.ownSubscription(sub)
+            element.ownSubscriptions(sub)
         },
         disconnectedCallback: (element) => {
             sideEffects = []

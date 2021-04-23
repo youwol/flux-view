@@ -141,7 +141,7 @@ let vDom = {
     ],
     connectedCallback: (elem) => {        
         /*This makes the subscription managed by the DOM, see part 'Lifecycle' */
-        elem.ownSubscription(sub)
+        elem.ownSubscriptions(sub)
     }
 }
 let div = render(vDOom)

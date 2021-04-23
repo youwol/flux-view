@@ -96,7 +96,7 @@ export interface VirtualDOM{
      *      connectedCallback: (elem: HTMLElement$) => {
      *          // the ownership of sub0 is given to the VirtualDOM
      *          // => it will be unsubscribed when element is actually removed from the view
-     *          elem.ownSubscription(clicked$.subscribe( (d) => console.log(d)))
+     *          elem.ownSubscriptions(clicked$.subscribe( (d) => console.log(d)))
      *      }
      *      children: [
      *          {
@@ -139,7 +139,7 @@ export interface InterfaceHTMLElement${
      *      connectedCallback: (elem: HTMLElement$) => {
      *          // the ownership of sub0 is given to the VirtualDOM
      *          // => it will be unsubscribed when element is actually removed from the view
-     *          elem.ownSubscription(clicked$.subscribe( (d) => console.log(d)))
+     *          elem.ownSubscriptions(clicked$.subscribe( (d) => console.log(d)))
      *      }
      *      children: [
      *          {
@@ -151,7 +151,7 @@ export interface InterfaceHTMLElement${
      * ```
      * @param sub subscription
      */
-    ownSubscription(sub: Subscription)
+    ownSubscriptions(...sub: Subscription[])
 }
 
 /**
@@ -270,8 +270,9 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 ? specialBindings[name](this, value) 
                 : this[name] = value
         }
-        ownSubscription(sub: Subscription){
-            this.subscriptions.push(sub)
+
+        ownSubscriptions(...subs: Subscription[]){
+            this.subscriptions.push(...subs)
         }
     }
 }
