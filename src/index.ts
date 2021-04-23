@@ -3,4 +3,4 @@
  */
 
 export {attr$, child$, children$, Stream$} from "./lib/stream$"
-export {render, VirtualDOM} from "./lib/core"
+export {render, VirtualDOM, HTMLElement$} from "./lib/core"
