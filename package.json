@@ -6,7 +6,7 @@
         "rxjs",
         "view"
     ],
-    "version": "0.0.6", 
+    "version": "0.0.7", 
     "description": "Tiny library to render HTML documents using reactive programing primitives",
     "author": "Guillaume Reinisch",
     "license": "MIT",
