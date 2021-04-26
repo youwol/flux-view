@@ -217,12 +217,12 @@ attribute/child has been set/added; both the domain's data and the rendered HTML
 When working with array of domain data **flux-view** provides the function **children**.
 This function is similar to **attr$** and **child$** defined above but add an extra piece 
 of logic to avoid flushing all the children and re-rendering them all each time a new array is emitted.
-The library provide 2 policies for such case:
--    ReplaceChildrenPolicy: when a new array of domains data is emitted, only new elements
+The library provides 2 policies for such case:
+-    **ReplaceChildrenPolicy**: when a new array of domains data is emitted, only new elements
 are created, previous elements that are not part of the new array are removed. Element comparison
 is by default references comparison (valid if domain data are immutables), but a custom function can provided. 
--   AppendOnlyPolicy: when a new array of domains data is emitted, 
-corresponding DOM elements are appended, no replacements, no deletions.
+-   **AppendOnlyPolicy**: when a new array of domains data is emitted, 
+corresponding DOM elements are always appended, no replacements, no deletions.
 
 The reader can find more information in the [documentation](https://youwol.github.io/flux-view/dist/docs/modules/children_.html#children_-1).
 
@@ -260,7 +260,3 @@ let vDom = {
 }
 ```
 In this case, the entire inner div is re-rendered when *timer$* emit a new value.
-
-There is yet one performance issue with *flux-view* that arises when a binding between
-an observable of a collection and the children of a node is desired using *children$*. 
-At that time the library redraw the all collection, even if only one item has been added/removed/modified. This issue will be solved soon in upcoming versions (somehow by allowing more granularity when using *children$' to provide required features). 
