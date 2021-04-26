@@ -1,5 +1,5 @@
 import { Subscription } from "rxjs";
-import { ChildrenStream$ } from "./children$";
+import { ChildrenStream$ } from "./advanced-children$";
 import { CustomElementsMap} from "./factory";
 import { InterfaceHTMLElement$, VirtualDOM } from "./interface";
 import { AttributeType, Stream$ } from "./stream$";
@@ -8,7 +8,7 @@ import { AttributeType, Stream$ } from "./stream$";
 /**
  * The actual element associated to a [[VirtualDOM]].
  * It implements the *regular* constructor of the target element on top of wich the flux-view logic is added,
- * the added public interface is described [[InterfaceHTMLElements$ | here]].
+ * the added public interface is described [[InterfaceHTMLElement$ | here]].
  * 
  * > 🧐 The implementation is based on [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
  */
@@ -80,6 +80,15 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             })
             if(this.vDom.children && Array.isArray(this.vDom.children))
                 this.renderChildren(this.vDom.children)
+
+            if(this.vDom.children && this.vDom.children instanceof Stream$){
+                this.subscriptions.push(
+                    this.vDom.children.subscribe( (children) =>{
+                        this.textContent = ''
+                        this.renderChildren(children)
+                    })
+                )
+            }
 
             if(this.vDom.children && this.vDom.children instanceof ChildrenStream$){
                 this.subscriptions.push( this.vDom.children.subscribe(this) )

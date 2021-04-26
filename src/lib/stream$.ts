@@ -138,3 +138,24 @@ export let child$ = stream$
  * ```
  */
 export let attr$ = stream$
+/** Type specialization of [[stream$]] for TDom = Array<[[VirtualDOM]]>
+* 
+* ``` typescript
+* let domain$ : Observable<{name:string}[]>
+* 
+* let vDOM = {
+*      tag: 'div', 
+*      id: 'parent-element',
+*      children: children$(
+*          domains$,
+*          (elements) => elements.map( ({name}) => ({innerText: 'Hello'})
+*      )
+* }
+* ```
+* 
+* > In the above example, each time the domain$ observable emit new values,
+* > all the children of the *parent-element* are first deleted, then the new children are 
+* > created and inserted. Quite often it is possible to use a more efficient approach, 
+* > see [[advancedChildren$]].
+*/
+export let children$ = stream$
