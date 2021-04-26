@@ -92,8 +92,9 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this as unknown as  HTMLElement$)
         }
 
-        renderChildren( children : Array<VirtualDOM> ){
+        renderChildren( children : Array<VirtualDOM> ) : Array<InterfaceHTMLElement$>{
 
+            let rendered = []
             children.forEach( (child) => {
     
                 if(child instanceof Stream$){
@@ -102,12 +103,15 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                     this.subscriptions.push( 
                         placeHolder.initialize(child) 
                     )
+                    rendered.push(placeHolder)
                 }  
                 else{  
                     let div = render(child)
                     this.appendChild(div)
+                    rendered.push(div)
                 }
             })
+            return rendered
         }
 
         applyAttribute(name: string, value: AttributeType){
