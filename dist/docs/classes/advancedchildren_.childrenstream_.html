@@ -55,10 +55,10 @@
 					<a href="../modules.html">@youwol/flux-view</a>
 				</li>
 				<li>
-					<a href="../modules/children_.html">children$</a>
+					<a href="../modules/advancedchildren_.html">advancedChildren$</a>
 				</li>
 				<li>
-					<a href="children_.childrenstream_.html">ChildrenStream$</a>
+					<a href="advancedchildren_.childrenstream_.html">ChildrenStream$</a>
 				</li>
 			</ul>
 			<h1>Class ChildrenStream$&lt;TDomain&gt;</h1>
@@ -77,8 +77,8 @@
 					</div>
 					<p>Base class used to define advanced <strong>children</strong> policy in <a href="../interfaces/interface.virtualdom.html">VirtualDOM</a> when
 					the source stream emit <strong>array</strong> of domain data.</p>
-					<p>You can derive you own class by providing the implementation of <a href="children_.childrenstream_.html#update">update</a>.</p>
-					<p>Example of use: <a href="children_.appendonlypolicy.html">AppendOnlyPolicy</a>, <a href="children_.replacepolicy.html">ReplacePolicy</a>.</p>
+					<p>You can derive you own class by providing the implementation of <a href="advancedchildren_.childrenstream_.html#update">update</a>.</p>
+					<p>Example of use: [[AppendOnlyPolicy]], [[ReplacePolicy]].</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -94,6 +94,14 @@
 				<ul class="tsd-hierarchy">
 					<li>
 						<span class="target">ChildrenStream$</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="advancedchildren_.appendonlychildrenstream_.html" class="tsd-signature-type" data-tsd-kind="Class">AppendOnlyChildrenStream$</a>
+							</li>
+							<li>
+								<a href="advancedchildren_.replacechildrenstream_.html" class="tsd-signature-type" data-tsd-kind="Class">ReplaceChildrenStream$</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -104,23 +112,22 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter"><a href="children_.childrenstream_.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter"><a href="advancedchildren_.childrenstream_.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="children_.childrenstream_.html#map" class="tsd-kind-icon">map</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="children_.childrenstream_.html#sideeffects" class="tsd-kind-icon">side<wbr>Effects</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="children_.childrenstream_.html#stream_" class="tsd-kind-icon">stream$</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="advancedchildren_.childrenstream_.html#map" class="tsd-kind-icon">map</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="advancedchildren_.childrenstream_.html#sideeffects" class="tsd-kind-icon">side<wbr>Effects</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="advancedchildren_.childrenstream_.html#stream_" class="tsd-kind-icon">stream$</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="children_.childrenstream_.html#finalize" class="tsd-kind-icon">finalize</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="children_.childrenstream_.html#subscribe" class="tsd-kind-icon">subscribe</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="children_.childrenstream_.html#update" class="tsd-kind-icon">update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="advancedchildren_.childrenstream_.html#subscribe" class="tsd-kind-icon">subscribe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="advancedchildren_.childrenstream_.html#update" class="tsd-kind-icon">update</a></li>
 							</ul>
 						</section>
 					</div>
@@ -132,13 +139,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Children<wbr>Stream$&lt;TDomain&gt;<span class="tsd-signature-symbol">(</span>stream$<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span>, map<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDomain</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="../interfaces/interface.virtualdom.html" class="tsd-signature-type" data-tsd-kind="Interface">VirtualDOM</a>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>sideEffects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="children_.childrenstream_.html" class="tsd-signature-type" data-tsd-kind="Class">ChildrenStream$</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Children<wbr>Stream$&lt;TDomain&gt;<span class="tsd-signature-symbol">(</span>stream$<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span>, map<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDomain</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="../interfaces/interface.virtualdom.html" class="tsd-signature-type" data-tsd-kind="Interface">VirtualDOM</a>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>sideEffects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="advancedchildren_.childrenstream_.html" class="tsd-signature-type" data-tsd-kind="Class">ChildrenStream$</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/children$.ts#L189">src/lib/children$.ts:189</a></li>
+									<li>Defined in src/lib/advanced-children$.ts:97</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -183,17 +190,17 @@
 									</ul>
 								</li>
 								<li>
-									<h5>__namedParameters: <span class="tsd-signature-symbol">{ </span>sideEffects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span></h5>
+									<h5>__namedParameters: <span class="tsd-signature-symbol">{ </span>sideEffects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter">
-											<h5><span class="tsd-flag ts-flagOptional">Optional</span> side<wbr>Effects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> side<wbr>Effects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 											<div class="tsd-comment tsd-typography">
-												<p>see <a href="children_.childrenstream_.html#sideeffects">sideEffects</a></p>
+												<p>see <a href="advancedchildren_.childrenstream_.html#sideeffects">sideEffects</a></p>
 											</div>
 											<ul class="tsd-parameters">
 												<li class="tsd-parameter-signature">
 													<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
-														<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+														<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 													</ul>
 													<ul class="tsd-descriptions">
 														<li class="tsd-description">
@@ -203,7 +210,7 @@
 																	<h5>parent: <a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a></h5>
 																</li>
 																<li>
-																	<h5>update: <a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h5>
+																	<h5>update: <a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h5>
 																</li>
 															</ul>
 															<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -215,7 +222,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="children_.childrenstream_.html" class="tsd-signature-type" data-tsd-kind="Class">ChildrenStream$</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="advancedchildren_.childrenstream_.html" class="tsd-signature-type" data-tsd-kind="Class">ChildrenStream$</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -256,10 +263,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="sideeffects" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> side<wbr>Effects</h3>
-					<div class="tsd-signature tsd-kind-icon">side<wbr>Effects<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<div class="tsd-signature tsd-kind-icon">side<wbr>Effects<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/children$.ts#L189">src/lib/children$.ts:189</a></li>
+							<li>Defined in src/lib/advanced-children$.ts:97</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -271,7 +278,7 @@
 							<dd><p>parent: parent <a href="core.htmlelement_.html">HTMLElement$</a></p>
 							</dd>
 							<dt>param</dt>
-							<dd><p>update: description of the update, see <a href="children_.renderingupdate.html">RenderingUpdate</a></p>
+							<dd><p>update: description of the update, see <a href="advancedchildren_.renderingupdate.html">RenderingUpdate</a></p>
 							</dd>
 						</dl>
 					</div>
@@ -280,7 +287,7 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, update<span class="tsd-signature-symbol">: </span><a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
@@ -290,7 +297,7 @@
 												<h5>parent: <a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a></h5>
 											</li>
 											<li>
-												<h5>update: <a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h5>
+												<h5>update: <a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -310,32 +317,6 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="finalize" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> finalize</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">finalize<span class="tsd-signature-symbol">(</span>parentElement<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, updates<span class="tsd-signature-symbol">: </span><a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/children$.ts#L228">src/lib/children$.ts:228</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>parentElement: <a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a></h5>
-								</li>
-								<li>
-									<h5>updates: <a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="subscribe" class="tsd-anchor"></a>
 					<h3>subscribe</h3>
@@ -346,7 +327,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/children$.ts#L217">src/lib/children$.ts:217</a></li>
+									<li>Defined in src/lib/advanced-children$.ts:125</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -364,17 +345,17 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 					<a name="update" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> update</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>parentElement<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, domainData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagAbstract">Abstract</span> update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>parentElement<span class="tsd-signature-symbol">: </span><a href="../interfaces/interface.interfacehtmlelement_.html" class="tsd-signature-type" data-tsd-kind="Interface">InterfaceHTMLElement$</a>, domainData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/children$.ts#L210">src/lib/children$.ts:210</a></li>
+									<li>Defined in src/lib/advanced-children$.ts:118</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -386,7 +367,7 @@
 									<h5>domainData: <span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="children_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="advancedchildren_.renderingupdate.html" class="tsd-signature-type" data-tsd-kind="Class">RenderingUpdate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -399,7 +380,7 @@
 						<a href="../modules.html">Exports</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/children_.html">children$</a>
+						<a href="../modules/advancedchildren_.html">advanced<wbr>Children$</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/core.html">core</a>
@@ -418,49 +399,49 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.appendonlypolicy.html" class="tsd-kind-icon">Append<wbr>Only<wbr>Policy</a>
+						<a href="advancedchildren_.appendonlychildrenstream_.html" class="tsd-kind-icon">Append<wbr>Only<wbr>Children<wbr>Stream$</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.childrenstream_.html" class="tsd-kind-icon">Children<wbr>Stream$</a>
+						<a href="advancedchildren_.childrenstream_.html" class="tsd-kind-icon">Children<wbr>Stream$</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter">
-								<a href="children_.childrenstream_.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="advancedchildren_.childrenstream_.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="children_.childrenstream_.html#map" class="tsd-kind-icon">map</a>
+								<a href="advancedchildren_.childrenstream_.html#map" class="tsd-kind-icon">map</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="children_.childrenstream_.html#sideeffects" class="tsd-kind-icon">side<wbr>Effects</a>
+								<a href="advancedchildren_.childrenstream_.html#sideeffects" class="tsd-kind-icon">side<wbr>Effects</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="children_.childrenstream_.html#stream_" class="tsd-kind-icon">stream$</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="children_.childrenstream_.html#finalize" class="tsd-kind-icon">finalize</a>
+								<a href="advancedchildren_.childrenstream_.html#stream_" class="tsd-kind-icon">stream$</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="children_.childrenstream_.html#subscribe" class="tsd-kind-icon">subscribe</a>
+								<a href="advancedchildren_.childrenstream_.html#subscribe" class="tsd-kind-icon">subscribe</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="children_.childrenstream_.html#update" class="tsd-kind-icon">update</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="advancedchildren_.childrenstream_.html#update" class="tsd-kind-icon">update</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.refelement.html" class="tsd-kind-icon">Ref<wbr>Element</a>
+						<a href="advancedchildren_.refelement.html" class="tsd-kind-icon">Ref<wbr>Element</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.renderingupdate.html" class="tsd-kind-icon">Rendering<wbr>Update</a>
+						<a href="advancedchildren_.renderingupdate.html" class="tsd-kind-icon">Rendering<wbr>Update</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.replacepolicy.html" class="tsd-kind-icon">Replace<wbr>Policy</a>
+						<a href="advancedchildren_.replacechildrenstream_.html" class="tsd-kind-icon">Replace<wbr>Children<wbr>Stream$</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="../modules/children_.html#children_-1" class="tsd-kind-icon">children$</a>
+						<a href="../modules/advancedchildren_.html#childrenappendonly_" class="tsd-kind-icon">children<wbr>Append<wbr>Only$</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="../modules/advancedchildren_.html#childrenwithreplace_" class="tsd-kind-icon">children<wbr>With<wbr>Replace$</a>
 					</li>
 				</ul>
 			</nav>
@@ -487,7 +468,7 @@
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
 			</ul>
 		</div>
 	</div>

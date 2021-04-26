@@ -1,3 +1,118 @@
+/**
+ * # Introduction
+ * 
+ * ## VirtualDom & rendering
+ * 
+ * The [[ VirtualDOM | virtual DOM]] is described by a JSON data-structure that mimics the structure of a HTML Node.
+ * The benefit of using this (virtual) description is that it allows using [RxJs Observables](https://rxjs-dev.firebaseapp.com/guide/observable) 
+ * where in a regular description only plain values are accepted.
+ * 
+ *
+ * To turn a vDOM into a regular HTMLElement, use the function **render**:
+
+ *```typescript
+ * import { interval } from 'rxjs';
+ * import { map, take } from 'rxjs/operators';
+ * import { render, attr$ } from '@youwol/flux-view'
+ * 
+ * 
+ * const nCount = 10
+ * // timer$: tick 10 times every seconds
+ * const timer$ = interval(1000).pipe(  
+ *     take(nCount), 
+ *     map( tick => nCount - tick) 
+ * )  
+ * 
+ * let vDom = { 
+ *     tag:'div', 
+ *     innerText: 'count down:', 
+ *     children:[
+ *         {   tag:'div',
+ *             innerText: attr$( 
+ *                 // input stream (aka domain stream)
+ *                 timer$, 
+ *                // rendering mapping
+ *                (countDown:number) => `Remaining: ${countDown} s` 
+ *             )
+ *        }
+ *     ]
+ * }
+ * let div : HTMLElement = render(vDom)
+ * ```
+ *
+ *
+ * ## **attr$**, **child$** and **children** functions
+ * 
+ * The functions [[attr$]], [[child$]], and  [[children$]] functions are actually the same, 
+ * they differ only by their usages (an definition).
+
+> The [[children$]] function is not efficient in terms of rendering. When performance matters, the function
+> [[advancedChildren$]] should be used.
+
+* It follows this common type's definition (the third arguments is optional):
+* ```typescript
+*function ( 
+*    stream$: Observable<TData>,
+*    viewMap: (TData) => TResult,
+*    { 
+*        untilFirst, 
+*        wrapper, 
+*        sideEffects
+*    }: 
+*    {   untilFirst?: TResult, 
+*        wrapper?: (TResult) => TResult, 
+*        sideEffects?: (TData, HTMLElement) => void  
+*    } = {},
+*)
+```
+where:
+- **stream$** is the domain's data stream defined as a RxJS observable
+- **viewMap** is a function that convert the domain's data to a vDOM attribute. 
+In the case of the function *attr$*, *TResult* is the type of the target attribute.
+In the case of the function *child$*, *TResult* is *VirtualDOM*. 
+In the case of the function *children$*, *TResult* is *Array\<VirtualDOM\>*. 
+- **untilFirst** is the data that will be used until the first emitted element in *stream$* is obtained. If not provided, the attribute/child does not exist until first emission.
+    In such case, using a *BehaviorSubject* of RxJS (observable that directly emit a predefined value) is an alternative that can also be used.
+
+```typescript
+ * let vDom = { 
+ *   tag:'div', innerText: 'count down:', 
+ *   children:[
+ *       {   tag:'div',
+ *           innerText: attr$( 
+ *               timer$, 
+ *               ( countDown:number ) => `Remaining: ${countDown} s`,
+ *               { untilFirst: "Waiting first count down..."}
+ *           )
+ *       }
+ *   ]
+*}
+
+```
+- **wrapper** is a function that is used to alter the data returned by **viewMap**. it is often used to factorize part of the viewMap function that are 'constant' with respect to the data in **stream$**. 
+For instance the following code factorizes the class *count-down-item*: 
+```typescript
+* let vDom = { 
+*    tag:'div', innerText: 'count down:', 
+*    children:[
+*        {   tag:'div',
+*            class:  attr$( 
+*                timer$, 
+*                ( countDown:number ) => countDown <5 ? 'text-red' : 'text-green',
+*                { wrapper: (classColor) => `count-down-item ${classColor}`} 
+*            ),
+*            innerText: attr$( timer$, (countDown:number) => `${countDown} s`)
+*        }
+*    ]
+* }
+```
+- **sideEffects** is a function that provides a handle to execute side effects once the
+attribute/child has been set/added; both the domain's data and the rendered HTMLElement are provided to this function.
+
+ * 
+ * @module stream$
+ */
+
 import { Observable } from "rxjs"
 import { map } from "rxjs/operators"
 import { VirtualDOM } from "./interface"
@@ -138,6 +253,9 @@ export let child$ = stream$
  * ```
  */
 export let attr$ = stream$
+
+
+
 /** Type specialization of [[stream$]] for TDom = Array<[[VirtualDOM]]>
 * 
 * ``` typescript

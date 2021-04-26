@@ -65,6 +65,118 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+							<h1>Introduction</h1>
+						</a>
+					</div>
+					<a href="#virtualdom-amp-rendering" id="virtualdom-amp-rendering" style="color: inherit; text-decoration: none;">
+						<h2>VirtualDom &amp; rendering</h2>
+					</a>
+					<p>The <a href="../interfaces/interface.virtualdom.html">virtual DOM</a> is described by a JSON data-structure that mimics the structure of a HTML Node.
+						The benefit of using this (virtual) description is that it allows using <a href="https://rxjs-dev.firebaseapp.com/guide/observable">RxJs Observables</a>
+					where in a regular description only plain values are accepted.</p>
+					<p>To turn a vDOM into a regular HTMLElement, use the function <strong>render</strong>:</p>
+					<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">interval</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rxjs&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">map</span><span style="color: #000000">, </span><span style="color: #001080">take</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rxjs/operators&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">render</span><span style="color: #000000">, </span><span style="color: #001080">attr$</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@youwol/flux-view&#039;</span>
+
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">nCount</span><span style="color: #000000"> = </span><span style="color: #098658">10</span>
+<span style="color: #008000">// timer$: tick 10 times every seconds</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">timer$</span><span style="color: #000000"> = </span><span style="color: #795E26">interval</span><span style="color: #000000">(</span><span style="color: #098658">1000</span><span style="color: #000000">).</span><span style="color: #795E26">pipe</span><span style="color: #000000">(  </span>
+<span style="color: #000000">    </span><span style="color: #795E26">take</span><span style="color: #000000">(</span><span style="color: #001080">nCount</span><span style="color: #000000">), </span>
+<span style="color: #000000">    </span><span style="color: #795E26">map</span><span style="color: #000000">( </span><span style="color: #001080">tick</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">nCount</span><span style="color: #000000"> - </span><span style="color: #001080">tick</span><span style="color: #000000">) </span>
+<span style="color: #000000">)  </span>
+
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDom</span><span style="color: #000000"> = { </span>
+<span style="color: #000000">    </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span>
+<span style="color: #000000">    </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;count down:&#039;</span><span style="color: #000000">, </span>
+<span style="color: #000000">    </span><span style="color: #001080">children:</span><span style="color: #000000">[</span>
+<span style="color: #000000">        {   </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #795E26">attr$</span><span style="color: #000000">( </span>
+<span style="color: #000000">                </span><span style="color: #008000">// input stream (aka domain stream)</span>
+<span style="color: #000000">                </span><span style="color: #001080">timer$</span><span style="color: #000000">, </span>
+<span style="color: #000000">               </span><span style="color: #008000">// rendering mapping</span>
+<span style="color: #000000">               (</span><span style="color: #001080">countDown</span><span style="color: #000000">:</span><span style="color: #267F99">number</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #A31515">`Remaining: </span><span style="color: #0000FF">${</span><span style="color: #001080">countDown</span><span style="color: #0000FF">}</span><span style="color: #A31515"> s`</span><span style="color: #000000"> </span>
+<span style="color: #000000">            )</span>
+<span style="color: #000000">       }</span>
+<span style="color: #000000">    ]</span>
+<span style="color: #000000">}</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">div</span><span style="color: #000000"> : </span><span style="color: #267F99">HTMLElement</span><span style="color: #000000"> = </span><span style="color: #795E26">render</span><span style="color: #000000">(</span><span style="color: #001080">vDom</span><span style="color: #000000">)</span>
+</code></pre>
+					<a href="#attr-child-and-children-functions" id="attr-child-and-children-functions" style="color: inherit; text-decoration: none;">
+						<h2><strong>attr$</strong>, <strong>child$</strong> and <strong>children</strong> functions</h2>
+					</a>
+					<p>The functions <a href="stream_.html#attr_">attr$</a>, <a href="stream_.html#child_">child$</a>, and  <a href="stream_.html#children_">children$</a> functions are actually the same,
+					they differ only by their usages (an definition).</p>
+					<blockquote>
+						<p>The <a href="stream_.html#children_">children$</a> function is not efficient in terms of rendering. When performance matters, the function
+						<a href="advancedchildren_.html">advancedChildren$</a> should be used.</p>
+					</blockquote>
+					<p>It follows this common type&#39;s definition (the third arguments is optional):</p>
+					<pre><code class="language-typescript"><span style="color: #0000FF">function</span><span style="color: #000000"> ( </span>
+<span style="color: #000000">   </span><span style="color: #001080">stream$</span><span style="color: #000000">: </span><span style="color: #267F99">Observable</span><span style="color: #000000">&lt;</span><span style="color: #267F99">TData</span><span style="color: #000000">&gt;,</span>
+<span style="color: #000000">   </span><span style="color: #795E26">viewMap</span><span style="color: #000000">: (</span><span style="color: #001080">TData</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">TResult</span><span style="color: #000000">,</span>
+<span style="color: #000000">   { </span>
+<span style="color: #000000">       </span><span style="color: #001080">untilFirst</span><span style="color: #000000">, </span>
+<span style="color: #000000">       </span><span style="color: #001080">wrapper</span><span style="color: #000000">, </span>
+<span style="color: #000000">       </span><span style="color: #001080">sideEffects</span>
+<span style="color: #000000">   }: </span>
+<span style="color: #000000">   {   </span><span style="color: #001080">untilFirst</span><span style="color: #000000">?: </span><span style="color: #267F99">TResult</span><span style="color: #000000">, </span>
+<span style="color: #000000">       </span><span style="color: #795E26">wrapper</span><span style="color: #000000">?: (</span><span style="color: #001080">TResult</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">TResult</span><span style="color: #000000">, </span>
+<span style="color: #000000">       </span><span style="color: #795E26">sideEffects</span><span style="color: #000000">?: (</span><span style="color: #001080">TData</span><span style="color: #000000">, </span><span style="color: #001080">HTMLElement</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">void</span><span style="color: #000000">  </span>
+<span style="color: #000000">   } = {},</span>
+<span style="color: #000000">)</span>
+</code></pre>
+					<p>where:</p>
+					<ul>
+						<li><strong>stream$</strong> is the domain&#39;s data stream defined as a RxJS observable</li>
+						<li><strong>viewMap</strong> is a function that convert the domain&#39;s data to a vDOM attribute.
+							In the case of the function <em>attr$</em>, <em>TResult</em> is the type of the target attribute.
+							In the case of the function <em>child$</em>, <em>TResult</em> is <em>VirtualDOM</em>.
+						In the case of the function <em>children$</em>, <em>TResult</em> is <em>Array&lt;VirtualDOM&gt;</em>.</li>
+						<li><strong>untilFirst</strong> is the data that will be used until the first emitted element in <em>stream$</em> is obtained. If not provided, the attribute/child does not exist until first emission.
+						In such case, using a <em>BehaviorSubject</em> of RxJS (observable that directly emit a predefined value) is an alternative that can also be used.</li>
+					</ul>
+					<pre><code class="language-typescript"><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDom</span><span style="color: #000000"> = { </span>
+<span style="color: #000000">  </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;count down:&#039;</span><span style="color: #000000">, </span>
+<span style="color: #000000">  </span><span style="color: #001080">children:</span><span style="color: #000000">[</span>
+<span style="color: #000000">      {   </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">          </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #795E26">attr$</span><span style="color: #000000">( </span>
+<span style="color: #000000">              </span><span style="color: #001080">timer$</span><span style="color: #000000">, </span>
+<span style="color: #000000">              ( </span><span style="color: #001080">countDown</span><span style="color: #000000">:</span><span style="color: #267F99">number</span><span style="color: #000000"> ) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #A31515">`Remaining: </span><span style="color: #0000FF">${</span><span style="color: #001080">countDown</span><span style="color: #0000FF">}</span><span style="color: #A31515"> s`</span><span style="color: #000000">,</span>
+<span style="color: #000000">              { </span><span style="color: #001080">untilFirst:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Waiting first count down...&quot;</span><span style="color: #000000">}</span>
+<span style="color: #000000">          )</span>
+<span style="color: #000000">      }</span>
+<span style="color: #000000">  ]</span>
+<span style="color: #000000">}</span>
+
+</code></pre>
+					<ul>
+						<li><strong>wrapper</strong> is a function that is used to alter the data returned by <strong>viewMap</strong>. it is often used to factorize part of the viewMap function that are &#39;constant&#39; with respect to the data in <strong>stream$</strong>.
+							For instance the following code factorizes the class <em>count-down-item</em>:<pre><code class="language-typescript"><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDom</span><span style="color: #000000"> = { </span>
+<span style="color: #000000"> </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;count down:&#039;</span><span style="color: #000000">, </span>
+<span style="color: #000000"> </span><span style="color: #001080">children:</span><span style="color: #000000">[</span>
+<span style="color: #000000">     {   </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">         </span><span style="color: #001080">class:</span><span style="color: #000000">  </span><span style="color: #795E26">attr$</span><span style="color: #000000">( </span>
+<span style="color: #000000">             </span><span style="color: #001080">timer$</span><span style="color: #000000">, </span>
+<span style="color: #000000">             ( </span><span style="color: #001080">countDown</span><span style="color: #000000">:</span><span style="color: #267F99">number</span><span style="color: #000000"> ) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">countDown</span><span style="color: #000000"> &lt;</span><span style="color: #098658">5</span><span style="color: #000000"> ? </span><span style="color: #A31515">&#039;text-red&#039;</span><span style="color: #000000"> : </span><span style="color: #A31515">&#039;text-green&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">             { </span><span style="color: #795E26">wrapper</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">classColor</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #A31515">`count-down-item </span><span style="color: #0000FF">${</span><span style="color: #001080">classColor</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">} </span>
+<span style="color: #000000">         ),</span>
+<span style="color: #000000">         </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #795E26">attr$</span><span style="color: #000000">( </span><span style="color: #001080">timer$</span><span style="color: #000000">, (</span><span style="color: #001080">countDown</span><span style="color: #000000">:</span><span style="color: #267F99">number</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #001080">countDown</span><span style="color: #0000FF">}</span><span style="color: #A31515"> s`</span><span style="color: #000000">)</span>
+<span style="color: #000000">     }</span>
+<span style="color: #000000"> ]</span>
+<span style="color: #000000">}</span>
+</code></pre>
+						</li>
+						<li><strong>sideEffects</strong> is a function that provides a handle to execute side effects once the
+						attribute/child has been set/added; both the domain&#39;s data and the rendered HTMLElement are provided to this function.</li>
+					</ul>
+				</div>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -86,6 +198,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="stream_.html#attr_" class="tsd-kind-icon">attr$</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="stream_.html#child_" class="tsd-kind-icon">child$</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="stream_.html#children_" class="tsd-kind-icon">children$</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="stream_.html#stream_-2" class="tsd-kind-icon">stream$</a></li>
 							</ul>
 						</section>
@@ -100,7 +213,7 @@
 					<div class="tsd-signature tsd-kind-icon">Attribute<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/stream$.ts#L97">src/lib/stream$.ts:97</a></li>
+							<li>Defined in <a href="https://github.com/youwol/flux-view/blob/98654f3/src/lib/stream$.ts#L212">src/lib/stream$.ts:212</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -122,7 +235,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/stream$.ts#L140">src/lib/stream$.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/98654f3/src/lib/stream$.ts#L255">src/lib/stream$.ts:255</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -250,7 +363,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/stream$.ts#L119">src/lib/stream$.ts:119</a></li>
+									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/98654f3/src/lib/stream$.ts#L234">src/lib/stream$.ts:234</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -370,6 +483,137 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="children_" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagLet">Let</span> children$</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">children$&lt;TDomain, TDom&gt;<span class="tsd-signature-symbol">(</span>stream$<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span>, vDomMap<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>TDomain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">TDom</span>, __namedParameters<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>sideEffects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>TDomain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, HTMLElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>untilFirst<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">TDom</span><span class="tsd-signature-symbol">; </span>wrapper<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>TDom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">TDom</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/stream_.stream_-1.html" class="tsd-signature-type" data-tsd-kind="Class">Stream$</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TDom</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/98654f3/src/lib/stream$.ts#L279">src/lib/stream$.ts:279</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Type specialization of <a href="stream_.html#stream_-2">stream$</a> for TDom = Array&lt;<a href="../interfaces/interface.virtualdom.html">VirtualDOM</a>&gt;</p>
+								</div>
+								<pre><code class="language-typescript"><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">domain$</span><span style="color: #000000"> : </span><span style="color: #267F99">Observable</span><span style="color: #000000">&lt;{</span><span style="color: #001080">name</span><span style="color: #000000">:</span><span style="color: #267F99">string</span><span style="color: #000000">}[]&gt;</span>
+
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDOM</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">     </span><span style="color: #001080">tag:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span>
+<span style="color: #000000">     </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;parent-element&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">     </span><span style="color: #001080">children:</span><span style="color: #000000"> </span><span style="color: #795E26">children$</span><span style="color: #000000">(</span>
+<span style="color: #000000">         </span><span style="color: #001080">domains$</span><span style="color: #000000">,</span>
+<span style="color: #000000">         (</span><span style="color: #001080">elements</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">elements</span><span style="color: #000000">.</span><span style="color: #795E26">map</span><span style="color: #000000">( ({</span><span style="color: #001080">name</span><span style="color: #000000">}) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> ({</span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Hello&#039;</span><span style="color: #000000">})</span>
+<span style="color: #000000">     )</span>
+<span style="color: #000000">}</span>
+</code></pre>
+								<blockquote>
+									<p>In the above example, each time the domain$ observable emit new values,
+										all the children of the <em>parent-element</em> are first deleted, then the new children are
+										created and inserted. Quite often it is possible to use a more efficient approach,
+									see <a href="advancedchildren_.html">advancedChildren$</a>.</p>
+								</blockquote>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>TDomain = <span class="tsd-signature-type">unknown</span></h4>
+								</li>
+								<li>
+									<h4>TDom = <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/interface.virtualdom.html" class="tsd-signature-type" data-tsd-kind="Interface">VirtualDOM</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/interface.virtualdom.html" class="tsd-signature-type" data-tsd-kind="Interface">VirtualDOM</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>stream$: <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>vDomMap: <span class="tsd-signature-symbol">(</span>TDomain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">TDom</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>TDomain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDom</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>TDomain: <span class="tsd-signature-type">any</span></h5>
+														</li>
+														<li>
+															<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TDom</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<h5>__namedParameters: <span class="tsd-signature-symbol">{ </span>sideEffects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>TDomain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, HTMLElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>untilFirst<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">TDom</span><span class="tsd-signature-symbol">; </span>wrapper<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>TDom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">TDom</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> side<wbr>Effects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>TDomain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, HTMLElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+											<ul class="tsd-parameters">
+												<li class="tsd-parameter-signature">
+													<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+														<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>TDomain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, HTMLElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+													</ul>
+													<ul class="tsd-descriptions">
+														<li class="tsd-description">
+															<h4 class="tsd-parameters-title">Parameters</h4>
+															<ul class="tsd-parameters">
+																<li>
+																	<h5>TDomain: <span class="tsd-signature-type">any</span></h5>
+																</li>
+																<li>
+																	<h5>HTMLElement: <span class="tsd-signature-type">any</span></h5>
+																</li>
+															</ul>
+															<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+														</li>
+													</ul>
+												</li>
+											</ul>
+										</li>
+										<li class="tsd-parameter">
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> until<wbr>First<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">TDom</span></h5>
+										</li>
+										<li class="tsd-parameter">
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> wrapper<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>TDom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">TDom</span></h5>
+											<ul class="tsd-parameters">
+												<li class="tsd-parameter-signature">
+													<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+														<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>TDom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDom</span></li>
+													</ul>
+													<ul class="tsd-descriptions">
+														<li class="tsd-description">
+															<h4 class="tsd-parameters-title">Parameters</h4>
+															<ul class="tsd-parameters">
+																<li>
+																	<h5>TDom: <span class="tsd-signature-type">any</span></h5>
+																</li>
+															</ul>
+															<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TDom</span></h4>
+														</li>
+													</ul>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../classes/stream_.stream_-1.html" class="tsd-signature-type" data-tsd-kind="Class">Stream$</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TDom</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
 					<a name="stream_-2" class="tsd-anchor"></a>
 					<h3>stream$</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
@@ -379,13 +623,13 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/stream$.ts#L81">src/lib/stream$.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/98654f3/src/lib/stream$.ts#L196">src/lib/stream$.ts:196</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Create a stream of DOM understable element (attribute, child or children) from a RxJS observable.
-									It is most of the times called indirectly using <a href="stream_.html#attr_">attr$</a>, <a href="stream_.html#child_">child$</a> or <a href="children_.html">children$</a>.</p>
+									It is most of the times called indirectly using <a href="stream_.html#attr_">attr$</a>, <a href="stream_.html#child_">child$</a> or <a href="stream_.html#children_">children$</a>.</p>
 								</div>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -412,7 +656,7 @@
 										<ul>
 											<li>   in the case of the function <a href="stream_.html#attr_">attr$</a>, <em>TDom</em> is <a href="stream_.html#attributetype">AttributeType</a>.</li>
 											<li>   in the case of the function <a href="stream_.html#child_">child$</a>, <em>TDom</em> is <a href="../interfaces/interface.virtualdom.html">VirtualDOM</a>.</li>
-											<li>   in the case of the function <a href="children_.html">children$</a>, <em>TDom</em> is Array&lt;<a href="../interfaces/interface.virtualdom.html">VirtualDOM</a>&gt;.</li>
+											<li>   in the case of the function <a href="stream_.html#children_">children$</a>, <em>TDom</em> is Array&lt;<a href="../interfaces/interface.virtualdom.html">VirtualDOM</a>&gt;.</li>
 										</ul>
 									</div>
 									<ul class="tsd-parameters">
@@ -519,7 +763,7 @@
 						<a href="../modules.html">Exports</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="children_.html">children$</a>
+						<a href="advancedchildren_.html">advanced<wbr>Children$</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="core.html">core</a>
@@ -548,6 +792,9 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="stream_.html#child_" class="tsd-kind-icon">child$</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="stream_.html#children_" class="tsd-kind-icon">children$</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="stream_.html#stream_-2" class="tsd-kind-icon">stream$</a>

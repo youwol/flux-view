@@ -100,7 +100,7 @@
 <span style="color: #000000">}</span>
 <span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">div</span><span style="color: #000000"> : </span><span style="color: #267F99">HTMLElement</span><span style="color: #000000"> = </span><span style="color: #795E26">render</span><span style="color: #000000">(</span><span style="color: #001080">vDom</span><span style="color: #000000">)</span>
 </code></pre>
-				<p>Few things to higlight:</p>
+				<p>Few things to highlight:</p>
 				<ul>
 					<li>the dataflow of the application is described using RxJS. It provides an efficient and elegant way to deal with events and asynchronicity. The dataflow is explicit and usually composed of pure functions.</li>
 					<li>the DOM is represented by a JSON data-structure (called virtual DOM or vDOM). All regular attributes of the DOM exist along with the <em>children</em> attributes to list children of the node.</li>
@@ -109,6 +109,7 @@
 				<blockquote>
 					<p>For those having knowledge of RxJS and HTML, learning how to use the library will take a couple of minutes: the all API contains only 4 functions : <em>render</em>, <em>attr$</em>, <em>child$</em>, <em>children$</em>; the three latters are here essentially the same, they are differentiated as syntactic sugar. If not the case, learning how to use the library is learning reactive programming and HTML5.</p>
 				</blockquote>
+				<p>Want to learn more? You can have a look to the <a href="https://youwol.github.io/flux-view/dist/docs/modules/stream_.html">documentation</a></p>
 				<a href="#more-elaborated-examples" id="more-elaborated-examples" style="color: inherit; text-decoration: none;">
 					<h2>More elaborated examples</h2>
 				</a>
@@ -151,165 +152,6 @@
 <span style="color: #000000">    </span><span style="color: #800000">&lt;/body&gt;</span>
 <span style="color: #800000">&lt;/html&gt;</span>
 </code></pre>
-				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
-					<h1>API</h1>
-				</a>
-				<a href="#virtual-dom-amp-render-function" id="virtual-dom-amp-render-function" style="color: inherit; text-decoration: none;">
-					<h2>Virtual DOM &amp; render function</h2>
-				</a>
-				<p>The virtual DOM (vDOM) is described by a JSON data-structure with following attributes (all are optionals):</p>
-				<ul>
-					<li> The tag of a node is defined using the &#39;tag&#39; attribute - default to &#39;div&#39;</li>
-					<li> All regular attributes of HTMLElement that can be set can be used</li>
-					<li> The children are defined as a list using the &#39;children&#39; attribute </li>
-					<li> the attribute &#39;style&#39; can be used to set some styles (provide as a Map&lt;string, string)&gt;)</li>
-					<li> the attribute &#39;connectedCallback&#39; allows to provide a function that will be executed when
-					the element is actually added to the document. It takes as argument the corresponding HTMLElement. </li>
-					<li> the attribute &#39;disconnectedCallback&#39; allows to provide a function that will be executed when
-					the element is removed from the document. It takes as argument the corresponding HTMLElement. </li>
-				</ul>
-				<p>Any of those attributes but &#39;tag&#39;, &#39;connectedCallback&#39; and &#39;disconnectedCallback&#39; can be: </p>
-				<ul>
-					<li>a plain value (with a type consistent to the corresponding type used by the HTMLElement)</li>
-					<li>an observable to a plain value (using <em>attr$</em>, <em>child$</em> or <em>children</em> - described hereafter).</li>
-				</ul>
-				<p>To turn a vDOM into a regular HTMLElement, use the function <em>render</em>:</p>
-				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">BehaviorSubject</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rxjs&#039;</span><span style="color: #000000">;</span>
-<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">render</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@youwol/flux-view&#039;</span>
-
-<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">option$</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">BehaviorSubject</span><span style="color: #000000">&lt;</span><span style="color: #267F99">string</span><span style="color: #000000">&gt;(</span><span style="color: #A31515">&#039;option0&#039;</span><span style="color: #000000">)</span>
-<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">sub</span><span style="color: #000000"> = </span><span style="color: #001080">option$</span><span style="color: #000000">.</span><span style="color: #795E26">subscribe</span><span style="color: #000000">( </span><span style="color: #001080">option</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span><span style="color: #008000">/*some behavior*/</span><span style="color: #000000">})</span>
-<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDom</span><span style="color: #000000"> = {</span>
-<span style="color: #000000">    </span><span style="color: #001080">class:</span><span style="color: #A31515">&#039;d-flex justify-content-center&#039;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #001080">children:</span><span style="color: #000000">[</span>
-<span style="color: #000000">        {</span>
-<span style="color: #000000">            </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;select&#039;</span><span style="color: #000000">,</span>
-<span style="color: #000000">            </span><span style="color: #001080">children:</span><span style="color: #000000">[</span>
-<span style="color: #000000">                {</span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;option&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #A31515">&#039;option 1&#039;</span><span style="color: #000000">},</span>
-<span style="color: #000000">                {</span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;option&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #A31515">&#039;option 2&#039;</span><span style="color: #000000">},</span>
-<span style="color: #000000">            ],</span>
-<span style="color: #000000">            </span><span style="color: #795E26">onchange</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">ev</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">option$</span><span style="color: #000000">.</span><span style="color: #795E26">next</span><span style="color: #000000">( </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">target</span><span style="color: #000000">.</span><span style="color: #001080">value</span><span style="color: #000000">)</span>
-<span style="color: #000000">        }</span>
-<span style="color: #000000">    ],</span>
-<span style="color: #000000">    </span><span style="color: #795E26">connectedCallback</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">elem</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {        </span>
-<span style="color: #000000">        </span><span style="color: #008000">/*This makes the subscription managed by the DOM, see part &#039;Lifecycle&#039; */</span>
-<span style="color: #000000">        </span><span style="color: #001080">elem</span><span style="color: #000000">.</span><span style="color: #795E26">ownSubscriptions</span><span style="color: #000000">(</span><span style="color: #001080">sub</span><span style="color: #000000">)</span>
-<span style="color: #000000">    }</span>
-<span style="color: #000000">}</span>
-<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">div</span><span style="color: #000000"> = </span><span style="color: #795E26">render</span><span style="color: #000000">(</span><span style="color: #001080">vDOom</span><span style="color: #000000">)</span>
-</code></pre>
-				<a href="#attr-child-functions" id="attr-child-functions" style="color: inherit; text-decoration: none;">
-					<h2><strong>attr$</strong>, <strong>child$</strong> functions</h2>
-				</a>
-				<p>The functions <strong>attr$</strong>, and <strong>child$</strong> functions are actually the same, they differ only by the type used
-				in their definition.</p>
-				<p>It follows this common type&#39;s definition (the third arguments is optional):</p>
-				<pre><code class="language-typescript"><span style="color: #0000FF">function</span><span style="color: #000000"> ( </span>
-<span style="color: #000000">   </span><span style="color: #001080">stream$</span><span style="color: #000000">: </span><span style="color: #267F99">Observable</span><span style="color: #000000">&lt;</span><span style="color: #267F99">TData</span><span style="color: #000000">&gt;,</span>
-<span style="color: #000000">   </span><span style="color: #795E26">viewMap</span><span style="color: #000000">: (</span><span style="color: #001080">TData</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">TResult</span><span style="color: #000000">,</span>
-<span style="color: #000000">   { </span>
-<span style="color: #000000">       </span><span style="color: #001080">untilFirst</span><span style="color: #000000">, </span>
-<span style="color: #000000">       </span><span style="color: #001080">wrapper</span><span style="color: #000000">, </span>
-<span style="color: #000000">       </span><span style="color: #001080">sideEffects</span>
-<span style="color: #000000">   }: </span>
-<span style="color: #000000">   {   </span><span style="color: #001080">untilFirst</span><span style="color: #000000">?: </span><span style="color: #267F99">TResult</span><span style="color: #000000">, </span>
-<span style="color: #000000">       </span><span style="color: #795E26">wrapper</span><span style="color: #000000">?: (</span><span style="color: #001080">TResult</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">TResult</span><span style="color: #000000">, </span>
-<span style="color: #000000">       </span><span style="color: #795E26">sideEffects</span><span style="color: #000000">?: (</span><span style="color: #001080">TData</span><span style="color: #000000">, </span><span style="color: #001080">HTMLElement</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">void</span><span style="color: #000000">  </span>
-<span style="color: #000000">   } = {},</span>
-<span style="color: #000000">)</span>
-</code></pre>
-				<p>where:</p>
-				<ul>
-					<li><strong>stream$</strong> is the domain&#39;s data stream defined as a RxJS observable</li>
-					<li><strong>viewMap</strong> is a function that convert the domain&#39;s data to a vDOM attribute.
-						In the case of the function <em>attr$</em>, <em>TResult</em> is the type of the target attibute.
-						In the case of the function <em>child$</em>, <em>TResult</em> is <em>VirtualDOM</em>.
-					In the case of the function <em>children$</em>, <em>TResult</em> is <em>Array&lt;VirtualDOM&gt;</em>. </li>
-					<li><strong>untilFirst</strong> is the data that will be used until the first emitted element in <em>stream$</em> is obtained. If not provided, the attribute/child does not exist until first emission.
-					In such case, using a <em>BehaviorSubject</em> of RxJS (observable that directly emit a predefined value) is an alternative that can also be used.</li>
-				</ul>
-				<pre><code class="language-typescript"><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDom</span><span style="color: #000000"> = { </span>
-<span style="color: #000000">    </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;count down:&#039;</span><span style="color: #000000">, </span>
-<span style="color: #000000">    </span><span style="color: #001080">children:</span><span style="color: #000000">[</span>
-<span style="color: #000000">        {   </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">,</span>
-<span style="color: #000000">            </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #795E26">attr$</span><span style="color: #000000">( </span>
-<span style="color: #000000">                </span><span style="color: #001080">timer$</span><span style="color: #000000">, </span>
-<span style="color: #000000">                ( </span><span style="color: #001080">countDown</span><span style="color: #000000">:</span><span style="color: #267F99">number</span><span style="color: #000000"> ) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #A31515">`Remaining: </span><span style="color: #0000FF">${</span><span style="color: #001080">countDown</span><span style="color: #0000FF">}</span><span style="color: #A31515"> s`</span><span style="color: #000000">,</span>
-<span style="color: #000000">                { </span><span style="color: #001080">untilFirst:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Waiting first count down...&quot;</span><span style="color: #000000">}</span>
-<span style="color: #000000">            )</span>
-<span style="color: #000000">        }</span>
-<span style="color: #000000">    ]</span>
-<span style="color: #000000">}</span>
-
-</code></pre>
-				<ul>
-					<li><strong>wrapper</strong> is a function that is used to alter the data returned by <strong>viewMap</strong>. it is often used to factorize part of the viewMap function that are &#39;constant&#39; with respect to the data in <strong>stream$</strong>.
-						For instance the following code factorizes the class <em>count-down-item</em>: <pre><code class="language-typescript"><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDom</span><span style="color: #000000"> = { </span>
-<span style="color: #000000">  </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;count down:&#039;</span><span style="color: #000000">, </span>
-<span style="color: #000000">  </span><span style="color: #001080">children:</span><span style="color: #000000">[</span>
-<span style="color: #000000">      {   </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">,</span>
-<span style="color: #000000">          </span><span style="color: #001080">class:</span><span style="color: #000000">  </span><span style="color: #795E26">attr$</span><span style="color: #000000">( </span>
-<span style="color: #000000">              </span><span style="color: #001080">timer$</span><span style="color: #000000">, </span>
-<span style="color: #000000">              ( </span><span style="color: #001080">countDown</span><span style="color: #000000">:</span><span style="color: #267F99">number</span><span style="color: #000000"> ) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">countDown</span><span style="color: #000000"> &lt;</span><span style="color: #098658">5</span><span style="color: #000000"> ? </span><span style="color: #A31515">&#039;text-red&#039;</span><span style="color: #000000"> : </span><span style="color: #A31515">&#039;text-green&#039;</span><span style="color: #000000">,</span>
-<span style="color: #000000">              { </span><span style="color: #795E26">wrapper</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">classColor</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #A31515">`count-down-item </span><span style="color: #0000FF">${</span><span style="color: #001080">classColor</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">} </span>
-<span style="color: #000000">          ),</span>
-<span style="color: #000000">          </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #795E26">attr$</span><span style="color: #000000">( </span><span style="color: #001080">timer$</span><span style="color: #000000">, (</span><span style="color: #001080">countDown</span><span style="color: #000000">:</span><span style="color: #267F99">number</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #001080">countDown</span><span style="color: #0000FF">}</span><span style="color: #A31515"> s`</span><span style="color: #000000">)</span>
-<span style="color: #000000">      }</span>
-<span style="color: #000000">  ]</span>
-<span style="color: #000000">}</span>
-</code></pre>
-					</li>
-					<li><strong>sideEffects</strong> is a function that provides a handle to execute side effects once the
-					attribute/child has been set/added; both the domain&#39;s data and the rendered HTMLElement are provided to this function.</li>
-				</ul>
-				<a href="#children-function" id="children-function" style="color: inherit; text-decoration: none;">
-					<h2><strong>children$</strong> function</h2>
-				</a>
-				<p>When working with array of domain data <strong>flux-view</strong> provides the function <strong>children</strong>.
-					This function is similar to <strong>attr$</strong> and <strong>child$</strong> defined above but add an extra piece
-					of logic to avoid flushing all the children and re-rendering them all each time a new array is emitted.
-				The library provide 2 policies for such case:</p>
-				<ul>
-					<li>   ReplaceChildrenPolicy: when a new array of domains data is emitted, only new elements
-						are created, previous elements that are not part of the new array are removed. Element comparison
-					is by default references comparison (valid if domain data are immutables), but a custom function can provided. </li>
-					<li>  AppendOnlyPolicy: when a new array of domains data is emitted,
-					corresponding DOM elements are appended, no replacements, no deletions.</li>
-				</ul>
-				<p>The reader can find more information in the <a href="https://youwol.github.io/flux-view/dist/docs/modules/children_.html#children_-1">documentation</a>.</p>
-				<a href="#technical-details" id="technical-details" style="color: inherit; text-decoration: none;">
-					<h1>Technical details</h1>
-				</a>
-				<a href="#lifecycle" id="lifecycle" style="color: inherit; text-decoration: none;">
-					<h2>Lifecycle</h2>
-				</a>
-				<p>Behind the scene, one central task of <em>flux-view</em>  is to keep track of internal subscriptions and manage their lifecycle, without any concern for the consumer of the library.</p>
-				<p>The rule is straightforward: only the subscriptions related to DOM elements included
-					in the document are kept alive. When an element is removed (in any ways), all the
-				related streams are unsubscribed recursively. Latter on, if the element is reinserted in the document, all the related streams are re-subscribed.</p>
-				<a href="#a-note-about-performances" id="a-note-about-performances" style="color: inherit; text-decoration: none;">
-					<h2>A note about performances</h2>
-				</a>
-				<p>Most of the popular frameworks (e.g. <em>React</em>, <em>Angular</em>, <em>Vue</em>) use an approach
-				that bind a state to a virtual dom and &#39;auto-magically&#39; identify and update relevant portions of the DOM that actually change when the state modification. This magic is at the price of a more complex API and at some undesired redrawing if care is not taken.</p>
-				<p>In <em>flux-view</em>, the user is in charge to chose how the binding between DOM&#39;s
-					attributes/children and observables is realized.
-					For instance, in the previous example, there is only the attribute <em>innerText</em> of the
-				inner div that is actually updated: when timer$ emit a new value, only this property is updated. A less efficient implementation would be:</p>
-				<pre><code class="language-typescript"><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDom</span><span style="color: #000000"> = { </span>
-<span style="color: #000000">   </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;count down:&#039;</span><span style="color: #000000">, </span>
-<span style="color: #000000">   </span><span style="color: #001080">children:</span><span style="color: #000000">[</span>
-<span style="color: #000000">       </span><span style="color: #795E26">child$</span><span style="color: #000000">(</span>
-<span style="color: #000000">           </span><span style="color: #001080">timer$</span><span style="color: #000000">, </span>
-<span style="color: #000000">           (</span><span style="color: #001080">countDown</span><span style="color: #000000">:</span><span style="color: #267F99">number</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> ({ </span><span style="color: #001080">tag:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #A31515">`Remaining: </span><span style="color: #0000FF">${</span><span style="color: #001080">countDown</span><span style="color: #0000FF">}</span><span style="color: #A31515"> s`</span><span style="color: #000000">})</span>
-<span style="color: #000000">       ) </span>
-<span style="color: #000000">   ]</span>
-<span style="color: #000000">}</span>
-</code></pre>
-				<p>In this case, the entire inner div is re-rendered when <em>timer$</em> emit a new value.</p>
-				<p>There is yet one performance issue with <em>flux-view</em> that arises when a binding between
-					an observable of a collection and the children of a node is desired using <em>children$</em>.
-				At that time the library redraw the all collection, even if only one item has been added/removed/modified. This issue will be solved soon in upcoming versions (somehow by allowing more granularity when using *children$&#39; to provide required features). </p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -319,7 +161,7 @@
 						<a href="modules.html">Exports</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/children_.html">children$</a>
+						<a href="modules/advancedchildren_.html">advanced<wbr>Children$</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/core.html">core</a>

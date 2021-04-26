@@ -6,13 +6,15 @@ declare class  HTMLElement${}
 
 
 /**
- * This is a virtual representation of a DOM element:
+ * Interface for internal representation of DOM nodes: 
  * -    for a given [[tag]], the interface have the same attributes than the associated regular DOM element.
- * -    if tag is not defined, the VirtualDOM is implicitely a *div*.
+ * -    if tag is not defined, the VirtualDOM is implicitly a *div*.
  * -    children are defined using the [[children]] attribute 
+ * -    the attribute **style** can be used to set some styles (provide as a Map<string, string)>)
  * 
  * When the Virtual DOM is rendered, it is transformed into a [[HTMLElement$]] : 
- * a custom HTML element that inherits from HTMLElement.
+ * a [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
+ *  that inherits from HTMLElement.
  * 
  * Here is an instance of static VirtualDOM:
  * 
@@ -31,8 +33,10 @@ declare class  HTMLElement${}
  * }
  * ```
  * 
+ * ## Connection to observables 
+ * 
  * The difference with a regular DOM is that a virtual DOM can have both attributes and children binded
- *  to a RxJS observables using [[attr$]], [[child$]] and [[children$]]:
+ * to a RxJS observables using [[attr$]], [[child$]] and [[children$]]:
  * 
  *``` typescript
  * // clicked$ is somehow our state (similar to a redux pattern)
@@ -66,8 +70,45 @@ declare class  HTMLElement${}
  * > Beside the [[tag]] attribute, there is no declaration of others attribute:
  * > the attribute you provide may have no effect if they do not exist for the 
  * > attribute tag you have provided 😒.  
- * >
- * > This may be a point to improve in the future.
+ * 
+ * ## **connectedCallback** and **disconnectedCallback**
+ * 
+ * -    the method **connectedCallback** allows to provide a function that will be executed when
+ * the element is actually added to the document. It takes as argument the corresponding HTMLElement. 
+ * -    the method **disconnectedCallback** allows to provide a function that will be executed when
+ * the element is removed from the document. It takes as argument the corresponding HTMLElement. 
+ * 
+ * A common use of  **connectedCallback** is to provide the ownership of a 
+ * (RxJs Subscription)[https://rxjs-dev.firebaseapp.com/guide/subscription] to the displayed element:
+ * whenever the element will be added/removed from the document, the subscription will be started/unsubscribed.
+ * 
+ * ```typescript
+ * import { BehaviorSubject } from 'rxjs';
+ * import { render } from '@youwol/flux-view'
+ *
+ * let option$ = new BehaviorSubject<string>('option0')
+ * 
+ * let vDom = {
+ *   class:'d-flex justify-content-center',
+ *   children:[
+ *       {
+ *           tag:'select',
+ *           children:[
+ *               {tag:'option', innerText:'option 1'},
+ *               {tag:'option', innerText:'option 2'},
+ *           ],
+ *           onchange: (ev) => option$.next( ev.target.value)
+ *       }
+ *   ],
+ *   connectedCallback: (elem: HTMLElement$) => {       
+ *      let sub = option$.subscribe( option => {...}) 
+ *       //This makes the subscription managed by the DOM
+ *       elem.ownSubscriptions(sub)
+ *   }
+ * }
+ *let div = render(vDOom)
+ *```
+ *
  */
  export interface VirtualDOM{
 
@@ -127,7 +168,11 @@ declare class  HTMLElement${}
 
 }
 
-
+/**
+ * This interface declares the methods added to [[HTMLElement$]]
+ * w/ regular HTMLElement.
+ * 
+ */
 export interface InterfaceHTMLElement$ extends HTMLElement{
 
     /**
@@ -155,8 +200,6 @@ export interface InterfaceHTMLElement$ extends HTMLElement{
      * @param sub subscription
      */
     ownSubscriptions(...sub: Subscription[])
-
-    renderChildren( children : Array<VirtualDOM> ) : Array<InterfaceHTMLElement$>
 }
 
 
