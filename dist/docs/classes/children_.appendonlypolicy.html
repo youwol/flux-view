@@ -68,6 +68,47 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#appendonlypolicy" id="appendonlypolicy" style="color: inherit; text-decoration: none;">
+							<h2>AppendOnlyPolicy</h2>
+						</a>
+					</div>
+					<p>Policy to be used within the function <a href="../modules/children_.html#children_-1">children$</a> to work with a stream of array of domain data,
+					always emitting new data that needs to be displayed in addition to the previous ones.</p>
+					<p> e.g.:</p>
+					<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">DomainData</span><span style="color: #000000">{ </span>
+<span style="color: #000000">   </span><span style="color: #0000FF">constructor</span><span style="color: #000000">( </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">){}</span>
+<span style="color: #000000">}</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">hello</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DomainData</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hello&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">world</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DomainData</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;world&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">foo</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DomainData</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;foo&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">stream$</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">BehaviorSubject</span><span style="color: #000000">&lt;</span><span style="color: #267F99">DomainData</span><span style="color: #000000">[]&gt;([</span><span style="color: #001080">hello</span><span style="color: #000000">, </span><span style="color: #001080">world</span><span style="color: #000000">])</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDOM</span><span style="color: #000000"> = { </span>
+<span style="color: #000000">   </span><span style="color: #001080">children:</span><span style="color: #000000"> </span><span style="color: #795E26">children$</span><span style="color: #000000">(</span>
+<span style="color: #000000">       </span><span style="color: #001080">stream$</span><span style="color: #000000">,</span>
+<span style="color: #000000">       (</span><span style="color: #001080">data</span><span style="color: #000000">: </span><span style="color: #267F99">DomainData</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> ({</span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #001080">data</span><span style="color: #000000">.</span><span style="color: #001080">value</span><span style="color: #000000">})</span>
+<span style="color: #000000">       {</span>
+<span style="color: #000000">           </span><span style="color: #001080">policy:</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">AppendOnlyPolicy</span><span style="color: #000000">()</span>
+<span style="color: #000000">       }</span>
+<span style="color: #000000">   )</span>
+<span style="color: #000000">}</span>
+<span style="color: #001080">body</span><span style="color: #000000">.</span><span style="color: #795E26">appendChild</span><span style="color: #000000">(</span><span style="color: #795E26">render</span><span style="color: #000000">(</span><span style="color: #001080">vDOM</span><span style="color: #000000">))</span>
+<span style="color: #008000">//&lt;div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; hello &lt;/div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; world &lt;/div&gt; </span>
+<span style="color: #008000">//&lt;/div&gt;</span>
+<span style="color: #001080">stream$</span><span style="color: #000000">.</span><span style="color: #795E26">next</span><span style="color: #000000">([</span><span style="color: #001080">hello</span><span style="color: #000000">, </span><span style="color: #001080">foo</span><span style="color: #000000">])</span>
+<span style="color: #008000">//&lt;div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; hello &lt;/div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; foo &lt;/div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; hello &lt;/div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; foo &lt;/div&gt; </span>
+<span style="color: #008000">//&lt;/div&gt;</span>
+</code></pre>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-type-parameters">
 				<h3>Type parameters</h3>
 				<ul class="tsd-type-parameters">
@@ -152,9 +193,6 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.appendonlychildrenstream_.html" class="tsd-kind-icon">Append<wbr>Only<wbr>Children<wbr>Stream$</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
@@ -171,10 +209,10 @@
 						<a href="children_.childrenstream_.html" class="tsd-kind-icon">Children<wbr>Stream$</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.renderingupdate.html" class="tsd-kind-icon">Rendering<wbr>Update</a>
+						<a href="children_.refelement.html" class="tsd-kind-icon">Ref<wbr>Element</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.replacechildrenstream_.html" class="tsd-kind-icon">Replace<wbr>Children<wbr>Stream$</a>
+						<a href="children_.renderingupdate.html" class="tsd-kind-icon">Rendering<wbr>Update</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="children_.replacepolicy.html" class="tsd-kind-icon">Replace<wbr>Policy</a>

@@ -68,6 +68,54 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#replacepolicy" id="replacepolicy" style="color: inherit; text-decoration: none;">
+							<h2>ReplacePolicy</h2>
+						</a>
+					</div>
+					<p>Policy to be used within the function <a href="../modules/children_.html#children_-1">children$</a> to work with
+						a stream of <strong>array</strong> of domain data where items can be re-emitted
+					multiple times (or removed).</p>
+					<p>For instance:</p>
+					<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">DomainData</span><span style="color: #000000">{ </span>
+<span style="color: #000000">   </span><span style="color: #0000FF">constructor</span><span style="color: #000000">( </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">){}</span>
+<span style="color: #000000">}</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">hello</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DomainData</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hello&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">world</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DomainData</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;world&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">foo</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DomainData</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;foo&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">stream$</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">BehaviorSubject</span><span style="color: #000000">&lt;</span><span style="color: #267F99">DomainData</span><span style="color: #000000">[]&gt;([</span><span style="color: #001080">hello</span><span style="color: #000000">, </span><span style="color: #001080">world</span><span style="color: #000000">])</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDOM</span><span style="color: #000000"> = { </span>
+<span style="color: #000000">   </span><span style="color: #001080">children:</span><span style="color: #000000"> </span><span style="color: #795E26">children$</span><span style="color: #000000">(</span>
+<span style="color: #000000">       </span><span style="color: #001080">stream$</span><span style="color: #000000">,</span>
+<span style="color: #000000">       (</span><span style="color: #001080">data</span><span style="color: #000000">: </span><span style="color: #267F99">DomainData</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> ({</span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #001080">data</span><span style="color: #000000">.</span><span style="color: #001080">value</span><span style="color: #000000">})</span>
+<span style="color: #000000">       {</span>
+<span style="color: #000000">           </span><span style="color: #001080">policy:</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ReplacePolicy</span><span style="color: #000000">()</span>
+<span style="color: #000000">       }</span>
+<span style="color: #000000">   )</span>
+<span style="color: #000000">}</span>
+<span style="color: #001080">body</span><span style="color: #000000">.</span><span style="color: #795E26">appendChild</span><span style="color: #000000">(</span><span style="color: #795E26">render</span><span style="color: #000000">(</span><span style="color: #001080">vDOM</span><span style="color: #000000">))</span>
+<span style="color: #008000">//&lt;div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; hello &lt;/div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; world &lt;/div&gt; </span>
+<span style="color: #008000">//&lt;/div&gt;</span>
+<span style="color: #001080">stream$</span><span style="color: #000000">.</span><span style="color: #795E26">next</span><span style="color: #000000">([</span><span style="color: #001080">hello</span><span style="color: #000000">, </span><span style="color: #001080">foo</span><span style="color: #000000">])</span>
+<span style="color: #008000">//&lt;div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; hello &lt;/div&gt; </span>
+<span style="color: #008000">//    &lt;div&gt; foo &lt;/div&gt; </span>
+<span style="color: #008000">//&lt;/div&gt;</span>
+</code></pre>
+					<p>The key points in the above example is that when <em>stream$.next([hello, foo])</em> is called:</p>
+					<ul>
+						<li>   <code>&lt;div&gt; hello &lt;/div&gt;</code> was not re-rendered in any way</li>
+						<li>   <code>&lt;div&gt; world &lt;/div&gt;</code> has been removed</li>
+						<li>   <code>&lt;div&gt; foo &lt;/div&gt;</code> has been added</li>
+						<li>   the policy does domain data comparison (to identify which elements are new or old) using reference by default,
+						a custom comparison operator can also be supplied (see <a href="children_.replacepolicy.html#comparisonoperator">comparisonOperator</a>)</li>
+					</ul>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-type-parameters">
 				<h3>Type parameters</h3>
 				<ul class="tsd-type-parameters">
@@ -121,7 +169,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/lib/children$.ts:31</li>
+									<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/children$.ts#L156">src/lib/children$.ts:156</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -137,6 +185,9 @@
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter">
 											<h5><span class="tsd-flag ts-flagOptional">Optional</span> comparison<wbr>Operator<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>rhs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDomain</span>, lhs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></h5>
+											<div class="tsd-comment tsd-typography">
+												<p>see <a href="children_.replacepolicy.html#comparisonoperator">comparisonOperator</a></p>
+											</div>
 											<ul class="tsd-parameters">
 												<li class="tsd-parameter-signature">
 													<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
@@ -175,9 +226,15 @@
 					<div class="tsd-signature tsd-kind-icon">comparison<wbr>Operator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>rhs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDomain</span>, lhs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TDomain</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/lib/children$.ts:31</li>
+							<li>Defined in <a href="https://github.com/youwol/flux-view/blob/6a3d75d/src/lib/children$.ts#L156">src/lib/children$.ts:156</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Comparison operator used to identify which elements need to be added/ updated/ replaced.
+							By default reference equality is used, ideal when the domain data are immutables.</p>
+						</div>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -231,19 +288,16 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.appendonlychildrenstream_.html" class="tsd-kind-icon">Append<wbr>Only<wbr>Children<wbr>Stream$</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="children_.appendonlypolicy.html" class="tsd-kind-icon">Append<wbr>Only<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="children_.childrenstream_.html" class="tsd-kind-icon">Children<wbr>Stream$</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.renderingupdate.html" class="tsd-kind-icon">Rendering<wbr>Update</a>
+						<a href="children_.refelement.html" class="tsd-kind-icon">Ref<wbr>Element</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="children_.replacechildrenstream_.html" class="tsd-kind-icon">Replace<wbr>Children<wbr>Stream$</a>
+						<a href="children_.renderingupdate.html" class="tsd-kind-icon">Rendering<wbr>Update</a>
 					</li>
 				</ul>
 				<ul class="current">

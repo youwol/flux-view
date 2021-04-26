@@ -146,9 +146,9 @@ let vDom = {
 }
 let div = render(vDOom)
 ```
-## *attr$*, *child$* & *children$* functions
+## **attr$**, **child$** functions
 
-The functions *attr$*, *child$* and *children$* are actually the same, they differ only by the type used
+The functions **attr$**, and **child$** functions are actually the same, they differ only by the type used
 in their definition.
 
 It follows this common type's definition (the third arguments is optional):
@@ -168,13 +168,13 @@ function (
 )
 ```
 where:
-- *stream$* is the domain's data stream defined as a RxJS observable
-- *viewMap* is a function that convert the domain's data to a vDOM attribute. 
+- **stream$** is the domain's data stream defined as a RxJS observable
+- **viewMap** is a function that convert the domain's data to a vDOM attribute. 
 In the case of the function *attr$*, *TResult* is the type of the target attibute.
 In the case of the function *child$*, *TResult* is *VirtualDOM*. 
 In the case of the function *children$*, *TResult* is *Array\<VirtualDOM\>*. 
-- *untilFirst* is the data that will be used until the first emitted element in *stream$* is obtained. If not provided, the attribute/child does not exist until first emission.
-    In such case, using a *BehaviorSubject* of RxJS (observable that directly emit a predifined value) is an alternative that can also be used.
+- **untilFirst** is the data that will be used until the first emitted element in *stream$* is obtained. If not provided, the attribute/child does not exist until first emission.
+    In such case, using a *BehaviorSubject* of RxJS (observable that directly emit a predefined value) is an alternative that can also be used.
 
 ```typescript
 let vDom = { 
@@ -191,7 +191,7 @@ let vDom = {
 }
 
 ```
-- *wrapper* is a function that is used to alter the data returned by *viewMap*. it is often used to factorize part of the viewMap function that are 'constant' with respect to the data in $stream$*. 
+- **wrapper** is a function that is used to alter the data returned by **viewMap**. it is often used to factorize part of the viewMap function that are 'constant' with respect to the data in **stream$**. 
 For instance the following code factorizes the class *count-down-item*: 
 ```typescript
 let vDom = { 
@@ -201,15 +201,31 @@ let vDom = {
             class:  attr$( 
                 timer$, 
                 ( countDown:number ) => countDown <5 ? 'text-red' : 'text-green',
-                { wrapper: (class) => `count-down-item ${class}`} 
+                { wrapper: (classColor) => `count-down-item ${classColor}`} 
             ),
             innerText: attr$( timer$, (countDown:number) => `${countDown} s`)
         }
     ]
 }
 ```
-- sideEffects is a function that provides a handle to execute side effects once the
-attribute/child as been set/added; both the domain's data and the rendered HTMLElement are provided to this function. For instance, a common use case is to focus an input after being dynamically added to the DOM.
+- **sideEffects** is a function that provides a handle to execute side effects once the
+attribute/child has been set/added; both the domain's data and the rendered HTMLElement are provided to this function.
+
+
+## **children$** function
+
+When working with array of domain data **flux-view** provides the function **children**.
+This function is similar to **attr$** and **child$** defined above but add an extra piece 
+of logic to avoid flushing all the children and re-rendering them all each time a new array is emitted.
+The library provide 2 policies for such case:
+-    ReplaceChildrenPolicy: when a new array of domains data is emitted, only new elements
+are created, previous elements that are not part of the new array are removed. Element comparison
+is by default references comparison (valid if domain data are immutables), but a custom function can provided. 
+-   AppendOnlyPolicy: when a new array of domains data is emitted, 
+corresponding DOM elements are appended, no replacements, no deletions.
+
+The reader can find more information in the [documentation](https://youwol.github.io/flux-view/dist/docs/modules/children_.html#children_-1).
+
 
 # Technical details
 
@@ -219,13 +235,13 @@ Behind the scene, one central task of *flux-view*  is to keep track of internal 
 
 The rule is straightforward: only the subscriptions related to DOM elements included 
 in the document are kept alive. When an element is removed (in any ways), all the 
-related streams are unsubscribed recursively. Latter on, if the element is reinserted in the document, all the related streams are resuscribed.
+related streams are unsubscribed recursively. Latter on, if the element is reinserted in the document, all the related streams are re-subscribed.
 
 
 ## A note about performances
 
 Most of the popular frameworks (e.g. *React*, *Angular*, *Vue*) use an approach 
-that bind a state to a virtual dom and automagically identify and update relevant portions of the DOM that actually change when the state modification. This magic is at the price of a more complex API and at some undesired redrawing if care is not taken.
+that bind a state to a virtual dom and 'auto-magically' identify and update relevant portions of the DOM that actually change when the state modification. This magic is at the price of a more complex API and at some undesired redrawing if care is not taken.
 
 In *flux-view*, the user is in charge to chose how the binding between DOM's 
 attributes/children and observables is realized. 
