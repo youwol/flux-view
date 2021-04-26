@@ -2,4 +2,6 @@ node_modules
 **/node_modules/**/*
 coverage
 junit.xml
-dist
+dist/lib
+dist/@youwol
+dist/index.d.ts
