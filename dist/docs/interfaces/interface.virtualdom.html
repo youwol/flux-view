@@ -1,0 +1,368 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>VirtualDOM | @youwol/flux-view</title>
+	<meta name="description" content="Documentation for @youwol/flux-view">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">@youwol/flux-view</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">@youwol/flux-view</a>
+				</li>
+				<li>
+					<a href="../modules/interface.html">interface</a>
+				</li>
+				<li>
+					<a href="interface.virtualdom.html">VirtualDOM</a>
+				</li>
+			</ul>
+			<h1>Interface VirtualDOM</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>This is a virtual representation of a DOM element:</p>
+						<ul>
+							<li>   for a given <a href="interface.virtualdom.html#tag">tag</a>, the interface have the same attributes than the associated regular DOM element.</li>
+							<li>   if tag is not defined, the VirtualDOM is implicitely a <em>div</em>.</li>
+							<li>   children are defined using the <a href="interface.virtualdom.html#children">children</a> attribute</li>
+						</ul>
+					</div>
+					<p>When the Virtual DOM is rendered, it is transformed into a <a href="../classes/core.htmlelement_.html">HTMLElement$</a> :
+					a custom HTML element that inherits from HTMLElement.</p>
+					<p>Here is an instance of static VirtualDOM:</p>
+					<pre><code class="language-typescript"><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDOM</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">     </span><span style="color: #001080">tag:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span><span style="color: #008000">// &lt;- for a div, tag can be omitted</span>
+<span style="color: #000000">     </span><span style="color: #001080">class:</span><span style="color: #A31515">&#039;text-center border&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">     </span><span style="color: #001080">style:</span><span style="color: #000000">{ </span><span style="color: #A31515">&#039;backgound-color&#039;</span><span style="color: #001080">:</span><span style="color: #A31515">&#039;blue&#039;</span><span style="color: #000000"> }</span>
+<span style="color: #000000">     </span><span style="color: #001080">id</span><span style="color: #000000">:</span><span style="color: #A31515">&#039;my-div&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">     </span><span style="color: #795E26">onclick</span><span style="color: #001080">:</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;on-click&#039;</span><span style="color: #000000">),</span>
+<span style="color: #000000">     </span><span style="color: #001080">children:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">         {</span>
+<span style="color: #000000">             </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;button&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">             </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;click me&#039;</span>
+<span style="color: #000000">         }]</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p>The difference with a regular DOM is that a virtual DOM can have both attributes and children binded
+					to a RxJS observables using <a href="../modules/stream_.html#attr_">attr$</a>, <a href="../modules/stream_.html#child_">child$</a> and <a href="../modules/children_.html">children$</a>:</p>
+					<pre><code class="language-typescript"><span style="color: #008000">// clicked$ is somehow our state (similar to a redux pattern)</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">clicked$</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">rxjs</span><span style="color: #000000">.</span><span style="color: #795E26">BehaviorSubject</span><span style="color: #000000">({</span><span style="color: #001080">clicked:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">})</span>
+
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDOM</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">     </span><span style="color: #001080">tag:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span>
+<span style="color: #000000">     </span><span style="color: #001080">class:</span><span style="color: #000000"> </span><span style="color: #795E26">attr$</span><span style="color: #000000">( </span>
+<span style="color: #000000">         </span><span style="color: #001080">clicked$</span><span style="color: #000000">,</span>
+<span style="color: #000000">         ({</span><span style="color: #001080">clicked</span><span style="color: #000000">}) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">clicked</span><span style="color: #000000"> ? </span><span style="color: #A31515">&#039;text-secondary&#039;</span><span style="color: #000000">: </span><span style="color: #A31515">&#039;text-primary&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">         {</span><span style="color: #795E26">wrapper</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">classes</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">classes</span><span style="color: #000000"> + </span><span style="color: #A31515">&#039; text-center border&#039;</span>
+<span style="color: #000000">     ),</span>
+<span style="color: #000000">     </span><span style="color: #001080">style:</span><span style="color: #000000">{ </span><span style="color: #A31515">&#039;backgound-color&#039;</span><span style="color: #001080">:</span><span style="color: #A31515">&#039;blue&#039;</span><span style="color: #000000"> }</span>
+<span style="color: #000000">     </span><span style="color: #001080">id</span><span style="color: #000000">:</span><span style="color: #A31515">&#039;my-div&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">     </span><span style="color: #795E26">onclick</span><span style="color: #001080">:</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;on-click&#039;</span><span style="color: #000000">),</span>
+<span style="color: #000000">     </span><span style="color: #001080">children:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">         {</span>
+<span style="color: #000000">             </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;button&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">             </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;click me&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">             </span><span style="color: #795E26">onclick</span><span style="color: #001080">:</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">clicked$</span><span style="color: #000000">.</span><span style="color: #795E26">next</span><span style="color: #000000">({</span><span style="color: #001080">clicked:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">})</span>
+<span style="color: #000000">         },</span>
+<span style="color: #000000">         </span><span style="color: #795E26">child$</span><span style="color: #000000">(</span>
+<span style="color: #000000">             </span><span style="color: #001080">clicked$</span><span style="color: #000000">,</span>
+<span style="color: #000000">             ({</span><span style="color: #001080">clicked</span><span style="color: #000000">}) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> ({ </span><span style="color: #001080">tag:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;span&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;clicked!!&#039;</span><span style="color: #000000"> }),</span>
+<span style="color: #000000">             {</span><span style="color: #001080">untilFirst:</span><span style="color: #000000"> { </span><span style="color: #001080">tag:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;span&#039;</span><span style="color: #000000">, </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;not clicked yet&#039;</span><span style="color: #000000"> } </span>
+<span style="color: #000000">         )</span>
+<span style="color: #000000">     ]</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<blockquote>
+						<p>Beside the <a href="interface.virtualdom.html#tag">tag</a> attribute, there is no declaration of others attribute:
+							the attribute you provide may have no effect if they do not exist for the
+						attribute tag you have provided 😒.</p>
+						<p>This may be a point to improve in the future.</p>
+					</blockquote>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">VirtualDOM</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interface.virtualdom.html#children" class="tsd-kind-icon">children</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interface.virtualdom.html#connectedcallback" class="tsd-kind-icon">connected<wbr>Callback</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interface.virtualdom.html#disconnectedcallback" class="tsd-kind-icon">disconnected<wbr>Callback</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interface.virtualdom.html#tag" class="tsd-kind-icon">tag</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="children" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> children</h3>
+					<div class="tsd-signature tsd-kind-icon">children<span class="tsd-signature-symbol">:</span> <a href="interface.virtualdom.html" class="tsd-signature-type" data-tsd-kind="Interface">VirtualDOM</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ChildrenStream$</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/lib/interface.ts:84</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The list of children, either an array of <a href="interface.virtualdom.html">VirtualDOM</a> or a stream of array of <a href="interface.virtualdom.html">VirtualDOM</a>
+							( see <a href="../modules/children_.html">children$</a> for this last case).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="connectedcallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> connected<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">connected<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>d<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement$</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/lib/interface.ts:112</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This method gets called when the VirtualDOM get inserted as actual DOM
+							in the HTML page (i.e. transformed into ).</p>
+						</div>
+						<p>This is when the view&#39;s observables are actually subscribed.
+							A typical usage is to transfer the ownership of some subscriptions to the virtual DOM such that
+						they get properly unsubscribed when the element is removed from the page:</p>
+						<pre><code class="language-typescript"><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">clicked$</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">rxjs</span><span style="color: #000000">.</span><span style="color: #795E26">BehaviorSubject</span><span style="color: #000000">({</span><span style="color: #001080">clicked:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">})</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">vDOM</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">     </span><span style="color: #001080">tag:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;div&#039;</span><span style="color: #000000">, </span>
+<span style="color: #000000">     </span><span style="color: #795E26">connectedCallback</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">elem</span><span style="color: #000000">: </span><span style="color: #267F99">HTMLElement$</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">         </span><span style="color: #008000">// the ownership of sub0 is given to the VirtualDOM</span>
+<span style="color: #000000">         </span><span style="color: #008000">// =&gt; it will be unsubscribed when element is actually removed from the view</span>
+<span style="color: #000000">         </span><span style="color: #001080">elem</span><span style="color: #000000">.</span><span style="color: #795E26">ownSubscriptions</span><span style="color: #000000">(</span><span style="color: #001080">clicked$</span><span style="color: #000000">.</span><span style="color: #795E26">subscribe</span><span style="color: #000000">( (</span><span style="color: #001080">d</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">d</span><span style="color: #000000">)))</span>
+<span style="color: #000000">     }</span>
+<span style="color: #000000">     </span><span style="color: #001080">children</span><span style="color: #000000">: [</span>
+<span style="color: #000000">         {</span>
+<span style="color: #000000">             </span><span style="color: #001080">tag:</span><span style="color: #A31515">&#039;button&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">             </span><span style="color: #001080">innerText:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;hello flux view&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">             </span><span style="color: #795E26">onclick</span><span style="color: #001080">:</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">clicked$</span><span style="color: #000000">.</span><span style="color: #795E26">next</span><span style="color: #000000">({</span><span style="color: #001080">clicked:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">})</span>
+<span style="color: #000000">         }]</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>d<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement$</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>d: <span class="tsd-signature-type">HTMLElement$</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="disconnectedcallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> disconnected<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">disconnected<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>d<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement$</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/lib/interface.ts:119</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This method get called when the actual DOM represented by the VirtualDOM
+							gets removed from the HTML page.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>d<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement$</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>d: <span class="tsd-signature-type">HTMLElement$</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="tag" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> tag</h3>
+					<div class="tsd-signature tsd-kind-icon">tag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/lib/interface.ts:78</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>tag of the virtual DOM, e.g. <em>div</em>, <em>span</em>, <em>table</em>, <em>etc</em>
+							The list of available tags are presented <a href="../modules/factory.html#customelementsmap">here</a></p>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/children_.html">children$</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/core.html">core</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/factory.html">factory</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="../modules/interface.html">interface</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/stream_.html">stream$</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="interface.interfacehtmlelement_.html" class="tsd-kind-icon">InterfaceHTMLElement$</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-module">
+						<a href="interface.virtualdom.html" class="tsd-kind-icon">VirtualDOM</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="interface.virtualdom.html#children" class="tsd-kind-icon">children</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="interface.virtualdom.html#connectedcallback" class="tsd-kind-icon">connected<wbr>Callback</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="interface.virtualdom.html#disconnectedcallback" class="tsd-kind-icon">disconnected<wbr>Callback</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="interface.virtualdom.html#tag" class="tsd-kind-icon">tag</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
