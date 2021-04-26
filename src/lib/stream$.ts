@@ -1,17 +1,17 @@
 import { Observable } from "rxjs"
 import { map } from "rxjs/operators"
-import { VirtualDOM } from "./core"
+import { VirtualDOM } from "./interface"
 
 /**
  * A RxJs observable that represents a DOM's attribute, child or children.
  * 
- * @param T0 the domain data type
- * @param T1 the DOM data type: either :
+ * @param TDomain the domain data type
+ * @param TDom the DOM data type: either :
  *     - [[AttributeType]] for attributes (see [[attr$]])
  *     - [[VirtualDOM]] for child (see [[child$]])
  *     - Array<[[VirtualDOM]]> for children (see [[children$]])
  */
-export class Stream$<T0, T1 = T0> {
+export class Stream$<TDomain, TDom = TDomain> {
 
     public readonly untilFirst
     public readonly wrapper
@@ -27,15 +27,14 @@ export class Stream$<T0, T1 = T0> {
     * attribute/child as been set/added; both the domain's data and the rendered HTMLElement are provided to this function.
      */
     constructor(
-        public readonly stream$: Observable<T0>,
-        public readonly map:  (T0,...args:any[])=>T1,
+        public readonly stream$: Observable<TDomain>,
+        public readonly map:  (TDomain,...args:any[])=>TDom,
         { untilFirst, wrapper, sideEffects }: 
-        { untilFirst?: T1, wrapper?: (T1) => T1 , 
-          sideEffects?: (T1, T0) => void } ) {
+        { untilFirst?: TDom, wrapper?: (TDom) => TDom , 
+          sideEffects?: (TDom, TDomain) => void } ) {
 
         this.untilFirst = untilFirst
         this.wrapper = wrapper
-        this.map = map
         this.sideEffects = sideEffects
     }
 
@@ -48,12 +47,12 @@ export class Stream$<T0, T1 = T0> {
         
         this.untilFirst && this.finalize(fct,  this.untilFirst )
         
-        return stream$.subscribe( (v:T1) => {
+        return stream$.subscribe( (v:TDom) => {
             this.finalize(fct, v )
         })
     }
     
-    private finalize(fct : (T,...args:any[]) => any, value: T1){
+    private finalize(fct : (T,...args:any[]) => any, value: TDom){
         let vWrapped = this.wrapper ? this.wrapper(value) : value
         let v1 = fct(vWrapped)
         this.sideEffects && this.sideEffects(vWrapped, v1)
@@ -139,22 +138,3 @@ export let child$ = stream$
  * ```
  */
 export let attr$ = stream$
-
-/**
- * Type specialization of [[stream$]] for TDom = Array<[[VirtualDOM]]>
- * 
- * ``` typescript
- * let domain$ : Observable<{name:string}>
- * 
- * let vDOM = {
- *      tag: 'div', 
- *      children: children(
- *          domains$,
- *          ({name}) => [{innerText: 'Hello'}, {innerText: name}),
-*           {   sideEffects: (vDom, htmlElem) => console.log(vDom, htmlElem),
-*               untilFirst: []
-*           }
- *      )
- * }
- */
-export let children$ = stream$
