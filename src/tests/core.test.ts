@@ -1,11 +1,12 @@
-import { BehaviorSubject, interval, Subject } from 'rxjs';
+import { BehaviorSubject, interval, Observable, Subject } from 'rxjs';
 import { create } from 'rxjs-spy'
 import { tag } from 'rxjs-spy/cjs/operators';
 import { SnapshotPlugin } from 'rxjs-spy/cjs/plugin';
 import * as Match from 'rxjs-spy/cjs/match';
 
-import { attr$, child$, children$, render} from '../index';
+import { attr$, child$, children$, render, ReplacePolicy, AppendOnlyPolicy, RenderingUpdate} from '../index';
 import { filter } from 'rxjs/operators';
+import { HTMLElement$ } from 'src/lib/core';
 
 const spy = create();
 
@@ -39,6 +40,7 @@ test('constant vDOM', () => {
         ]
     }
     let div = render(vDom)
+    document.body.textContent = ""
     document.body.appendChild(div)
     let root = document.getElementById("root")
     expect(root).toBeTruthy()
@@ -73,6 +75,7 @@ test('attr$', () => {
              sideEffects: (data) => sideEffects.push(data) })
     }
     let div = render(vDom)
+    document.body.textContent = ""
     document.body.appendChild(div)
     let root = document.getElementById("root")
     expect(root).toBeTruthy()
@@ -116,6 +119,7 @@ test('attr$ & external subscription', () => {
         }
     }
     let div = render(vDom)
+    document.body.textContent = ""
     document.body.appendChild(div)
     let root = document.getElementById("root")
     expect(root).toBeTruthy()
@@ -168,6 +172,7 @@ test('simple attr$ & child$ ', () => {
         ]
     }
     let div = render(vDom)
+    document.body.textContent = ""
     document.body.appendChild(div)
     let root = document.getElementById("browser")
     expect(root).toBeTruthy()
@@ -192,10 +197,10 @@ test('simple attr$ & child$ ', () => {
     expect(subs.file$).toEqual(0)
 })
 
-test('children$', () => { 
+test('children$ replace all with values', () => { 
 
     let inner_stream$ = new BehaviorSubject("a")
-    let data = ["hello","world"]
+    let data = [ "hello","world"]
     let array_data$ = new BehaviorSubject(data)
 
     let view= (text) => {
@@ -204,7 +209,16 @@ test('children$', () => {
 
     let vDom = {
         id:'browser',
-        children:children$( array_data$.pipe( tag( 'children$' )), (array) => array.map( view ) )
+        children:children$( 
+            array_data$.pipe( tag( 'children$' )), 
+            (data) => view(data),
+            {   
+                sideEffects: (element: HTMLElement$, update: RenderingUpdate<string>) => {
+                    update.added.forEach( added => dataAdded.push(added.domainData))
+                    update.removed.forEach( removed => dataRemoved.push(removed.domainData))
+                }
+            }
+        )
     }
 
     let check = (root, data, c) => {
@@ -214,19 +228,158 @@ test('children$', () => {
             expect(root.children[i]['classList'].toString()).toEqual(c)
         })
     }
+    let dataRemoved = []
+    let dataAdded = []
 
     let div = render(vDom)
+    document.body.textContent = ""
     document.body.appendChild(div)
     let root = document.getElementById("browser")
     expect(root).toBeTruthy()
     check(root, data, 'a')
-    
+    expect(dataRemoved).toEqual([])
+    expect(dataAdded).toEqual(['hello', 'world'])
+
+    dataRemoved = []
+    dataAdded = []
     data = ["tata", "toto", "tutu"]
     array_data$.next(["tata", "toto", "tutu"])
     check(root, data, 'a')
 
+    expect(dataRemoved).toEqual(['hello', 'world'])
+    expect(dataAdded).toEqual(["tata", "toto", "tutu"])
+
     inner_stream$.next('b')
     check(root, data, 'b')
+
+    let subs = getOpenSubscriptions()
+    expect(subs.children$).toEqual(1)
+    expect(subs.class$).toEqual(1)
+    div.remove()
+    subs = getOpenSubscriptions()
+    expect(subs.children$).toEqual(0)
+    expect(subs.class$).toEqual(0)
+})
+
+
+interface DomainData{
+    value: string
+}
+
+test('children$ replace all with references', () => { 
+
+    let inner_stream$ = new BehaviorSubject("a")
+    let hello = { value: 'hello'}
+    let world = { value: 'world'}
+    let toto = { value: 'toto'}
+
+    let array_data$ = new BehaviorSubject<DomainData[]>([hello,world])
+
+    let view= (d:DomainData) => {
+        return { tag:'span', innerText:d.value, class:attr$(inner_stream$.pipe( tag( 'class$' )), (d) => d)} 
+    }
+
+    let vDom = {
+        id:'browser',
+        children:children$( 
+            array_data$.pipe( tag( 'children$' )), 
+            (data) => view(data),
+            {   
+                sideEffects: (element: HTMLElement$, update: RenderingUpdate<DomainData>) => {
+                    update.added.forEach( added => dataAdded.push(added.domainData))
+                    update.removed.forEach( removed => dataRemoved.push(removed.domainData))
+                }
+            }
+        )
+    }
+
+    let check = (root, data, c) => {
+        let items = Array.from(root.children).map( (item: any) => item.innerText)
+        expect(items.length).toEqual(data.length)
+        data.forEach( (d,i) => {
+            expect(items[i]).toEqual(d)
+            expect(root.children[i]['classList'].toString()).toEqual(c)
+        })
+    }
+    let dataRemoved = []
+    let dataAdded = []
+
+    let div = render(vDom)
+    document.body.textContent = ""
+    document.body.appendChild(div)
+    let root = document.getElementById("browser")
+    expect(root).toBeTruthy()
+    check(root, ["hello", "world"], 'a')
+    expect(dataRemoved).toEqual([])
+    expect(dataAdded).toEqual([hello, world])
+
+    dataRemoved = []
+    dataAdded = []
+    array_data$.next([hello, toto ])
+    check(root, ["hello", "toto"], 'a')
+
+    expect(dataRemoved).toEqual([world])
+    expect(dataAdded).toEqual([toto])
+
+    inner_stream$.next('b')
+    check(root,  ["hello", "toto"], 'b')
+
+    let subs = getOpenSubscriptions()
+    expect(subs.children$).toEqual(1)
+    expect(subs.class$).toEqual(1)
+    div.remove()
+    subs = getOpenSubscriptions()
+    expect(subs.children$).toEqual(0)
+    expect(subs.class$).toEqual(0)
+})
+
+
+test('children$ append only', () => { 
+
+    let classNameStream$ = new BehaviorSubject("a")
+    let data = ["hello","world"]
+    let array_data$ = new BehaviorSubject(data)
+
+    let view= (text) => {
+        return { 
+            tag:'span', 
+            innerText:text, 
+            class:attr$(
+                classNameStream$.pipe( tag( 'class$' )), 
+                (d) => d)} 
+    }
+
+    let vDom = {
+        id:'browser',
+        children:children$( 
+            array_data$.pipe( tag( 'children$' )), 
+            (data) => view(data),
+            { 
+                policy: new AppendOnlyPolicy()
+            })
+    }
+
+    let check = (root, data, className) => {
+        let items = Array.from(root.children).map( (item: any) => item.innerText)
+        expect(root.children.length).toEqual(data.length)
+        data.forEach( (d,i) => {
+            expect(root.children[i]['innerText']).toEqual(d)
+            expect(root.children[i]['classList'].toString()).toEqual(className)
+        })
+    }
+
+    let div = render(vDom)
+    document.body.textContent = ""
+    document.body.appendChild(div)
+    let root = document.getElementById("browser")
+    expect(root).toBeTruthy()
+    check(root, ["hello","world"], 'a')
+    
+    array_data$.next(["tata", "toto", "tutu"])
+    check(root, ["hello", "world", "tata", "toto", "tutu"], 'a')
+
+    classNameStream$.next('b')
+    check(root, ["hello", "world", "tata", "toto", "tutu"], 'b')
 
     let subs = getOpenSubscriptions()
     expect(subs.children$).toEqual(1)
@@ -248,4 +401,17 @@ test('unknown element', () => {
         render(vDom)
     }
     expect( _render).toThrow(Error)
+})
+
+test('unknown children$ factory', () => { 
+    
+    let children = () =>  
+    children$( 
+        new Observable(), 
+        (data) => { return {}},
+        { 
+            policy: 5
+        })
+
+    expect( children).toThrow(Error)
 })

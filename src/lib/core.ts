@@ -81,13 +81,8 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             if(this.vDom.children && Array.isArray(this.vDom.children))
                 this.renderChildren(this.vDom.children)
 
-            if(this.vDom.children && this.vDom.children instanceof Stream$){
-                this.subscriptions.push(
-                    this.vDom.children.subscribe( (children) =>{
-                        this.textContent = ''
-                        this.renderChildren(children)
-                    })
-                )
+            if(this.vDom.children && this.vDom.children instanceof ChildrenStream$){
+                this.subscriptions.push( this.vDom.children.subscribe(this) )
             }
             this.vDom.connectedCallback && this.vDom.connectedCallback(this as unknown as HTMLElement$)
         };
