@@ -26,7 +26,6 @@ import { map } from "rxjs/operators";
 import { render } from "./core";
 import { InterfaceHTMLElement$, VirtualDOM } from "./interface";
 
-
 /**
  * ## RefElement
  * 
@@ -97,22 +96,31 @@ export abstract class ChildrenStream$<TDomain> {
     public readonly sideEffects : ( parent: InterfaceHTMLElement$, update:RenderingUpdate<TDomain>) => void
 
     /**
+     * If orderingIndex is supplied, all children elements are sorted according to the index
+     */
+     public readonly orderingIndex : ( data: TDomain ) => number
+
+    /**
      * 
      * @param stream$ input stream 
      * @param map mapping function domain data => [[VirtualDOM]]
      * @param sideEffects see [[sideEffects]] 
+     * @param orderingFunction see [[orderingFunction]] 
      */
     constructor(
         public readonly stream$: Observable<Array<TDomain>>,
         public readonly map:  (a : TDomain , ...args)=> VirtualDOM ,
         { 
-            sideEffects 
+            sideEffects,
+            orderingIndex
         }: 
         { 
-            sideEffects?: ( parent: InterfaceHTMLElement$, update:RenderingUpdate<TDomain>) => void 
+            sideEffects?: ( parent: InterfaceHTMLElement$, update:RenderingUpdate<TDomain>) => void,
+            orderingIndex? : ( data:TDomain) => number
         }) {
         this.map = map
         this.sideEffects = sideEffects
+        this.orderingIndex = orderingIndex
     }
 
     protected abstract update(
@@ -180,6 +188,8 @@ export class AppendOnlyChildrenStream$<TDomain> extends ChildrenStream$<TDomain>
     public readonly untilFirst
     public readonly sideEffects
 
+    private indexingOrders = new Map<HTMLElement, number>()
+
     constructor(
         public readonly stream$: Observable<Array<TDomain>>,
         public readonly map:  (a : TDomain , ...args)=> VirtualDOM,
@@ -195,13 +205,33 @@ export class AppendOnlyChildrenStream$<TDomain> extends ChildrenStream$<TDomain>
 
         let vDOMs = domainData.map( domain => this.map(domain))
         let rendered = vDOMs.map( vDOM => render(vDOM))
-        rendered.forEach( div => parentElement.appendChild(div))
+
+        if(!this.orderingIndex)
+            rendered.forEach( div => parentElement.appendChild(div))
         
+        if(this.orderingIndex){
+            rendered.forEach( (elem, i) =>  this.setIndex(elem, this.orderingIndex(domainData[i])) )
+            let existingElements = Array.from(parentElement.children) as HTMLElement[]
+            rendered.forEach( newElement => {
+                let next = existingElements.find( existingElement => this.getIndex(existingElement) > this.getIndex(newElement))
+                next 
+                    ? parentElement.insertBefore(newElement, next)
+                    : parentElement.appendChild(newElement)
+                existingElements = Array.from(parentElement.children) as HTMLElement[]
+            })
+        }
         let added = domainData.map( (d,i) => 
             new RefElement<TDomain>({domainData: d, virtualDOM: vDOMs[i], element:rendered[i]}) 
         )
 
         return new RenderingUpdate(added, [], [])
+    }
+
+    private getIndex(elem: HTMLElement) : number {
+        return this.indexingOrders.get(elem)
+    }
+    private setIndex(elem: HTMLElement, index: number) {
+        return this.indexingOrders.set(elem, index)
     }
 }
 
@@ -227,17 +257,19 @@ export function childrenAppendOnly$<TDomain=unknown>(
     stream$: Observable<Array<TDomain>>,
     vDomMap: (TDomain, ...args: any[]) => VirtualDOM,
     {   
-        sideEffects
+        sideEffects,
+        orderingIndex
     }: 
     { 
-        sideEffects?: ( parent: InterfaceHTMLElement$, update:RenderingUpdate<TDomain>) => void 
+        sideEffects?: ( parent: InterfaceHTMLElement$, update:RenderingUpdate<TDomain>) => void,
+        orderingIndex?: ( data: TDomain ) => number
     } = {}
     ) : AppendOnlyChildrenStream$<TDomain> {
 
     return new AppendOnlyChildrenStream$<TDomain>(
         stream$, 
         (data: TDomain, ...args:any[]) => vDomMap(data, ...args),
-        { sideEffects }
+        { sideEffects, orderingIndex }
     )
 }
 
