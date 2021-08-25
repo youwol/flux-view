@@ -66,7 +66,8 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             this.vDom = vDom
         }
         connectedCallback() {
-
+            if(!this.vDom)
+                return
             let attributes = Object.entries(this.vDom).filter( ([k,v]) => k != 'children' && !(v instanceof  Stream$))
             let attributes$ = Object.entries(this.vDom).filter( ([k,v]) => k != 'children' && (v instanceof  Stream$))
 
@@ -98,7 +99,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
 
         disconnectedCallback() {
             this.subscriptions.forEach( s => s.unsubscribe())
-            this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this as unknown as  HTMLElement$)
+            this.vDom && this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this as unknown as  HTMLElement$)
         }
 
         renderChildren( children : Array<VirtualDOM> ) : Array<InterfaceHTMLElement$>{
