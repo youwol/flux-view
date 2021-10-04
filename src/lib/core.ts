@@ -29,6 +29,11 @@ class HTMLPlaceHolderElement extends HTMLElement{
         this.currentElement = this
 
         let apply = (vDom:VirtualDOM) => {
+            if(vDom instanceof HTMLElement){
+                this.currentElement.replaceWith(vDom)
+                this.currentElement = vDom
+                return vDom
+            }
             let div = render(vDom)
             this.currentElement.replaceWith(div)
             this.currentElement = div
@@ -102,7 +107,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             this.vDom && this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this as unknown as  HTMLElement$)
         }
 
-        renderChildren( children : Array<VirtualDOM> ) : Array<InterfaceHTMLElement$>{
+        renderChildren( children : Array<VirtualDOM | Stream$<unknown> | HTMLElement> ) : Array<InterfaceHTMLElement$>{
 
             let rendered = []
             children.forEach( (child) => {
@@ -114,7 +119,10 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                         placeHolder.initialize(child) 
                     )
                     rendered.push(placeHolder)
-                }  
+                } 
+                else if(child instanceof HTMLElement){
+                    this.appendChild(child)
+                }   
                 else{  
                     let div = render(child)
                     this.appendChild(div)
