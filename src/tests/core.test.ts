@@ -508,6 +508,61 @@ test('advancedChildren$ append only', () => {
 })
 
 
+test('advancedChildren$ append only with sort', () => { 
+
+    let classNameStream$ = new BehaviorSubject("a")
+    let data = [2,1,10]
+    let array_data$ = new BehaviorSubject(data)
+
+    let view= (nbr) => {
+        return { 
+            tag:'span', 
+            innerText:nbr, 
+            class:attr$(
+                classNameStream$.pipe( tag( 'class$' )), 
+                (d) => d)} 
+    }
+
+    let vDom = {
+        id:'browser',
+        children:childrenAppendOnly$( 
+            array_data$.pipe( tag( 'children$' )), 
+            (data) => view(data),
+            {
+                orderingIndex: (data) => data
+            }
+            )
+    }
+
+    let check = (root, data, className) => {
+        let items = Array.from(root.children).map( (item: any) => item.innerText)
+        expect(root.children.length).toEqual(data.length)
+        data.forEach( (d,i) => {
+            expect(root.children[i]['innerText']).toEqual(d)
+            expect(root.children[i]['classList'].toString()).toEqual(className)
+        })
+    }
+
+    let div = render(vDom)
+    document.body.textContent = ""
+    document.body.appendChild(div)
+    let root = document.getElementById("browser")
+    expect(root).toBeTruthy()
+    check(root, [1,2,10], 'a')
+    
+    array_data$.next([3,8])
+    check(root, [1,2,3,8,10], 'a')
+
+    let subs = getOpenSubscriptions()
+    expect(subs.children$).toEqual(1)
+    expect(subs.class$).toEqual(1)
+    div.remove()
+    subs = getOpenSubscriptions()
+    expect(subs.children$).toEqual(0)
+    expect(subs.class$).toEqual(0)
+})
+
+
 test('unknown element', () => { 
 
     let vDom = {
