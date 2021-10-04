@@ -55,6 +55,40 @@ test('constant vDOM', () => {
 })
 
 
+test('constant vDOM with HTML element', () => {
+
+    let innerDiv = document.createElement('div')
+    innerDiv.innerHTML = 'test inner div'
+    innerDiv.classList.add("inner-div")
+    innerDiv.style.setProperty('background-color','green')
+    let vDom = {
+        id:'root',
+        class:'root',
+        children: [
+            {tag: 'label', innerText:'text label', style:{'background-color':'red'}},
+            innerDiv
+        ]
+    }
+    let div = render(vDom)
+    document.body.textContent = ""
+    document.body.appendChild(div)
+    let root = document.getElementById("root")
+    expect(root).toBeTruthy()
+    expect(root.classList.contains('root')).toBeTruthy()
+
+    let child0 = div.querySelector('label')
+    expect(child0).toBeTruthy()
+    expect(child0.innerText).toEqual('text label')
+    expect(child0.style.backgroundColor).toEqual('red')
+
+    let child1 = div.querySelector('.inner-div') as HTMLDivElement
+    expect(child1).toBeTruthy()
+    expect(child1.innerHTML).toEqual('test inner div')
+    expect(child1.style.backgroundColor).toEqual('green')
+
+    div.remove()
+})
+
 test('attr$', () => {
 
     spy.flush();
@@ -194,6 +228,46 @@ test('simple attr$ & child$ ', () => {
     div.remove()
     subs = getOpenSubscriptions()
     expect(subs.class$).toEqual(0)
+    expect(subs.file$).toEqual(0)
+})
+
+
+test('simple child$ with HTMLElement', () => {
+
+    spy.flush();
+    
+    let file$ = new Subject<{id:string, name:string}>()
+
+    let vDom = {
+        id:'browser',
+        children:[
+            child$( 
+                file$.pipe( tag('file$') ),  
+                (file) => {
+                    let innerDiv = document.createElement('span')
+                    innerDiv.innerText = file.name
+                    return innerDiv
+                })
+        ]
+    }
+    
+    let div = render(vDom)
+    document.body.textContent = ""
+    document.body.appendChild(div)
+    let root = document.getElementById("browser")
+    expect(root).toBeTruthy()
+    expect(root.children[0].tagName).toEqual('FV-PLACEHOLDER')
+    file$.next({id:'file0', name:'core.ts'})
+    let fileDiv = root.children[0] as HTMLDivElement
+    expect(fileDiv.tagName).toEqual('SPAN')
+    expect(fileDiv.innerText).toEqual('core.ts')
+    
+    let subs = getOpenSubscriptions()
+    expect(subs.file$).toEqual(1)
+    
+    root.remove()
+
+    subs = getOpenSubscriptions()
     expect(subs.file$).toEqual(0)
 })
 
