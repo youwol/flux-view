@@ -163,6 +163,10 @@ function factory(tag: string = 'div'):  HTMLElement${
  */
 export function render( vDom:VirtualDOM ) :  HTMLElement$ {
 
+    if (vDom == undefined) {
+        console.error("Got an undefined virtual DOM, return empty div")
+        return factory('div')
+    }
     let element = factory(vDom.tag)
     element.initialize(vDom)
     return element
