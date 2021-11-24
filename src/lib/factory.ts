@@ -38,7 +38,8 @@ export let CustomElementsMap = {
     "del": HTMLModElement,
     "details": HTMLDetailsElement,
     "dfn": HTMLElement,
-    "dialog": HTMLDialogElement,
+    // Not in Mozilla
+    //"dialog": HTMLDialogElement,
     "dir": HTMLDirectoryElement,
     "div": HTMLDivElement,
     "dl": HTMLDListElement,
@@ -128,4 +129,6 @@ export let CustomElementsMap = {
     "var": HTMLElement,
     "video": HTMLVideoElement,
     "wbr": HTMLElement
-   }
+}
+if (HTMLDialogElement)
+    CustomElementsMap["dialog"] = HTMLDialogElement
