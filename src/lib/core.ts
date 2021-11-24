@@ -87,7 +87,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             if(this.vDom.children && Array.isArray(this.vDom.children))
                 this.renderChildren(this.vDom.children)
 
-            if(this.vDom.children && this.vDom.children instanceof Stream$){
+            if (this.vDom.children && instanceOfStream$(this.vDom.children)) {
                 this.subscriptions.push(
                     this.vDom.children.subscribe( (children) =>{
                         this.textContent = ''
@@ -110,9 +110,9 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
         renderChildren( children : Array<VirtualDOM | Stream$<unknown> | HTMLElement> ) : Array<InterfaceHTMLElement$>{
 
             let rendered = []
-            children.forEach( (child) => {
-    
-                if(child instanceof Stream$){
+            children.filter(child => child != undefined).forEach((child) => {
+
+                if (instanceOfStream$(child)) {
                     let placeHolder = document.createElement('fv-placeholder') as HTMLPlaceHolderElement
                     this.appendChild(placeHolder)
                     this.subscriptions.push( 

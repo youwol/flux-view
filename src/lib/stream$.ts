@@ -127,6 +127,7 @@ import { VirtualDOM } from "./interface"
  *     - Array<[[VirtualDOM]]> for children (see [[children$]])
  */
 export class Stream$<TDomain, TDom = TDomain> {
+    ClassType = "Stream$"
 
     public readonly untilFirst
     public readonly wrapper
@@ -172,6 +173,10 @@ export class Stream$<TDomain, TDom = TDomain> {
         let v1 = fct(vWrapped)
         this.sideEffects && this.sideEffects(vWrapped, v1)
     }
+}
+
+export function instanceOfStream$(obj: any): obj is Stream$<any, any> {
+    return obj && (obj as Stream$<any, any>).ClassType === "Stream$"
 }
 
 /**

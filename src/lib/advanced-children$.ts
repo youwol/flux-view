@@ -88,6 +88,7 @@ export class RenderingUpdate<TDomain>{
  */
 export abstract class ChildrenStream$<TDomain> {
 
+    ClassType = "ChildrenStream$"
     /**
      * Callback that gets called when the DOM has been updated.
      * @param parent parent: parent [[HTMLElement$]]
@@ -142,6 +143,9 @@ export abstract class ChildrenStream$<TDomain> {
     }
 }
 
+export function instanceOfChildrenStream$(obj: any): obj is ChildrenStream$<any> {
+    return obj && (obj as ChildrenStream$<any>).ClassType === "ChildrenStream$"
+}
 
 /**
  * 
