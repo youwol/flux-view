@@ -144,10 +144,12 @@ export class Stream$<TDomain, TDom = TDomain> {
      */
     constructor(
         public readonly stream$: Observable<TDomain>,
-        public readonly map:  (TDomain,...args:any[])=>TDom,
-        { untilFirst, wrapper, sideEffects }: 
-        { untilFirst?: TDom, wrapper?: (TDom) => TDom , 
-          sideEffects?: (TDom, TDomain) => void } ) {
+        public readonly map: (TDomain, ...args: any[]) => TDom,
+        { untilFirst, wrapper, sideEffects }:
+            {
+                untilFirst?: TDom, wrapper?: (TDom) => TDom,
+                sideEffects?: (TDom, TDomain) => void
+            }) {
 
         this.untilFirst = untilFirst
         this.wrapper = wrapper
@@ -157,18 +159,18 @@ export class Stream$<TDomain, TDom = TDomain> {
     /**
      * Implementation function that supposed to be called only by [[HTMLElement$]].
      */
-    subscribe( fct : (T,...args:any[]) => any, ...withData ) {
+    subscribe(fct: (T, ...args: any[]) => any, ...withData) {
 
-        let stream$ = this.stream$.pipe( map( (d: any, ...args:any[]) => this.map(d,...withData) ))
-        
-        this.untilFirst && this.finalize(fct,  this.untilFirst )
-        
-        return stream$.subscribe( (v:TDom) => {
-            this.finalize(fct, v )
+        let stream$ = this.stream$.pipe(map((d: any, ...args: any[]) => this.map(d, ...withData)))
+
+        this.untilFirst && this.finalize(fct, this.untilFirst)
+
+        return stream$.subscribe((v: TDom) => {
+            this.finalize(fct, v)
         })
     }
-    
-    private finalize(fct : (T,...args:any[]) => any, value: TDom){
+
+    private finalize(fct: (T, ...args: any[]) => any, value: TDom) {
         let vWrapped = this.wrapper ? this.wrapper(value) : value
         let v1 = fct(vWrapped)
         this.sideEffects && this.sideEffects(vWrapped, v1)
@@ -198,23 +200,23 @@ export function instanceOfStream$(obj: any): obj is Stream$<any, any> {
  * For instance, a use case would be to focus an input after being dynamically added to the DOM.
  * @returns a stream usable in [[VirtualDOM]]
  */
-export function stream$<TDomain=unknown,TDom = AttributeType | VirtualDOM | Array<VirtualDOM>>(
+export function stream$<TDomain = unknown, TDom = AttributeType | VirtualDOM | Array<VirtualDOM>>(
     stream$: Observable<TDomain>,
     vDomMap: (TDomain, ...args: any[]) => TDom,
-    { untilFirst, wrapper, sideEffects }: 
-    { untilFirst?: TDom, wrapper?: (TDom) => TDom, sideEffects?: (TDomain, HTMLElement) => void  } = {},
-      ){
+    { untilFirst, wrapper, sideEffects }:
+        { untilFirst?: TDom, wrapper?: (TDom) => TDom, sideEffects?: (TDomain, HTMLElement) => void } = {},
+) {
 
     return new Stream$<TDomain, TDom>(
-        stream$, 
-        (data: TDomain, ...args:any[]) => vDomMap(data, ...args),
-        {untilFirst, wrapper, sideEffects })
+        stream$,
+        (data: TDomain, ...args: any[]) => vDomMap(data, ...args),
+        { untilFirst, wrapper, sideEffects })
 }
 
 /**
  * Type alias for attributes in [[VirtualDOM]]
  */
-export type AttributeType = number | string | boolean | {[key:string]:  number | string | boolean }
+export type AttributeType = number | string | boolean | { [key: string]: number | string | boolean }
 
 /**
  * Type specialization of [[stream$]] for TDom = [[VirtualDOM]]

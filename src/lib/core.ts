@@ -1,8 +1,8 @@
 import { Subscription } from "rxjs";
-import { ChildrenStream$ } from "./advanced-children$";
-import { CustomElementsMap} from "./factory";
+import { ChildrenStream$, instanceOfChildrenStream$ } from "./advanced-children$";
+import { CustomElementsMap } from "./factory";
 import { InterfaceHTMLElement$, VirtualDOM } from "./interface";
-import { AttributeType, Stream$ } from "./stream$";
+import { AttributeType, instanceOfStream$, Stream$ } from "./stream$";
 
 
 /**
@@ -12,24 +12,24 @@ import { AttributeType, Stream$ } from "./stream$";
  * 
  * > 🧐 The implementation is based on [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
  */
-export class HTMLElement$ extends _$(HTMLElement){
+export class HTMLElement$ extends _$(HTMLElement) {
 
 }
 
 
-class HTMLPlaceHolderElement extends HTMLElement{
+class HTMLPlaceHolderElement extends HTMLElement {
 
     private currentElement: HTMLElement
     constructor() {
         super();
     }
 
-    initialize( stream$: Stream$<VirtualDOM> ): Subscription {
+    initialize(stream$: Stream$<VirtualDOM>): Subscription {
 
         this.currentElement = this
 
-        let apply = (vDom:VirtualDOM) => {
-            if(vDom instanceof HTMLElement){
+        let apply = (vDom: VirtualDOM) => {
+            if (vDom instanceof HTMLElement) {
                 this.currentElement.replaceWith(vDom)
                 this.currentElement = vDom
                 return vDom
@@ -39,8 +39,8 @@ class HTMLPlaceHolderElement extends HTMLElement{
             this.currentElement = div
             return div
         }
-        
-        return stream$.subscribe( (vDom:VirtualDOM) => { return apply(vDom) })
+
+        return stream$.subscribe((vDom: VirtualDOM) => { return apply(vDom) })
     }
 }
 
@@ -52,7 +52,7 @@ type Constructor<T extends HTMLElement> = new (...args: any[]) => T;
 const specialBindings = {
     class: (instance, value) => instance.className = value,
     style: (instance: HTMLElement, value) => {
-        Object.entries(value).forEach( ([k,v]) => instance.style[k] = v )
+        Object.entries(value).forEach(([k, v]) => instance.style[k] = v)
     }
 }
 
@@ -67,47 +67,47 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             super(...args);
         }
 
-        initialize(vDom: VirtualDOM){
+        initialize(vDom: VirtualDOM) {
             this.vDom = vDom
         }
         connectedCallback() {
-            if(!this.vDom)
+            if (!this.vDom)
                 return
-            let attributes = Object.entries(this.vDom).filter( ([k,v]) => k != 'children' && !(v instanceof  Stream$))
-            let attributes$ = Object.entries(this.vDom).filter( ([k,v]) => k != 'children' && (v instanceof  Stream$))
+            let attributes = Object.entries(this.vDom).filter(([k, v]) => k != 'children' && !(instanceOfStream$(v)))
+            let attributes$ = Object.entries(this.vDom).filter(([k, v]) => k != 'children' && (instanceOfStream$(v)))
 
-            attributes.forEach( ([k,v]:[k:string, v:any]) => {
-                this.applyAttribute(k,v)
+            attributes.forEach(([k, v]: [k: string, v: any]) => {
+                this.applyAttribute(k, v)
             })
-            attributes$.forEach( ([k,attr$]:[k:string, attr$:Stream$<AttributeType>]) => {
+            attributes$.forEach(([k, attr$]: [k: string, attr$: Stream$<AttributeType>]) => {
                 this.subscriptions.push(
-                    attr$.subscribe( (v) => this.applyAttribute(k,v) , this ) 
+                    attr$.subscribe((v) => this.applyAttribute(k, v), this)
                 )
             })
-            if(this.vDom.children && Array.isArray(this.vDom.children))
+            if (this.vDom.children && Array.isArray(this.vDom.children))
                 this.renderChildren(this.vDom.children)
 
             if (this.vDom.children && instanceOfStream$(this.vDom.children)) {
                 this.subscriptions.push(
-                    this.vDom.children.subscribe( (children) =>{
+                    this.vDom.children.subscribe((children) => {
                         this.textContent = ''
                         this.renderChildren(children)
                     })
                 )
             }
 
-            if(this.vDom.children && this.vDom.children instanceof ChildrenStream$){
-                this.subscriptions.push( this.vDom.children.subscribe(this) )
+            if (this.vDom.children && instanceOfChildrenStream$(this.vDom.children)) {
+                this.subscriptions.push(this.vDom.children.subscribe(this))
             }
             this.vDom.connectedCallback && this.vDom.connectedCallback(this as unknown as HTMLElement$)
         };
 
         disconnectedCallback() {
-            this.subscriptions.forEach( s => s.unsubscribe())
-            this.vDom && this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this as unknown as  HTMLElement$)
+            this.subscriptions.forEach(s => s.unsubscribe())
+            this.vDom && this.vDom.disconnectedCallback && this.vDom.disconnectedCallback(this as unknown as HTMLElement$)
         }
 
-        renderChildren( children : Array<VirtualDOM | Stream$<unknown> | HTMLElement> ) : Array<InterfaceHTMLElement$>{
+        renderChildren(children: Array<VirtualDOM | Stream$<unknown> | HTMLElement>): Array<InterfaceHTMLElement$> {
 
             let rendered = []
             children.filter(child => child != undefined).forEach((child) => {
@@ -115,12 +115,12 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 if (instanceOfStream$(child)) {
                     let placeHolder = document.createElement('fv-placeholder') as HTMLPlaceHolderElement
                     this.appendChild(placeHolder)
-                    this.subscriptions.push( 
-                        placeHolder.initialize(child) 
+                    this.subscriptions.push(
+                        placeHolder.initialize(child)
                     )
                     rendered.push(placeHolder)
-                } 
-                else if(child instanceof HTMLElement){
+                }
+                else if (child instanceof HTMLElement) {
                     this.appendChild(child)
                 }   
                 else{  
@@ -132,27 +132,27 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             return rendered
         }
 
-        applyAttribute(name: string, value: AttributeType){
+        applyAttribute(name: string, value: AttributeType) {
 
-            specialBindings[name] 
-                ? specialBindings[name](this, value) 
+            specialBindings[name]
+                ? specialBindings[name](this, value)
                 : this[name] = value
         }
 
-        ownSubscriptions(...subs: Subscription[]){
+        ownSubscriptions(...subs: Subscription[]) {
             this.subscriptions.push(...subs)
         }
     }
 }
 
 
-function factory(tag: string = 'div'):  HTMLElement${
+function factory(tag: string = 'div'): HTMLElement$ {
 
-    if(!CustomElementsMap[tag])
+    if (!CustomElementsMap[tag])
         throw Error(`The element ${tag} is not registered in flux-view's factory`)
 
-    let div = document.createElement(tag,{ is:`fv-${tag}` } ) as any
-    return div as  HTMLElement$
+    let div = document.createElement(tag, { is: `fv-${tag}` }) as any
+    return div as HTMLElement$
 }
 
 /**
@@ -161,7 +161,7 @@ function factory(tag: string = 'div'):  HTMLElement${
  * @param vDom the virtual DOM
  * @returns the 'real' DOM element
  */
-export function render( vDom:VirtualDOM ) :  HTMLElement$ {
+export function render(vDom: VirtualDOM): HTMLElement$ {
 
     if (vDom == undefined) {
         console.error("Got an undefined virtual DOM, return empty div")
@@ -173,21 +173,21 @@ export function render( vDom:VirtualDOM ) :  HTMLElement$ {
 }
 
 
-function registerElement( tag: string, BaseClass ){
+function registerElement(tag: string, BaseClass) {
 
-    class ExtendedClass$ extends _$(BaseClass){
-        constructor() {super();}
+    class ExtendedClass$ extends _$(BaseClass) {
+        constructor() { super(); }
     }
-    customElements.define( `fv-${tag}`, ExtendedClass$ as any, { extends: tag })    
+    customElements.define(`fv-${tag}`, ExtendedClass$ as any, { extends: tag })
 }
 
 function register() {
-    
+
     customElements.define('fv-placeholder', HTMLPlaceHolderElement);
-    
-    Object.entries(CustomElementsMap).forEach( ([tag, HTMLElementClass]) => {
-       registerElement(tag, HTMLElementClass)
-    }) 
+
+    Object.entries(CustomElementsMap).forEach(([tag, HTMLElementClass]) => {
+        registerElement(tag, HTMLElementClass)
+    })
 }
 
 register()

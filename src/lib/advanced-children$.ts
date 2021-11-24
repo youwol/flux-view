@@ -39,17 +39,17 @@ export class RefElement<TDomain>{
     /**
      * domainData
      */
-     public readonly domainData: TDomain
+    public readonly domainData: TDomain
     /**
      * the virtual DOM as defined by the developer
      */
-     public readonly virtualDOM: VirtualDOM
+    public readonly virtualDOM: VirtualDOM
     /**
      * the actual DOM element
      */
-     public readonly element: InterfaceHTMLElement$
+    public readonly element: InterfaceHTMLElement$
 
-    constructor({domainData, virtualDOM, element}) {
+    constructor({ domainData, virtualDOM, element }) {
         this.domainData = domainData
         this.virtualDOM = virtualDOM
         this.element = element
@@ -67,11 +67,11 @@ export class RefElement<TDomain>{
  */
 export class RenderingUpdate<TDomain>{
 
-    constructor( 
-        public readonly added:RefElement<TDomain>[],
-        public readonly updated:RefElement<TDomain>[],
-        public readonly removed:RefElement<TDomain>[]
-        ){}
+    constructor(
+        public readonly added: RefElement<TDomain>[],
+        public readonly updated: RefElement<TDomain>[],
+        public readonly removed: RefElement<TDomain>[]
+    ) { }
 }
 
 
@@ -94,12 +94,12 @@ export abstract class ChildrenStream$<TDomain> {
      * @param parent parent: parent [[HTMLElement$]]
      * @param update update: description of the update, see [[RenderingUpdate]]
      */
-    public readonly sideEffects : ( parent: InterfaceHTMLElement$, update:RenderingUpdate<TDomain>) => void
+    public readonly sideEffects: (parent: InterfaceHTMLElement$, update: RenderingUpdate<TDomain>) => void
 
     /**
      * If orderingIndex is supplied, all children elements are sorted according to the index
      */
-     public readonly orderingIndex : ( data: TDomain ) => number
+    public readonly orderingIndex: (data: TDomain) => number
 
     /**
      * 
@@ -110,31 +110,31 @@ export abstract class ChildrenStream$<TDomain> {
      */
     constructor(
         public readonly stream$: Observable<Array<TDomain>>,
-        public readonly map:  (a : TDomain , ...args)=> VirtualDOM ,
-        { 
+        public readonly map: (a: TDomain, ...args) => VirtualDOM,
+        {
             sideEffects,
             orderingIndex
-        }: 
-        { 
-            sideEffects?: ( parent: InterfaceHTMLElement$, update:RenderingUpdate<TDomain>) => void,
-            orderingIndex? : ( data:TDomain) => number
-        }) {
+        }:
+            {
+                sideEffects?: (parent: InterfaceHTMLElement$, update: RenderingUpdate<TDomain>) => void,
+                orderingIndex?: (data: TDomain) => number
+            }) {
         this.map = map
         this.sideEffects = sideEffects
         this.orderingIndex = orderingIndex
     }
 
     protected abstract update(
-        parentElement: InterfaceHTMLElement$, 
-        domainData: Array<TDomain>) : RenderingUpdate<TDomain>
+        parentElement: InterfaceHTMLElement$,
+        domainData: Array<TDomain>): RenderingUpdate<TDomain>
 
     /**
      * Only for internal use (within [[HTMLElement$]]), should not actually be exposed.
      */
-    subscribe( parentElement: InterfaceHTMLElement$ ) {
-        
-        return this.stream$.pipe( 
-            map( (domains: any) => {                
+    subscribe(parentElement: InterfaceHTMLElement$) {
+
+        return this.stream$.pipe(
+            map((domains: any) => {
                 return this.update(parentElement, domains)
             })
         ).subscribe(
@@ -196,42 +196,42 @@ export class AppendOnlyChildrenStream$<TDomain> extends ChildrenStream$<TDomain>
 
     constructor(
         public readonly stream$: Observable<Array<TDomain>>,
-        public readonly map:  (a : TDomain , ...args)=> VirtualDOM,
+        public readonly map: (a: TDomain, ...args) => VirtualDOM,
         options: any
-        ) {
+    ) {
         super(stream$, map, options)
     }
 
     protected update(
-        parentElement: InterfaceHTMLElement$, 
+        parentElement: InterfaceHTMLElement$,
         domainData: Array<TDomain>
-        ) : RenderingUpdate<TDomain> {
+    ): RenderingUpdate<TDomain> {
 
-        let vDOMs = domainData.map( domain => this.map(domain))
-        let rendered = vDOMs.map( vDOM => render(vDOM))
+        let vDOMs = domainData.map(domain => this.map(domain))
+        let rendered = vDOMs.map(vDOM => render(vDOM))
 
-        if(!this.orderingIndex)
-            rendered.forEach( div => parentElement.appendChild(div))
-        
-        if(this.orderingIndex){
-            rendered.forEach( (elem, i) =>  this.setIndex(elem, this.orderingIndex(domainData[i])) )
+        if (!this.orderingIndex)
+            rendered.forEach(div => parentElement.appendChild(div))
+
+        if (this.orderingIndex) {
+            rendered.forEach((elem, i) => this.setIndex(elem, this.orderingIndex(domainData[i])))
             let existingElements = Array.from(parentElement.children) as HTMLElement[]
-            rendered.forEach( newElement => {
-                let next = existingElements.find( existingElement => this.getIndex(existingElement) > this.getIndex(newElement))
-                next 
+            rendered.forEach(newElement => {
+                let next = existingElements.find(existingElement => this.getIndex(existingElement) > this.getIndex(newElement))
+                next
                     ? parentElement.insertBefore(newElement, next)
                     : parentElement.appendChild(newElement)
                 existingElements = Array.from(parentElement.children) as HTMLElement[]
             })
         }
-        let added = domainData.map( (d,i) => 
-            new RefElement<TDomain>({domainData: d, virtualDOM: vDOMs[i], element:rendered[i]}) 
+        let added = domainData.map((d, i) =>
+            new RefElement<TDomain>({ domainData: d, virtualDOM: vDOMs[i], element: rendered[i] })
         )
 
         return new RenderingUpdate(added, [], [])
     }
 
-    private getIndex(elem: HTMLElement) : number {
+    private getIndex(elem: HTMLElement): number {
         return this.indexingOrders.get(elem)
     }
     private setIndex(elem: HTMLElement, index: number) {
@@ -256,23 +256,23 @@ export class AppendOnlyChildrenStream$<TDomain> extends ChildrenStream$<TDomain>
  * @returns 
  * @template TDomain Domain data type
  */
-export function childrenAppendOnly$<TDomain=unknown>(
+export function childrenAppendOnly$<TDomain = unknown>(
 
     stream$: Observable<Array<TDomain>>,
     vDomMap: (TDomain, ...args: any[]) => VirtualDOM,
-    {   
+    {
         sideEffects,
         orderingIndex
-    }: 
-    { 
-        sideEffects?: ( parent: InterfaceHTMLElement$, update:RenderingUpdate<TDomain>) => void,
-        orderingIndex?: ( data: TDomain ) => number
-    } = {}
-    ) : AppendOnlyChildrenStream$<TDomain> {
+    }:
+        {
+            sideEffects?: (parent: InterfaceHTMLElement$, update: RenderingUpdate<TDomain>) => void,
+            orderingIndex?: (data: TDomain) => number
+        } = {}
+): AppendOnlyChildrenStream$<TDomain> {
 
     return new AppendOnlyChildrenStream$<TDomain>(
-        stream$, 
-        (data: TDomain, ...args:any[]) => vDomMap(data, ...args),
+        stream$,
+        (data: TDomain, ...args: any[]) => vDomMap(data, ...args),
         { sideEffects, orderingIndex }
     )
 }
@@ -319,56 +319,56 @@ export function childrenAppendOnly$<TDomain=unknown>(
  * -    ```<div> foo </div>``` has been added
  * -    the policy does domain data comparison (to identify which elements are new or old) using reference by default,
  * a custom comparison operator can also be supplied.
- */ 
+ */
 export class ReplaceChildrenStream$<TDomain> extends ChildrenStream$<TDomain> {
 
     /**
      * Comparison operator used to identify which elements need to be added/ updated/ replaced.
      * By default reference equality is used, ideal when the domain data are immutables.
      */
-     public readonly comparisonOperator : (rhs:TDomain,lhs:TDomain)=> boolean
+    public readonly comparisonOperator: (rhs: TDomain, lhs: TDomain) => boolean
 
     constructor(
         public readonly stream$: Observable<Array<TDomain>>,
-        public readonly map:  (a : TDomain , ...args)=> VirtualDOM ,
-        { comparisonOperator, sideEffects }: { comparisonOperator: (rhs:TDomain,lhs:TDomain)=> boolean, sideEffects }
-        ) {
-        super(stream$, map, {sideEffects})
-        this.comparisonOperator = comparisonOperator || ((a,b) => a==b )
+        public readonly map: (a: TDomain, ...args) => VirtualDOM,
+        { comparisonOperator, sideEffects }: { comparisonOperator: (rhs: TDomain, lhs: TDomain) => boolean, sideEffects }
+    ) {
+        super(stream$, map, { sideEffects })
+        this.comparisonOperator = comparisonOperator || ((a, b) => a == b)
     }
 
-    private actualElements : RefElement<TDomain>[] = []
-    
+    private actualElements: RefElement<TDomain>[] = []
+
     protected update(
-        parentElement: InterfaceHTMLElement$, 
+        parentElement: InterfaceHTMLElement$,
         domainData: Array<TDomain>
-        ) : RenderingUpdate<TDomain> {
+    ): RenderingUpdate<TDomain> {
 
-            let actualData = this.actualElements.map( refElem => refElem.domainData)
-            let newData = domainData
-            .filter( d1 =>  actualData.find( d0 => this.comparisonOperator(d0,d1)) == undefined)
+        let actualData = this.actualElements.map(refElem => refElem.domainData)
+        let newData = domainData
+            .filter(d1 => actualData.find(d0 => this.comparisonOperator(d0, d1)) == undefined)
 
-            let deletedRefElem = this.actualElements
-            .filter( d0 => domainData.find( d1 => this.comparisonOperator(d0.domainData, d1)) == undefined)
-            
-            let vDOMs = newData.map( d => this.map(d))
-            deletedRefElem.forEach( elem => elem.element.remove())
+        let deletedRefElem = this.actualElements
+            .filter(d0 => domainData.find(d1 => this.comparisonOperator(d0.domainData, d1)) == undefined)
 
-            let rendered = vDOMs.map( vDOM => render(vDOM))
-            rendered.forEach( div => parentElement.appendChild(div))
-            
-            let added = newData.map( (d,i) => 
-                new RefElement<TDomain>({domainData: d, virtualDOM: vDOMs[i], element:rendered[i]}) 
-            ) 
-                
-            let update = new RenderingUpdate(added, [], deletedRefElem )
+        let vDOMs = newData.map(d => this.map(d))
+        deletedRefElem.forEach(elem => elem.element.remove())
 
-            this.actualElements = [
-                ...this.actualElements.filter( d =>  domainData.includes(d.domainData)),
-                ...added 
-            ]
-            return update
-        }
+        let rendered = vDOMs.map(vDOM => render(vDOM))
+        rendered.forEach(div => parentElement.appendChild(div))
+
+        let added = newData.map((d, i) =>
+            new RefElement<TDomain>({ domainData: d, virtualDOM: vDOMs[i], element: rendered[i] })
+        )
+
+        let update = new RenderingUpdate(added, [], deletedRefElem)
+
+        this.actualElements = [
+            ...this.actualElements.filter(d => domainData.includes(d.domainData)),
+            ...added
+        ]
+        return update
+    }
 }
 
 /**
@@ -385,22 +385,22 @@ export class ReplaceChildrenStream$<TDomain> extends ChildrenStream$<TDomain> {
  * @returns 
  * @template TDomain Domain data type
  */
-export function childrenWithReplace$<TDomain=unknown>(
+export function childrenWithReplace$<TDomain = unknown>(
 
     stream$: Observable<Array<TDomain>>,
     vDomMap: (TDomain, ...args: any[]) => VirtualDOM,
-    {   comparisonOperator,
+    { comparisonOperator,
         sideEffects
-    }: 
-    { 
-        comparisonOperator?: (rhs:TDomain,lhs:TDomain)=> boolean,
-        sideEffects?: ( parent: InterfaceHTMLElement$, update:RenderingUpdate<TDomain>) => void 
-    } 
-    ) : ReplaceChildrenStream$<TDomain> {
+    }:
+        {
+            comparisonOperator?: (rhs: TDomain, lhs: TDomain) => boolean,
+            sideEffects?: (parent: InterfaceHTMLElement$, update: RenderingUpdate<TDomain>) => void
+        }
+): ReplaceChildrenStream$<TDomain> {
 
     return new ReplaceChildrenStream$<TDomain>(
-        stream$, 
-        (data: TDomain, ...args:any[]) => vDomMap(data, ...args),
+        stream$,
+        (data: TDomain, ...args: any[]) => vDomMap(data, ...args),
         { comparisonOperator, sideEffects }
     )
 }
