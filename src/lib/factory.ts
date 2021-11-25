@@ -12,14 +12,14 @@ export let CustomElementsMap = {
     "a": HTMLAnchorElement,
     "abbr": HTMLElement,
     "address": HTMLElement,
-    //"applet": HTMLAppletElement, => got undefined
+    //"applet": HTMLAppletElement, Not in jest
     "area": HTMLAreaElement,
     "article": HTMLElement,
     "aside": HTMLElement,
     "audio": HTMLAudioElement,
     "b": HTMLElement,
     "base": HTMLBaseElement,
-    //"basefont": HTMLBaseFontElement, => got undefined
+    //"basefont": HTMLBaseFontElement, Not in jest
     "bdi": HTMLElement,
     "bdo": HTMLElement,
     "blockquote": HTMLQuoteElement,
@@ -38,8 +38,7 @@ export let CustomElementsMap = {
     "del": HTMLModElement,
     "details": HTMLDetailsElement,
     "dfn": HTMLElement,
-    // Not in Mozilla
-    //"dialog": HTMLDialogElement,
+    //"dialog": HTMLDialogElement, Not in Mozilla
     "dir": HTMLDirectoryElement,
     "div": HTMLDivElement,
     "dl": HTMLDListElement,
