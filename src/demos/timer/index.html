@@ -1,94 +1,111 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Timer</title>
+        <base href="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<head>
-  <meta charset="utf-8">
-  <title>Timer</title>
-  <base href="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.6.3/rxjs.umd.min.js"></script>
-  <script src="https://unpkg.com/@youwol/flux-view@0.0.5/dist/@youwol/flux-view.js"></script>
-  <!--
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.6.3/rxjs.umd.min.js"></script>
+        <script src="https://unpkg.com/@youwol/flux-view@0.0.5/dist/@youwol/flux-view.js"></script>
+        <!--
   For local testing replace previous script by this line
   <script src="../../../dist/@youwol/flux-view.js"></script>
   -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-    crossorigin="anonymous">
+        <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            crossorigin="anonymous"
+        />
+    </head>
 
+    <body class="px-5">
+        <h1>Timer example</h1>
 
-</head>
+        <p>
+            We illustrate here how attributes and DOM's children can be plugged
+            to observables.
+        </p>
+        <p>A count down is started at page loading:</p>
+        <ul>
+            <li>Until first tick a loading icon spin</li>
+            <li>Between 5 and 10 the counter color is blue</li>
+            <li>Below 5 the counter color is red</li>
+            <li>When the count-down is over the view is removed.</li>
+        </ul>
+        <p>
+            Depending on the mouse position, the background of the rendered
+            elements changes.
+        </p>
 
-<body class="px-5">
+        <div id="flux-view" class="px-2"></div>
 
-  <h1> Timer example </h1>
+        <script>
+            let flux = window['@youwol/flux-view']
+            let rxjs = window['rxjs']
 
-  <p>
-    We illustrate here how attributes and DOM's children can be plugged to observables.
-  </p>
-  <p>
-    A count down is started at page loading:
-      <ul>
-        <li> Until first tick a loading icon spin </li>
-        <li> Between 5 and 10 the countr color is blue </li>
-        <li> Below 5 the counter color is red </li>
-        <li> When the count down is over the view is removed. </li>
-    </ul>
-  </p>
-  <p>
-    Depending on the mouse position, the background of the rendered elements changes. 
-  </p>
+            const maxCount = 10
+            const timer$ = rxjs.interval(500).pipe(
+                rxjs.operators.take(maxCount),
+                rxjs.operators.map((t) => maxCount - t - 1),
+                rxjs.operators.finalize(() =>
+                    document.getElementById('flux-view').remove(),
+                ),
+            )
 
-      <div id='flux-view' class="px-2">
-      </div>
+            const mouseMove$ = rxjs.fromEvent(document, 'mousemove')
 
-      <script>
+            const isClose = (ev, div) => Math.abs(ev.y - div.offsetTop) < 100
+            const isAlmostDone = (t) => t < maxCount / 2
 
-        let flux = window['@youwol/flux-view']
-        let rxjs = window['rxjs']
+            let class$ = flux.attr$(
+                mouseMove$,
+                (ev, div) => (isClose(ev, div) ? 'bg-primary' : 'bg-secondary'),
+                {
+                    untilFirst: 'bg-primary',
+                    wrapper: (v) => `d-flex justify-content-between ` + v,
+                },
+            )
 
-        const maxCount = 10
-        const timer$ = rxjs.interval(500).pipe(
-          rxjs.operators.take(maxCount),
-          rxjs.operators.map((t) => maxCount - t - 1),
-          rxjs.operators.finalize(() => document.getElementById("flux-view").remove())
-        )
+            let countDiv$ = flux.child$(
+                timer$,
+                (t) => ({
+                    innerText: t,
+                    class: isAlmostDone(t)
+                        ? 'text-danger bg-light px-3'
+                        : 'text-success bg-light px-3',
+                }),
+                { untilFirst: { class: 'fas fa-spinner fa-spin' } },
+            )
 
-        const mouseMove$ = rxjs.fromEvent(document, 'mousemove')
+            let vDom = {
+                class: class$,
+                children: [
+                    {
+                        innerText: 'header',
+                        id: 'header',
+                        class: 'w-100 text-center',
+                    },
+                    countDiv$,
+                    {
+                        innerText: 'footer',
+                        id: 'footer',
+                        class: 'w-100 text-center',
+                    },
+                ],
+            }
 
-        const isClose = (ev, div) => Math.abs(ev.y - div.offsetTop) < 100
-        const isAlmostDone = (t) => t < maxCount / 2
+            // We render the div
+            let div = flux.render(vDom)
 
-        let class$ = flux.attr$(
-          mouseMove$,
-          (ev, div) => isClose(ev, div) ? 'bg-primary' : 'bg-secondary',
-          { untilFirst: 'bg-primary', wrapper: (v) => `d-flex justify-content-between ` + v }
-        )
-
-        let countDiv$ = flux.child$(
-          timer$,
-          (t) => ({ innerText: t, class: isAlmostDone(t) ? 'text-danger bg-light px-3' : 'text-success bg-light px-3', }),
-          { untilFirst: { class: "fas fa-spinner fa-spin" } }
-        )
-
-        let vDom = {
-          class: class$,
-          children: [
-            { innerText: "header", id: 'header', class: 'w-100 text-center' },
-            countDiv$,
-            { innerText: "footer", id: 'footer', class: 'w-100 text-center' },
-          ]
-        }
-
-        // We render the div
-        let div = flux.render(vDom)
-
-        document.getElementById("flux-view").appendChild(div)
-      </script>
-</body>
-
+            document.getElementById('flux-view').appendChild(div)
+        </script>
+    </body>
 </html>
