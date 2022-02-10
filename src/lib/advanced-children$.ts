@@ -257,6 +257,7 @@ export class AppendOnlyChildrenStream$<
     private getIndex(elem: HTMLElement): number {
         return this.indexingOrders.get(elem)
     }
+
     private setIndex(elem: HTMLElement, index: number) {
         return this.indexingOrders.set(elem, index)
     }
@@ -366,48 +367,49 @@ export class ReplaceChildrenStream$<TDomain> extends ChildrenStream$<TDomain> {
 
     protected update(
         parentElement: InterfaceHTMLElement$,
-        domainData: Array<TDomain>,
+        expectedData: Array<TDomain>,
     ): RenderingUpdate<TDomain> {
         const actualData = this.actualElements.map(
             (refElem) => refElem.domainData,
         )
-        const newData = domainData.filter(
-            (d1) =>
-                actualData.find((d0) => this.comparisonOperator(d0, d1)) ==
-                undefined,
+
+        const newData = expectedData.filter((candidate) =>
+            this.isNotInList(actualData, candidate),
         )
-
-        const deletedRefElem = this.actualElements.filter(
-            (d0) =>
-                domainData.find((d1) =>
-                    this.comparisonOperator(d0.domainData, d1),
-                ) == undefined,
-        )
-
-        const vDOMs = newData.map((d) => this.map(d))
-        deletedRefElem.forEach((elem) => elem.element.remove())
-
-        const rendered = vDOMs.map((vDOM) => render(vDOM))
+        const newVirtualDOMs = newData.map((d) => this.map(d))
+        const rendered = newVirtualDOMs.map((vDOM) => render(vDOM))
+        // TODO: Sorting (as appendOnlyChildren$)
         rendered.forEach((div) => parentElement.appendChild(div))
-
-        const added = newData.map(
+        const addedRefElem = newData.map(
             (d, i) =>
                 new RefElement<TDomain>({
                     domainData: d,
-                    virtualDOM: vDOMs[i],
+                    virtualDOM: newVirtualDOMs[i],
                     element: rendered[i],
                 }),
         )
 
-        const update = new RenderingUpdate(added, [], deletedRefElem)
+        const deletedRefElem = this.actualElements.filter((candidate) =>
+            this.isNotInList(expectedData, candidate.domainData),
+        )
+        deletedRefElem.forEach((elem) => elem.element.remove())
+        const deletedData = deletedRefElem.map((ref) => ref.domainData)
 
         this.actualElements = [
-            ...this.actualElements.filter((d) =>
-                domainData.includes(d.domainData),
+            ...this.actualElements.filter((candidate) =>
+                this.isNotInList(deletedData, candidate.domainData),
             ),
-            ...added,
+            ...addedRefElem,
         ]
-        return update
+
+        return new RenderingUpdate(addedRefElem, [], deletedRefElem)
+    }
+
+    private isNotInList(list: TDomain[], candidate: TDomain): boolean {
+        return (
+            list.find((item) => this.comparisonOperator(item, candidate)) ===
+            undefined
+        )
     }
 }
 
