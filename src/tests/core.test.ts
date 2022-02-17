@@ -14,6 +14,8 @@ import {
     HTMLElement$,
     render,
     RenderingUpdate,
+    Stream$,
+    VirtualDOM,
 } from '../index'
 
 const spy = create()
@@ -115,15 +117,15 @@ test('attr$', () => {
 
     const sideEffects = []
 
-    const class$ = new Subject()
-    const vDom = {
+    const class$: Subject<string> = new Subject()
+    const vDom: VirtualDOM & { class: Stream$<string, string> } = {
         id: 'root',
         class: attr$(class$.pipe(tag('class$')), (c) => c, {
             untilFirst: 'default',
         }),
         innerText: attr$(class$.pipe(tag('innerText$')), (c) => c, {
             wrapper: (d) => `text is ${d}`,
-            sideEffects: (data) => sideEffects.push(data),
+            sideEffects: (domain, dom) => sideEffects.push({ domain, dom }),
         }),
     }
     const div = render(vDom)
@@ -138,7 +140,8 @@ test('attr$', () => {
     expect(root.classList.toString()).toBe('class_1')
     expect(root.innerText).toBe('text is class_1')
     expect(sideEffects).toHaveLength(1)
-    expect(sideEffects[0]).toBe('text is class_1')
+    expect(sideEffects[0].domain).toBe('class_1')
+    expect(sideEffects[0].dom).toBe('text is class_1')
 
     let subs = getOpenSubscriptions()
     expect(subs.class$).toBe(1)
@@ -334,6 +337,9 @@ test('advancedChildren$ replace all with values', () => {
     let data = ['hello', 'world']
     const array_data$ = new BehaviorSubject(data)
 
+    let dataRemoved = []
+    let dataAdded = []
+
     const view = (text) => {
         return {
             tag: 'span',
@@ -370,8 +376,6 @@ test('advancedChildren$ replace all with values', () => {
             expect(root.children[i]['classList'].toString()).toEqual(c)
         })
     }
-    let dataRemoved = []
-    let dataAdded = []
 
     const div = render(vDom)
     document.body.textContent = ''
