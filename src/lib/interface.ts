@@ -119,7 +119,7 @@ export interface VirtualDOM {
      * The list of children, either an array of [[VirtualDOM]] or a stream of array of [[VirtualDOM]]
      * ( see [[children$]] for this last case).
      */
-    children?: Array<VirtualDOM> | ChildrenStream$<unknown>
+    children?: Array<VirtualDOM> | ChildrenStream$<VirtualDOM[]>
 
     /**
      * This method gets called when the VirtualDOM get inserted as actual DOM
@@ -161,7 +161,8 @@ export interface VirtualDOM {
      *
      * @Hidden
      */
-    [key: string]: unknown
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Index signature effectively optional
+    [key: string]: any
 }
 
 /**

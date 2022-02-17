@@ -40,6 +40,7 @@ class HTMLPlaceHolderElement extends HTMLElement {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TS2545: A mixin class must have a constructor with a single rest parameter of type 'any[]'.
 type Constructor<T extends HTMLElement> = new (...args: any[]) => T
 
 const specialBindings = {
@@ -54,6 +55,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
         vDom: VirtualDOM
         subscriptions = new Array<Subscription>()
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TS2545: A mixin class must have a constructor with a single rest parameter of type 'any[]'.
         constructor(...args: any[]) {
             super(...args)
         }
@@ -72,13 +74,16 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 ([k, v]) => k != 'children' && instanceOfStream$(v),
             )
 
-            attributes.forEach(([k, v]: [k: string, v: any]) => {
+            attributes.forEach(([k, v]: [k: string, v: AttributeType]) => {
                 this.applyAttribute(k, v)
             })
             attributes$.forEach(
                 ([k, attr$]: [k: string, attr$: Stream$<AttributeType>]) => {
                     this.subscriptions.push(
-                        attr$.subscribe((v) => this.applyAttribute(k, v), this),
+                        attr$.subscribe((v) => {
+                            this.applyAttribute(k, v)
+                            return v
+                        }, this),
                     )
                 },
             )
@@ -86,11 +91,19 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 this.renderChildren(this.vDom.children)
             }
 
-            if (this.vDom.children && instanceOfStream$(this.vDom.children)) {
+            // XXX : Really ? this.vDom.children does not seem to be a Stream$ at any moment
+            if (
+                this.vDom.children &&
+                instanceOfStream$<VirtualDOM[]>(this.vDom.children)
+            ) {
+                console.error(
+                    '@youwol/flux-view:src/lib/core.ts#96 : Should not happen',
+                )
                 this.subscriptions.push(
                     this.vDom.children.subscribe((children) => {
                         this.textContent = ''
                         this.renderChildren(children)
+                        return children
                     }),
                 )
             }
@@ -113,7 +126,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
         }
 
         renderChildren(
-            children: Array<VirtualDOM | Stream$<unknown> | HTMLElement>,
+            children: Array<VirtualDOM | Stream$<VirtualDOM> | HTMLElement>,
         ): Array<InterfaceHTMLElement$> {
             const rendered = []
             children
@@ -156,8 +169,7 @@ function factory(tag = 'div'): HTMLElement$ {
         )
     }
 
-    const div = document.createElement(tag, { is: `fv-${tag}` }) as any
-    return div as HTMLElement$
+    return document.createElement(tag, { is: `fv-${tag}` }) as HTMLElement$
 }
 
 /**
@@ -182,7 +194,11 @@ function registerElement(tag: string, BaseClass) {
             super()
         }
     }
-    customElements.define(`fv-${tag}`, ExtendedClass$ as any, { extends: tag })
+    customElements.define(
+        `fv-${tag}`,
+        ExtendedClass$ as CustomElementConstructor,
+        { extends: tag },
+    )
 }
 
 function register() {

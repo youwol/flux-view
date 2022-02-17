@@ -129,13 +129,13 @@ import { VirtualDOM } from './interface'
 export class Stream$<TDomain, TDom = TDomain> {
     ClassType = 'Stream$'
 
-    public readonly untilFirst
-    public readonly wrapper
-    public readonly sideEffects
+    public readonly untilFirst: TDom
+    public readonly wrapper: (tDom: TDom) => TDom
+    public readonly sideEffects: (tDomain: TDomain, tDom: TDom) => void
 
     /**
-     * @param stream$  domain's data stream defined as a RxJS observable
-     * @param map mapping
+     * @param source$  domain's data stream defined as a RxJS observable
+     * @param vDomMap mapping
      * @param vDomMap function that convert the domain's data to a vDOM attribute
      * @param untilFirst is the data that will be used until the first emitted element in *stream$* is obtained.
      *  If not provided, the attribute/child does not exist until first emission.
@@ -144,16 +144,16 @@ export class Stream$<TDomain, TDom = TDomain> {
      * attribute/child as been set/added; both the domain's data and the rendered HTMLElement are provided to this function.
      */
     constructor(
-        public readonly stream$: Observable<TDomain>,
-        public readonly map: (TDomain, ...args: any[]) => TDom,
+        public readonly source$: Observable<TDomain>,
+        public readonly vDomMap: (tDomain: TDomain, ...args) => TDom,
         {
             untilFirst,
             wrapper,
             sideEffects,
         }: {
             untilFirst?: TDom
-            wrapper?: (TDom) => TDom
-            sideEffects?: (TDom, TDomain) => void
+            wrapper?: (tDom: TDom) => TDom
+            sideEffects?: (tDomain: TDomain, tDom: TDom) => void
         },
     ) {
         this.untilFirst = untilFirst
@@ -164,26 +164,30 @@ export class Stream$<TDomain, TDom = TDomain> {
     /**
      * Implementation function that supposed to be called only by [[HTMLElement$]].
      */
-    subscribe(fct: (T, ...args: any[]) => any, ...withData) {
-        const stream$ = this.stream$.pipe(
-            map((d: any, ...args: any[]) => this.map(d, ...withData)),
+    subscribe(realizeDom: (tDom: TDom, ...args) => TDom, ...withData) {
+        const mappedSource$: Observable<[TDom, TDomain]> = this.source$.pipe(
+            map((d: TDomain) => [this.vDomMap(d, ...withData), d]),
         )
 
-        this.untilFirst && this.finalize(fct, this.untilFirst)
+        this.untilFirst && this.finalize(realizeDom, this.untilFirst, undefined)
 
-        return stream$.subscribe((v: TDom) => {
-            this.finalize(fct, v)
+        return mappedSource$.subscribe(([v, d]: [TDom, TDomain]) => {
+            this.finalize(realizeDom, v, d)
         })
     }
 
-    private finalize(fct: (T, ...args: any[]) => any, value: TDom) {
+    private finalize(
+        realizeDom: (tDom: TDom, ...args) => TDom,
+        value: TDom,
+        d: TDomain,
+    ) {
         const vWrapped = this.wrapper ? this.wrapper(value) : value
-        const v1 = fct(vWrapped)
-        this.sideEffects && this.sideEffects(vWrapped, v1)
+        const v1 = realizeDom(vWrapped)
+        this.sideEffects && this.sideEffects(d, v1)
     }
 }
 
-export function instanceOfStream$<TDomain, TDom>(
+export function instanceOfStream$<TDomain, TDom = TDomain>(
     obj: unknown,
 ): obj is Stream$<TDomain, TDom> {
     return obj && (obj as Stream$<TDomain, TDom>).ClassType === 'Stream$'
@@ -193,7 +197,7 @@ export function instanceOfStream$<TDomain, TDom>(
  * Create a stream of DOM understandable element (attribute, child or children) from a RxJS observable.
  * It is usually called indirectly using [[attr$]], [[child$]] or [[children$]].
  *
- * @param stream$  domain's data stream defined as a RxJS observable
+ * @param source$  domain's data stream defined as a RxJS observable
  * @param vDomMap function that convert the domain's data to a vDOM attribute:
  * -    in the case of the function [[attr$]], *TDom* is [[AttributeType]].
  * -    in the case of the function [[child$]], *TDom* is [[VirtualDOM]].
@@ -209,28 +213,27 @@ export function instanceOfStream$<TDomain, TDom>(
  * @returns a stream usable in [[VirtualDOM]]
  */
 export function stream$<
-    TDomain = unknown,
-    TDom = AttributeType | VirtualDOM | Array<VirtualDOM>,
+    TDomain,
+    TDom extends AttributeType | VirtualDOM | Array<VirtualDOM>,
 >(
-    stream$: Observable<TDomain>,
-    vDomMap: (TDomain, ...args: any[]) => TDom,
+    source$: Observable<TDomain>,
+    vDomMap: (tDomain: TDomain, ...args) => TDom,
     {
         untilFirst,
         wrapper,
         sideEffects,
     }: {
         untilFirst?: TDom
-        wrapper?: (TDom) => TDom
-        sideEffects?: (TDomain, HTMLElement) => void
+        wrapper?: (tDom: TDom) => TDom
+        sideEffects?: (tDomain: TDomain, tDom: TDom) => void
     } = {},
 ) {
     return new Stream$<TDomain, TDom>(
-        stream$,
-        (data: TDomain, ...args: any[]) => vDomMap(data, ...args),
+        source$,
+        (data: TDomain, ...args) => vDomMap(data, ...args),
         { untilFirst, wrapper, sideEffects },
     )
 }
-
 /**
  * Type alias for attributes in [[VirtualDOM]]
  */
