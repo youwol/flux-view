@@ -1,5 +1,4 @@
 const path = require('path')
-const webpack = require('webpack')
 const pkg = require('./package.json')
 const ROOT = path.resolve(__dirname, 'src')
 const DESTINATION = path.resolve(__dirname, 'dist')
@@ -40,7 +39,7 @@ module.exports = {
             },
             {
                 test: /\.ts$/,
-                use: [{ loader: 'awesome-typescript-loader' }],
+                use: [{ loader: 'ts-loader' }],
                 exclude: /node_modules/,
             },
         ],
