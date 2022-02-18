@@ -53,6 +53,9 @@
         "webpack": "^5.28.0",
         "webpack-cli": "4.3.0"
     },
+    "resolutions": {
+        "rxjs-spy/error-stack-parser": "2.0.6"
+    },
     "youwol": {
         "pipeline": {
             "name": "yw_pipeline_webpack_ts",
