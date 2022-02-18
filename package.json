@@ -6,7 +6,7 @@
         "rxjs",
         "view"
     ],
-    "version": "0.0.11", 
+    "version": "0.0.12",
     "description": "Tiny library to render HTML documents using reactive programing primitives",
     "author": "Guillaume Reinisch",
     "license": "MIT",
@@ -31,19 +31,30 @@
         "rxjs": "6.x"
     },
     "devDependencies": {
-        "awesome-typescript-loader": "5.2.1",
+        "@typescript-eslint/eslint-plugin": "^5.0.0",
+        "@typescript-eslint/parser": "^5.0.0",
         "rxjs": "6.x",
         "rxjs-spy": "7.5.3",
         "@types/node": "14.14.16",
-        "eslint": "7.16.0",
-        "eslint-loader": "4.0.2",
-        "typescript": "4.1.3",
-        "webpack": "^4.12.0",
-        "webpack-cli": "4.3.0",
+        "eslint": "7.23.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-eslint-comments": "^3.2.0",
+        "eslint-plugin-import": "^2.25.2",
+        "eslint-plugin-jest": "^25.2.2",
+        "eslint-plugin-unused-imports": "^1.1.5",
         "jest": "26.6.3",
-        "jest-junit": "12.0.0",
+        "jest-junit": "13.0.0",
+        "prettier": "^2.4.1",
+        "prettier-plugin-properties": "^0.1.0",
+        "typescript": "4.2.3",
         "ts-jest": "26.4.4",
-        "typedoc": "0.20.34"
+        "ts-loader": "8.1.0",
+        "typedoc": "0.22.11",
+        "webpack": "^5.28.0",
+        "webpack-cli": "4.3.0"
+    },
+    "resolutions": {
+        "rxjs-spy/error-stack-parser": "2.0.6"
     },
     "youwol": {
         "pipeline": {
@@ -53,5 +64,130 @@
         "cdnDependencies": {
             "rxjs": "6.x"
         }
+    },
+    "prettier": {
+        "printWidth": 80,
+        "tabWidth": 4,
+        "useTabs": false,
+        "semi": false,
+        "singleQuote": true,
+        "quoteProps": "as-needed",
+        "trailingComma": "all",
+        "bracketSpacing": true,
+        "arrowParens": "always",
+        "rangeStart": 0,
+        "requirePragma": false,
+        "insertPragma": false,
+        "proseWrap": "preserve",
+        "htmlWhitespaceSensitivity": "css",
+        "endOfLine": "lf",
+        "embeddedLanguageFormatting": "auto",
+        "keySeparator": "="
+    },
+    "eslintConfig": {
+        "root": true,
+        "ignorePatterns": [
+            "/dist/",
+            "/coverage/"
+        ],
+        "env": {
+            "browser": true,
+            "es2020": true
+        },
+        "extends": [
+            "eslint:recommended",
+            "plugin:eslint-comments/recommended",
+            "plugin:import/recommended",
+            "prettier"
+        ],
+        "rules": {
+            "eslint-comments/require-description": [
+                "error"
+            ],
+            "eslint-comments/no-unused-disable": [
+                "error"
+            ],
+            "curly": [
+                "error"
+            ],
+            "no-irregular-whitespace": [
+                "error",
+                {
+                    "skipComments": true,
+                    "skipTemplates": true
+                }
+            ]
+        },
+        "overrides": [
+            {
+                "files": [
+                    "webpack.config.js",
+                    "jest.config.js"
+                ],
+                "env": {
+                    "node": true
+                }
+            },
+            {
+                "files": [
+                    "*.ts"
+                ],
+                "extends": [
+                    "plugin:@typescript-eslint/recommended",
+                    "plugin:import/typescript"
+                ],
+                "parser": "@typescript-eslint/parser",
+                "parserOptions": {
+                    "tsconfigRootDir": "./",
+                    "project": [
+                        "./tsconfig.json"
+                    ]
+                },
+                "plugins": [
+                    "unused-imports",
+                    "@typescript-eslint"
+                ],
+                "rules": {
+                    "@typescript-eslint/no-namespace": "off",
+                    "@typescript-eslint/no-unused-vars": "off",
+                    "unused-imports/no-unused-imports": "error",
+                    "unused-imports/no-unused-vars": [
+                        "warn",
+                        {
+                            "vars": "all",
+                            "varsIgnorePattern": "^_",
+                            "args": "after-used",
+                            "argsIgnorePattern": "^_"
+                        }
+                    ],
+                    "@typescript-eslint/no-unnecessary-type-assertion": "error"
+                }
+            },
+            {
+                "files": [
+                    "*.test.ts"
+                ],
+                "extends": [
+                    "plugin:jest/recommended",
+                    "plugin:jest/style"
+                ],
+                "plugins": [
+                    "jest"
+                ],
+                "rules": {
+                    "jest/expect-expect": [
+                        "error",
+                        {
+                            "assertFunctionNames": [
+                                "expect",
+                                "verify"
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "noInlineConfig": false,
+        "reportUnusedDisableDirectives": true
     }
 }

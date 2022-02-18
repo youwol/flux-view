@@ -5,13 +5,14 @@
     </head>
 
     <body id="container">
-
         <script>
-        let [flux, rxjs] = [window['@youwol/flux-view'], window['rxjs']]
-        
-        let vDom = { innerText: flux.attr$( rxjs.of("Hi! Happy fluxing!"), (d)=>d) }
-        
-        document.getElementById("container").appendChild(flux.render(vDom))
+            let [flux, rxjs] = [window['@youwol/flux-view'], window['rxjs']]
+
+            let vDom = {
+                innerText: flux.attr$(rxjs.of('Hi! Happy fluxing!'), (d) => d),
+            }
+
+            document.getElementById('container').appendChild(flux.render(vDom))
         </script>
     </body>
 </html>
