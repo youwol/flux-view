@@ -3,5 +3,7 @@ node_modules
 coverage
 junit.xml
 dist
+yarn-error.log
 *.iml
 cdn.zip
+__pycache__
