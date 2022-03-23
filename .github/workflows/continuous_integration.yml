@@ -8,14 +8,13 @@ on:
     pull_request:
         branches:
             - develop
-  workflow_dispatch:
-    inputs:
-      skip:
-        description: "list of check to skip"
-        type: string
-        required: false
-        default: ''
-
+    workflow_dispatch:
+        inputs:
+            skip:
+                description: 'list of check to skip'
+                type: string
+                required: false
+                default: ''
 
 jobs:
     build_artefacts:
@@ -33,7 +32,7 @@ jobs:
               id: action_ts_static_analysis
               uses: youwol/nestor/ts/static_analysis@main
               with:
-                skip: ${{ inputs.skip }}
+                  skip: ${{ inputs.skip }}
 
             - name: Build & test package
               id: action_ts_build_artefact
