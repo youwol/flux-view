@@ -2,6 +2,7 @@ const path = require('path')
 const pkg = require('./package.json')
 const ROOT = path.resolve(__dirname, 'src')
 const DESTINATION = path.resolve(__dirname, 'dist')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 module.exports = {
     context: ROOT,
@@ -16,6 +17,13 @@ module.exports = {
         filename: pkg.name + '.js',
         globalObject: `(typeof self !== 'undefined' ? self : this)`,
     },
+    plugins: [
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            reportFilename: './bundle-analysis.html',
+            openAnalyzer: false,
+        }),
+    ],
     resolve: {
         extensions: ['.ts', 'tsx', '.js'],
         modules: [ROOT, 'node_modules'],
