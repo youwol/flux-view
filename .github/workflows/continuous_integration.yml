@@ -32,7 +32,7 @@ jobs:
               id: action_ts_static_analysis
               uses: youwol/nestor/ts/static_analysis@main
               with:
-                  skip: ${{ inputs.skip }}
+                  skip: ${{ github.event.inputs.skip }}
 
             - name: Build & test package
               id: action_ts_build_artefact
