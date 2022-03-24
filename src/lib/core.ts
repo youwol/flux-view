@@ -147,9 +147,10 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
         }
 
         applyAttribute(name: string, value: AttributeType) {
-            specialBindings[name]
-                ? specialBindings[name](this, value)
-                : (this[name] = value)
+            let binding = specialBindings[name]
+                ? () => specialBindings[name](this, value)
+                : () => (this[name] = value)
+            binding()
         }
 
         ownSubscriptions(...subs: Subscription[]) {
