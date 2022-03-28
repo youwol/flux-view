@@ -10,8 +10,8 @@ on:
             - develop
     workflow_dispatch:
         inputs:
-            skip:
-                description: 'list of check to skip'
+            ignore:
+                description: 'list of failure check to ignore'
                 type: string
                 required: false
                 default: ''
@@ -32,7 +32,7 @@ jobs:
               id: action_ts_static_analysis
               uses: youwol/nestor/ts/static_analysis@main
               with:
-                  skip: ${{ github.event.inputs.skip }}
+                  ignore: ${{ github.event.inputs.ignore }}
 
             - name: Build & test package
               id: action_ts_build_artefact
