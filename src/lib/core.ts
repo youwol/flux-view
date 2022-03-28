@@ -147,7 +147,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
         }
 
         applyAttribute(name: string, value: AttributeType) {
-            let binding = specialBindings[name]
+            const binding = specialBindings[name]
                 ? () => specialBindings[name](this, value)
                 : () => (this[name] = value)
             binding()
