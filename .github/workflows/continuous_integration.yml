@@ -32,7 +32,7 @@ jobs:
               id: action_ts_static_analysis
               uses: youwol/nestor/ts/static_analysis@main
               with:
-                  ignore: ${{ github.event.inputs.ignore }}
+                  ignore: ${{ format('audit {0}', github.event.inputs.ignore) }}
 
             - name: Build & test package
               id: action_ts_build_artefact
