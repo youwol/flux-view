@@ -4,7 +4,7 @@ import { CustomElementsMap } from './factory'
 import { InterfaceHTMLElement$, VirtualDOM } from './interface'
 import { AttributeType, instanceOfStream$, Stream$ } from './stream$'
 
-export const apiVersion = '01'
+export const apiVersion = '1'
 /**
  * The actual element associated to a [[VirtualDOM]].
  * It implements the *regular* constructor of the target element on top of which the flux-view logic is added,
