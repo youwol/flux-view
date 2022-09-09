@@ -4,6 +4,7 @@ import { CustomElementsMap } from './factory'
 import { InterfaceHTMLElement$, VirtualDOM } from './interface'
 import { AttributeType, instanceOfStream$, Stream$ } from './stream$'
 
+export const apiVersion = '01'
 /**
  * The actual element associated to a [[VirtualDOM]].
  * It implements the *regular* constructor of the target element on top of which the flux-view logic is added,
@@ -130,7 +131,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 .forEach((child) => {
                     if (instanceOfStream$(child)) {
                         const placeHolder = document.createElement(
-                            'fv-placeholder',
+                            `fv-${apiVersion}-placeholder`,
                         ) as HTMLPlaceHolderElement
                         this.appendChild(placeHolder)
                         this.subscriptions.push(placeHolder.initialize(child))
@@ -166,7 +167,9 @@ function factory(tag = 'div'): HTMLElement$ {
         )
     }
 
-    return document.createElement(tag, { is: `fv-${tag}` }) as HTMLElement$
+    return document.createElement(tag, {
+        is: `fv-${apiVersion}-${tag}`,
+    }) as HTMLElement$
 }
 
 /**
@@ -192,14 +195,17 @@ function registerElement(tag: string, BaseClass) {
         }
     }
     customElements.define(
-        `fv-${tag}`,
+        `fv-${apiVersion}-${tag}`,
         ExtendedClass$ as CustomElementConstructor,
         { extends: tag },
     )
 }
 
 function register() {
-    customElements.define('fv-placeholder', HTMLPlaceHolderElement)
+    customElements.define(
+        `fv-${apiVersion}-placeholder`,
+        HTMLPlaceHolderElement,
+    )
 
     Object.entries(CustomElementsMap).forEach(([tag, HTMLElementClass]) => {
         registerElement(tag, HTMLElementClass)
