@@ -49,6 +49,11 @@ const specialBindings = {
     style: (instance: HTMLElement, value) => {
         Object.entries(value).forEach(([k, v]) => (instance.style[k] = v))
     },
+    customAttributes: (instance, value: { [k: string]: string }) => {
+        Object.entries(value).forEach(([k, v]) =>
+            instance.setAttribute(k.replace(/[A-Z]/g, '-$&').toLowerCase(), v),
+        )
+    },
 }
 
 function _$<T extends Constructor<HTMLElement>>(Base: T) {

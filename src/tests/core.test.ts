@@ -59,6 +59,9 @@ test('constant vDOM', () => {
                 style: { 'background-color': 'red' },
             },
         ],
+        customAttributes: {
+            hasCustomAttributes: true,
+        },
     }
     const div = render(vDom)
     document.body.textContent = ''
@@ -66,7 +69,7 @@ test('constant vDOM', () => {
     const root = document.getElementById('root')
     expect(root).toBeTruthy()
     expect(root.classList.contains('root')).toBeTruthy()
-
+    expect(root.getAttribute('has-custom-attributes')).toBeTruthy()
     const child = div.querySelector('label')
     expect(child).toBeTruthy()
     expect(child.innerText).toBe('text label')
