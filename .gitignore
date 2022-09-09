@@ -1,9 +1,9 @@
 node_modules
 **/node_modules/**/*
-coverage
+dist/
+coverage/
 junit.xml
-dist
-yarn-error.log
-*.iml
 cdn.zip
 __pycache__
+*.iml
+.templates

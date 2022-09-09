@@ -1,3 +1,15 @@
+const apiVersion = "01"
+const externals = {
+    "rxjs": "rxjs_APIv6",
+    "rxjs/operators": {
+        "commonjs": "rxjs/operators",
+        "commonjs2": "rxjs/operators",
+        "root": [
+            "rxjs_APIv6",
+            "operators"
+        ]
+    }
+}
 const path = require('path')
 const pkg = require('./package.json')
 const ROOT = path.resolve(__dirname, 'src')
@@ -9,14 +21,6 @@ module.exports = {
     entry: {
         main: './index.ts',
     },
-    output: {
-        path: DESTINATION,
-        libraryTarget: 'umd',
-        umdNamedDefine: true,
-        library: pkg.name,
-        filename: pkg.name + '.js',
-        globalObject: `(typeof self !== 'undefined' ? self : this)`,
-    },
     plugins: [
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',
@@ -24,27 +28,21 @@ module.exports = {
             openAnalyzer: false,
         }),
     ],
+    output: {
+        path: DESTINATION,
+        libraryTarget: 'umd',
+        umdNamedDefine: true,
+        library: `${pkg.name}_APIv${apiVersion}`,
+        filename: pkg.name + '.js',
+        globalObject: `(typeof self !== 'undefined' ? self : this)`,
+    },
     resolve: {
         extensions: ['.ts', 'tsx', '.js'],
         modules: [ROOT, 'node_modules'],
     },
-    externals: [
-        {
-            rxjs: 'rxjs',
-            'rxjs/operators': {
-                commonjs: 'rxjs/operators',
-                commonjs2: 'rxjs/operators',
-                root: ['rxjs', 'operators'],
-            },
-        },
-    ],
+    externals,
     module: {
         rules: [
-            {
-                enforce: 'pre',
-                test: /\.js$/,
-                use: 'source-map-loader',
-            },
             {
                 test: /\.ts$/,
                 use: [{ loader: 'ts-loader' }],

@@ -1,195 +1,63 @@
 {
     "name": "@youwol/flux-view",
-    "keywords": [
-        "html",
-        "reactive-programming",
-        "rxjs",
-        "view"
-    ],
-    "version": "0.1.0-next",
-    "description": "Tiny library to render HTML documents using reactive programing primitives",
-    "author": "Guillaume Reinisch",
-    "license": "MIT",
-    "homepage": "",
+    "description": "Tiny library to render HTML documents using reactive programing primitives.",
+    "version": "0.1.2-wip",
+    "author": "greinisch@youwol.com",
+    "homepage": "https://github.com/youwol/flux-view#README.md",
     "main": "dist/@youwol/flux-view.js",
     "types": "src/index.ts",
     "scripts": {
+        "clean": "del-cli dist",
         "build": "yarn build:dev",
-        "build:dev": "webpack --mode development",
-        "build:prod": "webpack --mode production",
-        "test": "jest -c ./jest.config.js --rootDir .",
-        "test-coverage": "jest -c ./jest.config.js --rootDir . --collect-coverage --collectCoverageFrom=./src/lib/**/*.ts --coverageDirectory=./coverage/$TARGET --runInBand",
-        "doc": "typedoc src/ --exclude src/index.ts --exclude src/tests --out dist/docs --theme default",
+        "build:dev": "yarn clean && webpack --mode development",
+        "build:prod": "yarn clean && webpack --mode production",
+        "test": "jest -c ./jest.config.js -i --rootDir .",
+        "test-coverage": "jest -c ./jest.config.js -i --rootDir . --collect-coverage --collectCoverageFrom=./src/lib/**/*.ts ",
+        "doc": "typedoc",
         "publish-npm-public": "yarn build:prod && yarn test-coverage && yarn publish --access public"
     },
-    "repository": {
-        "type": "git",
-        "url": ""
-    },
-    "dependencies": {},
-    "peerDependencies": {
-        "rxjs": "6.x"
-    },
     "devDependencies": {
-        "@types/jest": "^27.4.1",
-        "@typescript-eslint/eslint-plugin": "^5.14.0",
-        "@typescript-eslint/parser": "^5.14.0",
-        "rxjs": "6.x",
         "rxjs-spy": "7.5.3",
-        "@types/node": "14.14.16",
-        "eslint": "8.10.0",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-eslint-comments": "^3.2.0",
-        "eslint-plugin-import": "^2.25.4",
-        "eslint-plugin-jest": "^26.1.1",
-        "eslint-plugin-unused-imports": "^2.0.0",
+        "@types/node": "18.0.6",
+        "typescript": "^4.7.4",
+        "ts-lib": "^0.0.5",
+        "ts-node": "^10.9.1",
+        "ts-loader": "^9.3.1",
+        "@types/jest": "27.4.1",
+        "ts-jest": "27.1.3",
         "jest": "27.5.1",
         "jest-junit": "13.0.0",
-        "prettier": "^2.5.1",
-        "prettier-plugin-properties": "^0.1.0",
-        "typescript": "4.2.3",
-        "ts-jest": "27.1.3",
-        "ts-loader": "8.1.0",
-        "typedoc": "0.22.13",
-        "webpack": "^5.70.0",
+        "typedoc": "^0.23.8",
+        "webpack": "^5.73.0",
+        "webpack-cli": "4.9.2",
         "webpack-bundle-analyzer": "4.5.0",
-        "webpack-cli": "4.9.2"
+        "del-cli": "^5.0.0",
+        "@youwol/prettier-config": "^0.0.1",
+        "@youwol/eslint-config": "^0.0.1",
+        "prettier": "^2.7.1",
+        "prettier-plugin-properties": "^0.2.0",
+        "@typescript-eslint/eslint-plugin": "^5.33.1",
+        "@typescript-eslint/parser": "^5.33.1",
+        "eslint": "8.22.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-eslint-comments": "^3.2.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jest": "^26.8.4",
+        "eslint-plugin-tsdoc": "^0.2.16",
+        "eslint-plugin-unused-imports": "^2.0.0"
     },
-    "resolutions": {
-        "rxjs-spy/error-stack-parser": "2.0.6"
+    "prettier": "@youwol/prettier-config",
+    "eslintConfig": {
+        "extends": [
+            "@youwol"
+        ]
+    },
+    "dependencies": {
+        "rxjs": "^6.5.5"
     },
     "youwol": {
-        "pipeline": {
-            "name": "yw_pipeline_webpack_ts",
-            "version": "0.0.0"
-        },
         "cdnDependencies": {
-            "rxjs": "6.x"
+            "rxjs": "^6.5.5"
         }
-    },
-    "prettier": {
-        "printWidth": 80,
-        "tabWidth": 4,
-        "useTabs": false,
-        "semi": false,
-        "singleQuote": true,
-        "quoteProps": "as-needed",
-        "trailingComma": "all",
-        "bracketSpacing": true,
-        "arrowParens": "always",
-        "rangeStart": 0,
-        "requirePragma": false,
-        "insertPragma": false,
-        "proseWrap": "preserve",
-        "htmlWhitespaceSensitivity": "css",
-        "endOfLine": "lf",
-        "embeddedLanguageFormatting": "auto",
-        "keySeparator": "="
-    },
-    "eslintConfig": {
-        "root": true,
-        "ignorePatterns": [
-            "/dist/",
-            "/coverage/"
-        ],
-        "env": {
-            "browser": true,
-            "es2020": true
-        },
-        "extends": [
-            "eslint:recommended",
-            "plugin:eslint-comments/recommended",
-            "plugin:import/recommended",
-            "prettier"
-        ],
-        "rules": {
-            "eslint-comments/require-description": [
-                "error"
-            ],
-            "eslint-comments/no-unused-disable": [
-                "error"
-            ],
-            "curly": [
-                "error"
-            ],
-            "no-irregular-whitespace": [
-                "error",
-                {
-                    "skipComments": true,
-                    "skipTemplates": true
-                }
-            ]
-        },
-        "overrides": [
-            {
-                "files": [
-                    "webpack.config.js",
-                    "jest.config.js"
-                ],
-                "env": {
-                    "node": true
-                }
-            },
-            {
-                "files": [
-                    "*.ts"
-                ],
-                "extends": [
-                    "plugin:@typescript-eslint/recommended",
-                    "plugin:import/typescript"
-                ],
-                "parser": "@typescript-eslint/parser",
-                "parserOptions": {
-                    "tsconfigRootDir": "./",
-                    "project": [
-                        "./tsconfig.json"
-                    ]
-                },
-                "plugins": [
-                    "unused-imports",
-                    "@typescript-eslint"
-                ],
-                "rules": {
-                    "@typescript-eslint/no-namespace": "off",
-                    "@typescript-eslint/no-unused-vars": "off",
-                    "unused-imports/no-unused-imports": "error",
-                    "unused-imports/no-unused-vars": [
-                        "warn",
-                        {
-                            "vars": "all",
-                            "varsIgnorePattern": "^_",
-                            "args": "after-used",
-                            "argsIgnorePattern": "^_"
-                        }
-                    ],
-                    "@typescript-eslint/no-unnecessary-type-assertion": "error"
-                }
-            },
-            {
-                "files": [
-                    "*.test.ts"
-                ],
-                "extends": [
-                    "plugin:jest/recommended",
-                    "plugin:jest/style"
-                ],
-                "plugins": [
-                    "jest"
-                ],
-                "rules": {
-                    "jest/expect-expect": [
-                        "error",
-                        {
-                            "assertFunctionNames": [
-                                "expect",
-                                "verify"
-                            ]
-                        }
-                    ]
-                }
-            }
-        ],
-        "noInlineConfig": false,
-        "reportUnusedDisableDirectives": true
     }
 }
