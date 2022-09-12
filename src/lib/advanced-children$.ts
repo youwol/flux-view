@@ -115,7 +115,7 @@ export class RenderingUpdate<TDomain> {
  *
  * Example of use: [[AppendOnlyPolicy]], [[ReplacePolicy]].
  */
-export abstract class ChildrenStream$<TDomain> {
+export abstract class ChildrenStream<TDomain> {
     ClassType = 'ChildrenStream$'
     /**
      * Callback that gets called when the DOM has been updated.
@@ -208,8 +208,8 @@ export abstract class ChildrenStream$<TDomain> {
 
 export function instanceOfChildrenStream$<T>(
     obj: unknown,
-): obj is ChildrenStream$<T> {
-    return obj && (obj as ChildrenStream$<T>).ClassType === 'ChildrenStream$'
+): obj is ChildrenStream<T> {
+    return obj && (obj as ChildrenStream<T>).ClassType === 'ChildrenStream$'
 }
 
 /**
@@ -252,9 +252,7 @@ export function instanceOfChildrenStream$<T>(
  *```
  *
  */
-export class AppendOnlyChildrenStream$<
-    TDomain,
-> extends ChildrenStream$<TDomain> {
+export class AppendOnlyChildrenStream<TDomain> extends ChildrenStream<TDomain> {
     public readonly untilFirst
     public readonly sideEffects
 
@@ -303,8 +301,8 @@ export function childrenAppendOnly$<TDomain>(
     stream$: Observable<TDomain[]>,
     vDomMap: (data: TDomain, ...args: unknown[]) => VirtualDOM,
     options: TOptions<TDomain> = {},
-): AppendOnlyChildrenStream$<TDomain> {
-    return new AppendOnlyChildrenStream$<TDomain>(
+): AppendOnlyChildrenStream<TDomain> {
+    return new AppendOnlyChildrenStream<TDomain>(
         stream$,
         (data: TDomain, ...args) => vDomMap(data, ...args),
         options,
@@ -356,7 +354,7 @@ export type TOptionsWithComparison<TDomain> = TOptions<TDomain> & {
  * -    the policy does domain data comparison (to identify which elements are new or old) using reference by default,
  * a custom comparison operator can also be supplied.
  */
-export class ReplaceChildrenStream$<TDomain> extends ChildrenStream$<TDomain> {
+export class ReplaceChildrenStream<TDomain> extends ChildrenStream<TDomain> {
     /**
      * Comparison operator used to identify which elements need to be added/ updated/ replaced.
      * By default, reference equality is used, ideal when the domain data are immutables.
@@ -442,8 +440,8 @@ export function childrenWithReplace$<TDomain>(
     stream$: Observable<TDomain[]>,
     vDomMap: (tDomain: TDomain, ...args) => VirtualDOM,
     options: TOptionsWithComparison<TDomain> = {},
-): ReplaceChildrenStream$<TDomain> {
-    return new ReplaceChildrenStream$<TDomain>(
+): ReplaceChildrenStream<TDomain> {
+    return new ReplaceChildrenStream<TDomain>(
         stream$,
         (data: TDomain, ...args) => vDomMap(data, ...args),
         options,

@@ -194,14 +194,14 @@ export function render(vDom: VirtualDOM): HTMLElement$ {
 }
 
 function registerElement(tag: string, BaseClass) {
-    class ExtendedClass$ extends _$(BaseClass) {
+    class ExtendedClass extends _$(BaseClass) {
         constructor() {
             super()
         }
     }
     customElements.define(
         `fv-${apiVersion}-${tag}`,
-        ExtendedClass$ as CustomElementConstructor,
+        ExtendedClass as CustomElementConstructor,
         { extends: tag },
     )
 }
