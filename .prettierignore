@@ -1,5 +1,6 @@
 node_modules
 dist/
+.template/
 coverage/
 junit.xml
 yarn.lock

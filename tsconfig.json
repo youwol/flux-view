@@ -23,5 +23,10 @@
       "es2020"
     ],
     "paths": {}
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
   }
 }
