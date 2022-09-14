@@ -207,6 +207,13 @@ function registerElement(tag: string, BaseClass) {
 }
 
 function register() {
+    if (customElements.get(`fv-${apiVersion}-placeholder`)) {
+        console.warn(
+            `flux-view with api version ${apiVersion} has already defined custom elements`,
+        )
+        return
+    }
+
     customElements.define(
         `fv-${apiVersion}-placeholder`,
         HTMLPlaceHolderElement,
