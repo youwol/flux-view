@@ -27,7 +27,7 @@ template = Template(
             "rxjs-spy": "7.5.3"
         }),
     userGuide=True,
-    bundles=Bundles(mainModule=MainModule(entryFile="index.ts", loadDependencies=list({"rxjs": "^6.5.5"}))))
+    bundles=Bundles(mainModule=MainModule(entryFile="index.ts", loadDependencies=["rxjs"])))
 
 generate_template(template)
 shutil.copyfile(
