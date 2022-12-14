@@ -30,7 +30,9 @@ const exportedSymbols = {
 // eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
 const mainEntry : Object = {
     "entryFile": "index.ts",
-    "loadDependencies": []
+    "loadDependencies": [
+        "rxjs"
+    ]
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
