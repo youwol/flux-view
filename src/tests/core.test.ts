@@ -17,6 +17,7 @@ import {
     Stream$,
     VirtualDOM,
 } from '../index'
+import { apiVersion } from '../lib/core'
 
 const spy = create()
 
@@ -59,6 +60,9 @@ test('constant vDOM', () => {
                 style: { 'background-color': 'red' },
             },
         ],
+        customAttributes: {
+            hasCustomAttributes: true,
+        },
     }
     const div = render(vDom)
     document.body.textContent = ''
@@ -66,7 +70,7 @@ test('constant vDOM', () => {
     const root = document.getElementById('root')
     expect(root).toBeTruthy()
     expect(root.classList.contains('root')).toBeTruthy()
-
+    expect(root.getAttribute('has-custom-attributes')).toBeTruthy()
     const child = div.querySelector('label')
     expect(child).toBeTruthy()
     expect(child.innerText).toBe('text label')
@@ -226,7 +230,7 @@ test('simple attr$ & child$', () => {
     document.body.appendChild(div)
     const root = document.getElementById('browser')
     expect(root).toBeTruthy()
-    expect(root.children[0].tagName).toBe('FV-PLACEHOLDER')
+    expect(root.children[0].tagName).toBe(`FV-${apiVersion}-PLACEHOLDER`)
     file$.next({ id: 'file0', name: 'core.ts' })
     const fileDiv = root.children[0] as HTMLDivElement
     expect(fileDiv.tagName).toBe('SPAN')
@@ -267,7 +271,7 @@ test('simple child$ with HTMLElement', () => {
     document.body.appendChild(div)
     const root = document.getElementById('browser')
     expect(root).toBeTruthy()
-    expect(root.children[0].tagName).toBe('FV-PLACEHOLDER')
+    expect(root.children[0].tagName).toBe(`FV-${apiVersion}-PLACEHOLDER`)
     file$.next({ id: 'file0', name: 'core.ts' })
     const fileDiv = root.children[0] as HTMLDivElement
     expect(fileDiv.tagName).toBe('SPAN')
@@ -598,13 +602,17 @@ test('advancedChildren$ append only with sort', () => {
     expect(subs.class$).toBe(0)
 })
 
-test('unknown element', () => {
-    const vDom = {
+test('problems', () => {
+    const vDomUnknown = {
         tag: 'unknown',
         class: 'root',
     }
-    const _render = () => {
-        render(vDom)
+    expect(() => render(vDomUnknown)).toThrow(Error)
+    expect(render(undefined).tagName).toBe('DIV')
+    const vDomUndefined = {
+        class: 'root',
+        children: [undefined],
     }
-    expect(_render).toThrow(Error)
+    const div = render(vDomUndefined)
+    expect(div.children).toHaveLength(0)
 })

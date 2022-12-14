@@ -1,10 +1,13 @@
-const path = require('path')
-const pkg = require('./package.json')
+import * as path from 'path'
+// Do not shorten following import, it will cause webpack.config file to not compile anymore
+import { setup } from './src/auto-generated'
+import * as webpack from 'webpack'
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+
 const ROOT = path.resolve(__dirname, 'src')
 const DESTINATION = path.resolve(__dirname, 'dist')
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
-module.exports = {
+const webpackConfig: webpack.Configuration = {
     context: ROOT,
     entry: {
         main: './index.ts',
@@ -18,40 +21,20 @@ module.exports = {
     ],
     output: {
         path: DESTINATION,
+        publicPath: `/api/assets-gateway/raw/package/${setup.assetId}/${setup.version}/dist/`,
         libraryTarget: 'umd',
         umdNamedDefine: true,
-        library: pkg.name,
-        filename: pkg.name + '.js',
+        library: `${setup.name}_APIv${setup.apiVersion}`,
+        filename: setup.name + '.js',
         globalObject: `(typeof self !== 'undefined' ? self : this)`,
     },
-    plugins: [
-        new BundleAnalyzerPlugin({
-            analyzerMode: 'static',
-            reportFilename: './bundle-analysis.html',
-            openAnalyzer: false,
-        }),
-    ],
     resolve: {
         extensions: ['.ts', 'tsx', '.js'],
         modules: [ROOT, 'node_modules'],
     },
-    externals: [
-        {
-            rxjs: 'rxjs',
-            'rxjs/operators': {
-                commonjs: 'rxjs/operators',
-                commonjs2: 'rxjs/operators',
-                root: ['rxjs', 'operators'],
-            },
-        },
-    ],
+    externals: setup.externals,
     module: {
         rules: [
-            {
-                enforce: 'pre',
-                test: /\.js$/,
-                use: 'source-map-loader',
-            },
             {
                 test: /\.ts$/,
                 use: [{ loader: 'ts-loader' }],
@@ -61,3 +44,4 @@ module.exports = {
     },
     devtool: 'source-map',
 }
+export default webpackConfig

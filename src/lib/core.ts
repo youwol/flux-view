@@ -4,6 +4,7 @@ import { CustomElementsMap } from './factory'
 import { InterfaceHTMLElement$, VirtualDOM } from './interface'
 import { AttributeType, instanceOfStream$, Stream$ } from './stream$'
 
+export const apiVersion = '1'
 /**
  * The actual element associated to a [[VirtualDOM]].
  * It implements the *regular* constructor of the target element on top of which the flux-view logic is added,
@@ -47,6 +48,11 @@ const specialBindings = {
     class: (instance, value) => (instance.className = value),
     style: (instance: HTMLElement, value) => {
         Object.entries(value).forEach(([k, v]) => (instance.style[k] = v))
+    },
+    customAttributes: (instance, value: { [k: string]: string }) => {
+        Object.entries(value).forEach(([k, v]) =>
+            instance.setAttribute(k.replace(/[A-Z]/g, '-$&').toLowerCase(), v),
+        )
     },
 }
 
@@ -130,7 +136,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 .forEach((child) => {
                     if (instanceOfStream$(child)) {
                         const placeHolder = document.createElement(
-                            'fv-placeholder',
+                            `fv-${apiVersion}-placeholder`,
                         ) as HTMLPlaceHolderElement
                         this.appendChild(placeHolder)
                         this.subscriptions.push(placeHolder.initialize(child))
@@ -147,7 +153,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
         }
 
         applyAttribute(name: string, value: AttributeType) {
-            let binding = specialBindings[name]
+            const binding = specialBindings[name]
                 ? () => specialBindings[name](this, value)
                 : () => (this[name] = value)
             binding()
@@ -166,7 +172,9 @@ function factory(tag = 'div'): HTMLElement$ {
         )
     }
 
-    return document.createElement(tag, { is: `fv-${tag}` }) as HTMLElement$
+    return document.createElement(tag, {
+        is: `fv-${apiVersion}-${tag}`,
+    }) as HTMLElement$
 }
 
 /**
@@ -186,20 +194,30 @@ export function render(vDom: VirtualDOM): HTMLElement$ {
 }
 
 function registerElement(tag: string, BaseClass) {
-    class ExtendedClass$ extends _$(BaseClass) {
+    class ExtendedClass extends _$(BaseClass) {
         constructor() {
             super()
         }
     }
     customElements.define(
-        `fv-${tag}`,
-        ExtendedClass$ as CustomElementConstructor,
+        `fv-${apiVersion}-${tag}`,
+        ExtendedClass as CustomElementConstructor,
         { extends: tag },
     )
 }
 
 function register() {
-    customElements.define('fv-placeholder', HTMLPlaceHolderElement)
+    if (customElements.get(`fv-${apiVersion}-placeholder`)) {
+        console.warn(
+            `flux-view with api version ${apiVersion} has already defined custom elements`,
+        )
+        return
+    }
+
+    customElements.define(
+        `fv-${apiVersion}-placeholder`,
+        HTMLPlaceHolderElement,
+    )
 
     Object.entries(CustomElementsMap).forEach(([tag, HTMLElementClass]) => {
         registerElement(tag, HTMLElementClass)
