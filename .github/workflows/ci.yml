@@ -1,0 +1,13 @@
+name: Continuous Integration
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  nestor_ci:
+    name: Typescript
+    uses: youwol/nestor/.github/workflows/typescript-ci.yml@v1
