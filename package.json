@@ -6,7 +6,7 @@
         "rxjs",
         "view"
     ],
-    "version": "0.1.0-next",
+    "version": "0.1.1",
     "description": "Tiny library to render HTML documents using reactive programing primitives",
     "author": "Guillaume Reinisch",
     "license": "MIT",
@@ -34,6 +34,7 @@
         "@types/jest": "^27.4.1",
         "@typescript-eslint/eslint-plugin": "^5.14.0",
         "@typescript-eslint/parser": "^5.14.0",
+        "webpack-bundle-analyzer": "^4.4.0",
         "rxjs": "6.x",
         "rxjs-spy": "7.5.3",
         "@types/node": "14.14.16",

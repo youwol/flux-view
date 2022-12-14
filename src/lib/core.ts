@@ -91,14 +91,10 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 this.renderChildren(this.vDom.children)
             }
 
-            // XXX : Really ? this.vDom.children does not seem to be a Stream$ at any moment
             if (
                 this.vDom.children &&
                 instanceOfStream$<VirtualDOM[]>(this.vDom.children)
             ) {
-                console.error(
-                    '@youwol/flux-view:src/lib/core.ts#96 : Should not happen',
-                )
                 this.subscriptions.push(
                     this.vDom.children.subscribe((children) => {
                         this.textContent = ''
@@ -151,9 +147,10 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
         }
 
         applyAttribute(name: string, value: AttributeType) {
-            specialBindings[name]
-                ? specialBindings[name](this, value)
-                : (this[name] = value)
+            let binding = specialBindings[name]
+                ? () => specialBindings[name](this, value)
+                : () => (this[name] = value)
+            binding()
         }
 
         ownSubscriptions(...subs: Subscription[]) {

@@ -9,6 +9,13 @@ module.exports = {
     entry: {
         main: './index.ts',
     },
+    plugins: [
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            reportFilename: './bundle-analysis.html',
+            openAnalyzer: false,
+        }),
+    ],
     output: {
         path: DESTINATION,
         libraryTarget: 'umd',
