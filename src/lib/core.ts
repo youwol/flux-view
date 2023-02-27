@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs'
 import { instanceOfChildrenStream$ } from './advanced-children$'
 import { CustomElementsMap } from './factory'
-import { InterfaceHTMLElement$, VirtualDOM } from './interface'
+import { VirtualDOM } from './interface'
 import { AttributeType, instanceOfStream$, Stream$ } from './stream$'
 
 export const apiVersion = '1'
@@ -57,8 +57,15 @@ const specialBindings = {
 }
 
 function _$<T extends Constructor<HTMLElement>>(Base: T) {
-    return class extends Base implements InterfaceHTMLElement$ {
-        vDom: VirtualDOM
+    return class extends Base {
+        /**
+         * Virtual DOM
+         */
+        vDom: Readonly<VirtualDOM>
+
+        /**
+         * @ignore
+         */
         subscriptions = new Array<Subscription>()
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TS2545: A mixin class must have a constructor with a single rest parameter of type 'any[]'.
@@ -129,7 +136,7 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
 
         renderChildren(
             children: Array<VirtualDOM | Stream$<VirtualDOM> | HTMLElement>,
-        ): Array<InterfaceHTMLElement$> {
+        ): Array<HTMLElement$> {
             const rendered = []
             children
                 .filter((child) => child != undefined)

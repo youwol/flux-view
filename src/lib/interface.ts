@@ -164,36 +164,3 @@ export interface VirtualDOM {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Index signature effectively optional
     [key: string]: any
 }
-
-/**
- * This interface declares the methods added to [[HTMLElement$]]
- * w/ regular HTMLElement.
- *
- */
-export interface InterfaceHTMLElement$ extends HTMLElement {
-    /**
-     * The provided subscription get owned by the element:
-     * it will be unsubscribed when the element is removed from the DOM.
-     *
-     * Typically:
-     *  * ``` typescript
-     * let clicked$ = new rxjs.BehaviorSubject({clicked: false})
-     * let vDOM = {
-     *      tag: 'div',
-     *      connectedCallback: (elem: HTMLElement$) => {
-     *          // the ownership of sub0 is given to the VirtualDOM
-     *          // => it will be unsubscribed when element is actually removed from the view
-     *          elem.ownSubscriptions(clicked$.subscribe( (d) => console.log(d)))
-     *      }
-     *      children: [
-     *          {
-     *              tag:'button',
-     *              innerText: 'hello flux view',
-     *              onclick: () => clicked$.next({clicked: true})
-     *          }]
-     * }
-     * ```
-     * @param sub subscription
-     */
-    ownSubscriptions(...sub: Subscription[])
-}
