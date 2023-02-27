@@ -6,11 +6,13 @@ import { AttributeType, instanceOfStream$, Stream$ } from './stream$'
 
 export const apiVersion = '1'
 /**
- * The actual element associated to a [[VirtualDOM]].
- * It implements the *regular* constructor of the target element on top of which the flux-view logic is added,
- * the added public interface is described [[InterfaceHTMLElement$ | here]].
+ * The actual element associated to a {@link VirtualDOM}.
+ * It implements the *regular* constructor of the target HTML element on top of which reactive trait is added.
  *
- * > 🧐 The implementation is based on [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
+ * The implementation is based on
+ * [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements).
+ *
+ * @category Concepts
  */
 export class HTMLElement$ extends ReactiveTrait(HTMLElement) {}
 
@@ -180,6 +182,11 @@ function ReactiveTrait<T extends Constructor<HTMLElement>>(Base: T) {
             binding()
         }
 
+        /**
+         * The provided subscription get owned by the element:
+         * it will be unsubscribed when the element is removed from the DOM.
+         * @param subs: subscriptions to own
+         */
         ownSubscriptions(...subs: Subscription[]) {
             this.subscriptions.push(...subs)
         }
@@ -199,10 +206,12 @@ function factory(tag = 'div'): HTMLElement$ {
 }
 
 /**
- * Transform a [[VirtualDOM]] into a real HTMLElement (actually an [[HTMLElement$]]).
+ * Transform a {@link VirtualDOM} into a {@link HTMLElement$}.
  *
  * @param vDom the virtual DOM
  * @returns the 'real' DOM element
+ * @category Concepts
+ * @category Entry Points
  */
 export function render(vDom: VirtualDOM): HTMLElement$ {
     if (vDom == undefined) {
