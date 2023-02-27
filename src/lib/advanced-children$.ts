@@ -311,7 +311,7 @@ export type ComparisonTrait<TDomain> = {
 }
 
 /**
- * ## ReplaceChildrenStream$
+ * ## FromStoreChildrenStream$
  *
  * Use case: when the emitting source of the array of domain data re-use some of its element.
  *
@@ -351,7 +351,9 @@ export type ComparisonTrait<TDomain> = {
  * -    the policy does domain data comparison (to identify which elements are new or old) using reference by default,
  * a custom comparison operator can also be supplied.
  */
-export class ReplaceChildrenStream<TDomain> extends ChildrenStream<TDomain> {
+export class FromStoreChildrenStream$<
+    TDomain,
+> extends ChildrenStream$<TDomain> {
     /**
      * Comparison operator used to identify which elements need to be added/ updated/ replaced.
      * By default, reference equality is used, ideal when the domain data are immutables.
@@ -418,26 +420,41 @@ export class ReplaceChildrenStream<TDomain> extends ChildrenStream<TDomain> {
         )
     }
 }
+/**
+ *
+ * @category Reactive Children
+ */
+export type ChildrenFromStoreOption<TDomain> = ChildrenUpdateTrait<TDomain> &
+    OrderingTrait<TDomain> &
+    ComparisonTrait<TDomain>
 
 /**
- * ## childrenWithReplace$
- *
- * Creation function companion of [[ReplaceChildrenStream$]].
- *
- * @param stream$ The stream of array of domain data
- * @param vDomMap The mapping between DomainData and [[VirtualDOM]]
- * @param options
- * -    parent: [[HTMLElement$]] parent element
- * -    update: description of the update using [[RenderingUpdate]]
- * @returns
- * @template TDomain Domain data type
+ * @ignore
+ * @hidden
+ * @deprecated use childrenFromStore$
  */
 export function childrenWithReplace$<TDomain>(
     stream$: Observable<TDomain[]>,
     vDomMap: (tDomain: TDomain, ...args) => VirtualDOM,
-    options: TOptionsWithComparison<TDomain> = {},
-): ReplaceChildrenStream<TDomain> {
-    return new ReplaceChildrenStream<TDomain>(
+    options: ChildrenFromStoreOption<TDomain> = {},
+): FromStoreChildrenStream$<TDomain> {
+    return new FromStoreChildrenStream$<TDomain>(
+        stream$,
+        (data: TDomain, ...args) => vDomMap(data, ...args),
+        options,
+    )
+}
+
+/**
+ * @category Reactive Children
+ * @category Entry Points
+ */
+export function childrenFromStore$<TDomain>(
+    stream$: Observable<TDomain[]>,
+    vDomMap: (tDomain: TDomain, ...args) => VirtualDOM,
+    options: ChildrenFromStoreOption<TDomain> = {},
+): FromStoreChildrenStream$<TDomain> {
+    return new FromStoreChildrenStream$<TDomain>(
         stream$,
         (data: TDomain, ...args) => vDomMap(data, ...args),
         options,
