@@ -12,7 +12,7 @@ export const apiVersion = '1'
  *
  * > 🧐 The implementation is based on [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
  */
-export class HTMLElement$ extends _$(HTMLElement) {}
+export class HTMLElement$ extends ReactiveTrait(HTMLElement) {}
 
 class HTMLPlaceHolderElement extends HTMLElement {
     private currentElement: HTMLElement
@@ -56,7 +56,7 @@ const specialBindings = {
     },
 }
 
-function _$<T extends Constructor<HTMLElement>>(Base: T) {
+function ReactiveTrait<T extends Constructor<HTMLElement>>(Base: T) {
     return class extends Base {
         /**
          * Virtual DOM
@@ -215,7 +215,7 @@ export function render(vDom: VirtualDOM): HTMLElement$ {
 }
 
 function registerElement(tag: string, BaseClass) {
-    class ExtendedClass extends _$(BaseClass) {
+    class ExtendedClass extends ReactiveTrait(BaseClass) {
         constructor() {
             super()
         }
