@@ -10,7 +10,7 @@ import {
     child$,
     children$,
     childrenAppendOnly$,
-    childrenWithReplace$,
+    childrenFromStore$,
     HTMLElement$,
     render,
     RenderingUpdate,
@@ -354,7 +354,7 @@ test('advancedChildren$ replace all with values', () => {
 
     const vDom = {
         id: 'browser',
-        children: childrenWithReplace$(
+        children: childrenFromStore$(
             array_data$.pipe(tag('children$')),
             (data) => view(data),
             {
@@ -433,7 +433,7 @@ test('advancedChildren$ replace all with references', () => {
 
     const vDom = {
         id: 'browser',
-        children: childrenWithReplace$(
+        children: childrenFromStore$(
             array_data$.pipe(tag('children$')),
             (data) => view(data),
             {
