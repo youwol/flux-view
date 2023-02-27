@@ -73,9 +73,15 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             super(...args)
         }
 
+        /**
+         * @ignore
+         */
         initialize(vDom: VirtualDOM) {
             this.vDom = vDom
         }
+        /**
+         * @ignore
+         */
         connectedCallback() {
             if (!this.vDom) {
                 return
@@ -127,6 +133,9 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 this.vDom.connectedCallback(this as unknown as HTMLElement$)
         }
 
+        /**
+         * @ignore
+         */
         disconnectedCallback() {
             this.subscriptions.forEach((s) => s.unsubscribe())
             this.vDom &&
@@ -134,6 +143,9 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 this.vDom.disconnectedCallback(this as unknown as HTMLElement$)
         }
 
+        /**
+         * @ignore
+         */
         renderChildren(
             children: Array<VirtualDOM | Stream$<VirtualDOM> | HTMLElement>,
         ): Array<HTMLElement$> {
@@ -158,7 +170,9 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 })
             return rendered
         }
-
+        /**
+         * @ignore
+         */
         applyAttribute(name: string, value: AttributeType) {
             const binding = specialBindings[name]
                 ? () => specialBindings[name](this, value)
