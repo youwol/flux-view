@@ -244,6 +244,16 @@ export type AttributeType =
     | { [key: string]: number | string | boolean }
 
 /**
+ *
+ * @category Reactive Child
+ */
+export type ChildOption<TDomain> = {
+    untilFirst?: VirtualDOM
+    wrapper?: (tDom: VirtualDOM) => VirtualDOM
+    sideEffects?: (tDomain: TDomain, vDom: VirtualDOM) => void
+}
+
+/**
  * Type specialization of [[stream$]] for TDom = [[VirtualDOM]]
  *
  * ``` typescript
@@ -263,8 +273,27 @@ export type AttributeType =
  * }
  * ```
  */
-export const child$ = stream$
+export function child$<TDomain>(
+    source$: Observable<TDomain>,
+    mappingFct: (tDomain: TDomain) => VirtualDOM,
+    options: ChildOption<TDomain> = {},
+) {
+    return new Stream$<TDomain, VirtualDOM>(
+        source$,
+        (data: TDomain) => mappingFct(data),
+        options,
+    )
+}
 
+/**
+ *
+ * @category Reactive Attribute
+ */
+export type AttrOption<TDomain, TAttr = AttributeType> = {
+    untilFirst?: TAttr
+    wrapper?: (tDom: TAttr) => TAttr
+    sideEffects?: (tDomain: TDomain, tDom: TAttr) => void
+}
 /**
  * Type specialization of [[stream$]] for TDom = [[AttributeType]]
  *
@@ -284,7 +313,27 @@ export const child$ = stream$
  * }
  * ```
  */
-export const attr$ = stream$
+export function attr$<TDomain, TAttr = AttributeType>(
+    source$: Observable<TDomain>,
+    mappingFct: (tDomain: TDomain) => TAttr,
+    options: AttrOption<TDomain, TAttr> = {},
+) {
+    return new Stream$<TDomain, TAttr>(
+        source$,
+        (data: TDomain) => mappingFct(data),
+        options,
+    )
+}
+
+/**
+ *
+ * @category Reactive Children
+ */
+export type ChildrenOption<TDomain> = {
+    untilFirst?: VirtualDOM[]
+    wrapper?: (tDom: VirtualDOM[]) => VirtualDOM[]
+    sideEffects?: (tDomain: TDomain, tDom: VirtualDOM[]) => void
+}
 
 /** Type specialization of [[stream$]] for TDom = Array<[[VirtualDOM]]>
  *
@@ -306,4 +355,14 @@ export const attr$ = stream$
  * > created and inserted. Quite often it is possible to use a more efficient approach,
  * > see [[advancedChildren$]].
  */
-export const children$ = stream$
+export function children$<TDomain>(
+    source$: Observable<TDomain>,
+    mappingFct: (tDomain: TDomain) => VirtualDOM[],
+    options: ChildrenOption<TDomain> = {},
+) {
+    return new Stream$<TDomain, VirtualDOM[]>(
+        source$,
+        (data: TDomain) => mappingFct(data),
+        options,
+    )
+}
