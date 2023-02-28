@@ -1,18 +1,20 @@
 import { Subscription } from 'rxjs'
 import { instanceOfChildrenStream$ } from './advanced-children$'
 import { CustomElementsMap } from './factory'
-import { InterfaceHTMLElement$, VirtualDOM } from './interface'
+import { VirtualDOM } from './interface'
 import { AttributeType, instanceOfStream$, Stream$ } from './stream$'
 
 export const apiVersion = '1'
 /**
- * The actual element associated to a [[VirtualDOM]].
- * It implements the *regular* constructor of the target element on top of which the flux-view logic is added,
- * the added public interface is described [[InterfaceHTMLElement$ | here]].
+ * The actual element associated to a {@link VirtualDOM}.
+ * It implements the *regular* constructor of the target HTML element on top of which reactive trait is added.
  *
- * > 🧐 The implementation is based on [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
+ * The implementation is based on
+ * [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements).
+ *
+ * @category Concepts
  */
-export class HTMLElement$ extends _$(HTMLElement) {}
+export class HTMLElement$ extends ReactiveTrait(HTMLElement) {}
 
 class HTMLPlaceHolderElement extends HTMLElement {
     private currentElement: HTMLElement
@@ -56,9 +58,16 @@ const specialBindings = {
     },
 }
 
-function _$<T extends Constructor<HTMLElement>>(Base: T) {
-    return class extends Base implements InterfaceHTMLElement$ {
-        vDom: VirtualDOM
+function ReactiveTrait<T extends Constructor<HTMLElement>>(Base: T) {
+    return class extends Base {
+        /**
+         * Virtual DOM
+         */
+        vDom: Readonly<VirtualDOM>
+
+        /**
+         * @ignore
+         */
         subscriptions = new Array<Subscription>()
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TS2545: A mixin class must have a constructor with a single rest parameter of type 'any[]'.
@@ -66,9 +75,15 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             super(...args)
         }
 
+        /**
+         * @ignore
+         */
         initialize(vDom: VirtualDOM) {
             this.vDom = vDom
         }
+        /**
+         * @ignore
+         */
         connectedCallback() {
             if (!this.vDom) {
                 return
@@ -120,6 +135,9 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 this.vDom.connectedCallback(this as unknown as HTMLElement$)
         }
 
+        /**
+         * @ignore
+         */
         disconnectedCallback() {
             this.subscriptions.forEach((s) => s.unsubscribe())
             this.vDom &&
@@ -127,9 +145,12 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 this.vDom.disconnectedCallback(this as unknown as HTMLElement$)
         }
 
+        /**
+         * @ignore
+         */
         renderChildren(
             children: Array<VirtualDOM | Stream$<VirtualDOM> | HTMLElement>,
-        ): Array<InterfaceHTMLElement$> {
+        ): Array<HTMLElement$> {
             const rendered = []
             children
                 .filter((child) => child != undefined)
@@ -151,7 +172,9 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
                 })
             return rendered
         }
-
+        /**
+         * @ignore
+         */
         applyAttribute(name: string, value: AttributeType) {
             const binding = specialBindings[name]
                 ? () => specialBindings[name](this, value)
@@ -159,6 +182,11 @@ function _$<T extends Constructor<HTMLElement>>(Base: T) {
             binding()
         }
 
+        /**
+         * The provided subscription get owned by the element:
+         * it will be unsubscribed when the element is removed from the DOM.
+         * @param subs: subscriptions to own
+         */
         ownSubscriptions(...subs: Subscription[]) {
             this.subscriptions.push(...subs)
         }
@@ -178,10 +206,12 @@ function factory(tag = 'div'): HTMLElement$ {
 }
 
 /**
- * Transform a [[VirtualDOM]] into a real HTMLElement (actually an [[HTMLElement$]]).
+ * Transform a {@link VirtualDOM} into a {@link HTMLElement$}.
  *
  * @param vDom the virtual DOM
  * @returns the 'real' DOM element
+ * @category Concepts
+ * @category Entry Points
  */
 export function render(vDom: VirtualDOM): HTMLElement$ {
     if (vDom == undefined) {
@@ -194,7 +224,7 @@ export function render(vDom: VirtualDOM): HTMLElement$ {
 }
 
 function registerElement(tag: string, BaseClass) {
-    class ExtendedClass extends _$(BaseClass) {
+    class ExtendedClass extends ReactiveTrait(BaseClass) {
         constructor() {
             super()
         }

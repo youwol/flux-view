@@ -1,129 +1,103 @@
-/**
- * # Introduction
- *
- * When working with domain data that generates an array of [[VirtualDOM]]
- * the function [[children$]] has already been presented.
- *
- * However, as explained in its documentation, it is not the most efficient
- * solution as each time the source observable emit new data the DOM children
- * are flushed and re-created from scratch.
- *
- * If performance becomes an issue, the functions provided here add extra pieces
- * of logic to avoid flushing all the children and re-rendering them all each time a new elements are emitted.
- *
- * The library provides 2 policies for such case:
- * -   [[AppendOnlyChildrenStream$]]: when a new array of domains data is emitted,
- * corresponding DOM elements are always appended as children, no replacements, no deletions.
- * -   [[ReplaceChildrenStream$]]: when a new array of domains data is emitted, only new elements
- * are created, previous elements that are not part of the new array are removed. Element comparison
- * is by default references comparison (valid if domain data are immutables), but a custom function can be provided.
- *
- * @module advancedChildren$
- */
-
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { render } from './core'
-import { InterfaceHTMLElement$, VirtualDOM } from './interface'
+import { HTMLElement$, render } from './core'
+import { VirtualDOM } from './interface'
 
 /**
+ * Specifies the side effects associated to an update of children.
  *
- * @deprecated use orderOperator
+ * @category Reactive Children
  */
-export interface TOptionsWithOrderingIndex<TDomain> {
+export type ChildrenUpdateTrait<TDomain> = {
     /**
-     * @param data
+     * Execute side effects once the children have been updated.
+     *
+     * @param parent parent of the children
+     * @param update description of the update
+     */
+    sideEffects?: (
+        parent: HTMLElement$,
+        update: RenderingUpdate<TDomain>,
+    ) => void
+}
+
+/**
+ * Specifies the order in which children are included in the parent element.
+ *
+ * @category Reactive Children
+ */
+export type OrderingTrait<TDomain> = {
+    /**
+     * @hidden
      * @deprecated use orderOperator
      */
     orderingIndex?: (data: TDomain) => number
-    orderOperator?: never
+    /**
+     * Specifies how the children are ordered in the parent element.
+     * Order is defined using this callback.
+     *
+     * @param d1 Domain data associated to the first element for comparison
+     * @param d2 Domain data associated to the second element for comparison
+     * @return a value:
+     * -    if `>0`, sort `d1` after `d2`
+     * -    if `<0`, sort `d1` before `d2`
+     */
+    orderOperator?: (d1: TDomain, d2: TDomain) => number
 }
-export type TOptions<TDomain> = {
-    sideEffects?: (
-        parent: InterfaceHTMLElement$,
-        update: RenderingUpdate<TDomain>,
-    ) => void
-} & (
-    | TOptionsWithOrderingIndex<TDomain>
-    | {
-          orderingIndex?: never
-          orderOperator?: (d1: TDomain, d2: TDomain) => number
-      }
-)
 
 /**
  * ## RefElement
  *
- * RefElement references the three component of a view (related
- * to the function [[advancedChildren$]] when *sideEffects* is called):
- * -    domainData: the domain data
- * -    virtualDom: the virtual dom as defined by the developer
- * -    element: the actual [[HTMLElement$]]
+ * Encapsulates domainData, VirtualDOM & HTMLElement.
+ *
+ * @category Reactive Children
  */
-export class RefElement<TDomain> {
+export type RefElement<TDomain> = {
     /**
      * domainData
      */
-    public readonly domainData: TDomain
+    domainData: TDomain
     /**
      * the virtual DOM as defined by the developer
      */
-    public readonly virtualDOM: VirtualDOM
+    virtualDOM: VirtualDOM
     /**
      * the actual DOM element
      */
-    public readonly element: InterfaceHTMLElement$
-
-    constructor({
-        domainData,
-        virtualDOM,
-        element,
-    }: {
-        domainData: TDomain
-        virtualDOM: VirtualDOM
-        element: InterfaceHTMLElement$
-    }) {
-        this.domainData = domainData
-        this.virtualDOM = virtualDOM
-        this.element = element
-    }
+    element: HTMLElement$
 }
 
 /**
- * ## RenderingUpdate
+ * Describes an update when a DOM element has been modified when using {@link childrenAppendOnly$} or
+ * {@link childrenFromStore$}.
  *
- * This class describes an update when DOM has been modified through the use
- * of [[advancedChildren$]]; it provides the list of **added**, **updated**, and **removed**
- * [[RefElement]].
- *
+ * @category Reactive Children
  */
-export class RenderingUpdate<TDomain> {
-    constructor(
-        public readonly added: RefElement<TDomain>[],
-        public readonly updated: RefElement<TDomain>[],
-        public readonly removed: RefElement<TDomain>[],
-    ) {}
+export type RenderingUpdate<TDomain> = {
+    added: RefElement<TDomain>[]
+    updated: RefElement<TDomain>[]
+    removed: RefElement<TDomain>[]
 }
 
 /**
- * ## ChildrenStream$
- *
- * Base class used to define advanced **children** policy in [[VirtualDOM]] when
+ * Base class used to define advanced **children** policy in {@link VirtualDOM} when
  * the source stream emit **array** of domain data.
  *
- * You can derive you own class by providing the implementation of [[update]].
+ * You can derive you own class by providing the implementation of {@link update}.
  *
- * Example of use: [[AppendOnlyPolicy]], [[ReplacePolicy]].
+ * Example of use: {@link AppendOnlyChildrenStream$}, {@link FromStoreChildrenStream$}.
+ *
+ * @category Advanced
  */
-export abstract class ChildrenStream<TDomain> {
+export abstract class ChildrenStream$<TDomain> {
     ClassType = 'ChildrenStream$'
     /**
      * Callback that gets called when the DOM has been updated.
-     * @param parent parent: parent [[HTMLElement$]]
-     * @param update update: description of the update, see [[RenderingUpdate]]
+     * @param parent parent: parent {@link HTMLElement$}
+     * @param update update: description of the update, see {@link RenderingUpdate}
      */
     public readonly sideEffects: (
-        parent: InterfaceHTMLElement$,
+        parent: HTMLElement$,
         update: RenderingUpdate<TDomain>,
     ) => void
 
@@ -138,14 +112,20 @@ export abstract class ChildrenStream<TDomain> {
     /**
      *
      * @param stream$ input stream
-     * @param vDomMap mapping function domain data => [[VirtualDOM]]
-     * @param sideEffects see [[sideEffects]]
-     * @param orderingFunction see [[orderingFunction]]
+     * @param vDomMap mapping function domain data => {@link VirtualDOM}
+     * @param sideEffects see {@link sideEffects}
+     * @param orderingFunction see {@link orderOperator}
      */
     protected constructor(
         public readonly stream$: Observable<Array<TDomain>>,
         public readonly vDomMap: (tDomain: TDomain, ...args) => VirtualDOM,
-        { sideEffects, orderingIndex, orderOperator }: TOptions<TDomain>,
+        {
+            sideEffects,
+            orderingIndex,
+            orderOperator,
+        }: ChildrenUpdateTrait<TDomain> &
+            OrderingTrait<TDomain> &
+            ComparisonTrait<TDomain>,
     ) {
         this.vDomMap = vDomMap
         this.sideEffects = sideEffects
@@ -161,14 +141,14 @@ export abstract class ChildrenStream<TDomain> {
     }
 
     protected abstract update(
-        parentElement: InterfaceHTMLElement$,
+        parentElement: HTMLElement$,
         domainData: Array<TDomain>,
     ): RenderingUpdate<TDomain>
 
     /**
-     * Only for internal use (within [[HTMLElement$]]), should not actually be exposed.
+     * Only for internal use (within {@link HTMLElement$}), should not actually be exposed.
      */
-    subscribe(parentElement: InterfaceHTMLElement$) {
+    subscribe(parentElement: HTMLElement$) {
         return this.stream$
             .pipe(
                 map((domains: TDomain[]) => {
@@ -183,7 +163,7 @@ export abstract class ChildrenStream<TDomain> {
     }
 
     protected addChildRef(
-        parentElement: InterfaceHTMLElement$,
+        parentElement: HTMLElement$,
         ref: RefElement<TDomain>,
     ) {
         this.children.push(ref)
@@ -208,134 +188,75 @@ export abstract class ChildrenStream<TDomain> {
 
 export function instanceOfChildrenStream$<T>(
     obj: unknown,
-): obj is ChildrenStream<T> {
-    return obj && (obj as ChildrenStream<T>).ClassType === 'ChildrenStream$'
+): obj is ChildrenStream$<T> {
+    return obj && (obj as ChildrenStream$<T>).ClassType === 'ChildrenStream$'
 }
 
 /**
+ * See companion creation function {@link childrenAppendOnly$}.
  *
- * ## AppendOnlyChildrenStream$
- *
- * Use case: when the emitting source of the array of domain data is always emitting new data
- * for which associated DOM nodes need to be added.
- *
- * In practice it is often used through the companion function [[childrenAppendOnly$]]
- *
- * For instance:
- *
- *```typescript
- * class DomainData{
- *    constructor( public readonly value: string){}
- *}
- *let hello = new DomainData("hello")
- *let world = new DomainData("world")
- *let foo = new DomainData("foo")
- *let stream$ = new BehaviorSubject<DomainData[]>([hello, world])
- *let vDOM = {
- *    children: appendOnlyChildren$(
- *        stream$,
- *        (data: DomainData) => ({innerText: data.value})
- *    )
- *}
- * body.appendChild(render(vDOM))
- * //<div>
- * //    <div> hello </div>
- * //    <div> world </div>
- * //</div>
- * stream$.next([hello, foo])
- * //<div>
- * //    <div> hello </div>
- * //    <div> foo </div>
- * //    <div> hello </div>
- * //    <div> foo </div>
- * //</div>
- *```
- *
+ * @category Advanced
  */
-export class AppendOnlyChildrenStream<TDomain> extends ChildrenStream<TDomain> {
+export class AppendOnlyChildrenStream$<
+    TDomain,
+> extends ChildrenStream$<TDomain> {
     public readonly untilFirst
     public readonly sideEffects
 
     constructor(
         public readonly stream$: Observable<TDomain[]>,
         public readonly vDomMap: (tDomain: TDomain, ...args) => VirtualDOM,
-        options: TOptions<TDomain>,
+        options: ChildrenUpdateTrait<TDomain> & OrderingTrait<TDomain>,
     ) {
         super(stream$, vDomMap, options)
     }
 
     protected update(
-        parentElement: InterfaceHTMLElement$,
+        parentElement: HTMLElement$,
         domainData: TDomain[],
     ): RenderingUpdate<TDomain> {
         const added = domainData.map((d) => {
             const vDom = this.vDomMap(d)
-            return new RefElement<TDomain>({
+            return {
                 domainData: d,
                 virtualDOM: vDom,
                 element: render(vDom),
-            })
+            }
         })
         added.forEach((ref) => this.addChildRef(parentElement, ref))
 
-        return new RenderingUpdate(added, [], [])
+        return { added, updated: [], removed: [] }
     }
 }
-
 /**
+ * Option definition for the function {@link childrenAppendOnly$}.
  *
- * ## childrenAppendOnly$
- *
- * Creation function companion of [[AppendOnlyChildrenStream$]].
- *
- *
- * @param stream$ The stream of array of domain data
- * @param vDomMap The mapping between DomainData and [[VirtualDOM]]
- * @param options
- * -    parent: [[HTMLElement$]] parent element
- * -    update: description of the update using [[RenderingUpdate]]
- * @returns
- * @template TDomain Domain data type
+ * @category Reactive Children
  */
-export function childrenAppendOnly$<TDomain>(
-    stream$: Observable<TDomain[]>,
-    vDomMap: (data: TDomain, ...args: unknown[]) => VirtualDOM,
-    options: TOptions<TDomain> = {},
-): AppendOnlyChildrenStream<TDomain> {
-    return new AppendOnlyChildrenStream<TDomain>(
-        stream$,
-        (data: TDomain, ...args) => vDomMap(data, ...args),
-        options,
-    )
-}
-
-export type TOptionsWithComparison<TDomain> = TOptions<TDomain> & {
-    comparisonOperator?: (d1: TDomain, d2: TDomain) => boolean
-}
+export type ChildrenAppendOnlyOption<TDomain> = ChildrenUpdateTrait<TDomain> &
+    OrderingTrait<TDomain>
 
 /**
- * ## ReplaceChildrenStream$
  *
- * Use case: when the emitting source of the array of domain data re-use some of its element.
- *
- * In practice, it is often used through the companion function [[childrenWithReplace$]]
+ * Use case: when the emitting `source$` of the array of domain data is always emitting new data
+ * for which associated DOM nodes need to be added.
  *
  * For instance:
  *
- *```typescript
+ * ```typescript
  * class DomainData{
  *    constructor( public readonly value: string){}
- *}
- *let hello = new DomainData("hello")
- *let world = new DomainData("world")
- *let foo = new DomainData("foo")
- *let stream$ = new BehaviorSubject<DomainData[]>([hello, world])
- *let vDOM = {
- *    children: childrenWithReplace$(
+ * }
+ * let hello = new DomainData("hello")
+ * let world = new DomainData("world")
+ * let foo = new DomainData("foo")
+ * let stream$ = new BehaviorSubject<DomainData[]>([hello, world])
+ * let vDOM = {
+ *    children: appendOnlyChildren$(
  *        stream$,
  *        (data: DomainData) => ({innerText: data.value})
  *    )
- *}
+ * }
  * body.appendChild(render(vDOM))
  * //<div>
  * //    <div> hello </div>
@@ -345,16 +266,53 @@ export type TOptionsWithComparison<TDomain> = TOptions<TDomain> & {
  * //<div>
  * //    <div> hello </div>
  * //    <div> foo </div>
+ * //    <div> hello </div>
+ * //    <div> foo </div>
  * //</div>
- *```
- * The key points in the above example is that when *stream$.next([hello, foo])* is called:
- * -    ```<div> hello </div>``` was not re-rendered in any way
- * -    ```<div> world </div>``` has been removed
- * -    ```<div> foo </div>``` has been added
- * -    the policy does domain data comparison (to identify which elements are new or old) using reference by default,
- * a custom comparison operator can also be supplied.
+ * ```
+ *
+ * @param stream$ The stream of array of domain data
+ * @param vDomMap The mapping between one DomainData and corresponding {@link VirtualDOM}
+ * @param option
+ * @template TDomain Domain data type
+ * @category Reactive Children
+ * @category Entry Points
  */
-export class ReplaceChildrenStream<TDomain> extends ChildrenStream<TDomain> {
+export function childrenAppendOnly$<TDomain>(
+    stream$: Observable<TDomain[]>,
+    vDomMap: (data: TDomain, ...args: unknown[]) => VirtualDOM,
+    option: ChildrenAppendOnlyOption<TDomain> = {},
+): AppendOnlyChildrenStream$<TDomain> {
+    return new AppendOnlyChildrenStream$<TDomain>(
+        stream$,
+        (data: TDomain, ...args) => vDomMap(data, ...args),
+        option,
+    )
+}
+/**
+ * Specifies whether two domain data represents the same {@link VirtualDOM} (or {@link HTMLElement}).
+ *
+ * @category Reactive Children
+ */
+export type ComparisonTrait<TDomain> = {
+    /**
+     * Default is to use reference equality.
+     *
+     * @param d1 first domain data for comparison
+     * @param d2 second domain data for comparison
+     * @return `true` if the `d1` and `d2` represents the same element, `false` otherwise.
+     */
+    comparisonOperator?: (d1: TDomain, d2: TDomain) => boolean
+}
+
+/**
+ * See companion creation function {@link childrenFromStore$}.
+ *
+ * @category Advanced
+ */
+export class FromStoreChildrenStream$<
+    TDomain,
+> extends ChildrenStream$<TDomain> {
     /**
      * Comparison operator used to identify which elements need to be added/ updated/ replaced.
      * By default, reference equality is used, ideal when the domain data are immutables.
@@ -364,7 +322,9 @@ export class ReplaceChildrenStream<TDomain> extends ChildrenStream<TDomain> {
     constructor(
         public readonly stream$: Observable<TDomain[]>,
         public readonly vDomMap: (tDomain: TDomain, ...args) => VirtualDOM,
-        options: TOptionsWithComparison<TDomain>,
+        options: ChildrenUpdateTrait<TDomain> &
+            OrderingTrait<TDomain> &
+            ComparisonTrait<TDomain>,
     ) {
         super(stream$, vDomMap, options)
         if (options.comparisonOperator) {
@@ -377,7 +337,7 @@ export class ReplaceChildrenStream<TDomain> extends ChildrenStream<TDomain> {
     private actualElements: RefElement<TDomain>[] = []
 
     protected update(
-        parentElement: InterfaceHTMLElement$,
+        parentElement: HTMLElement$,
         expectedData: Array<TDomain>,
     ): RenderingUpdate<TDomain> {
         const actualData = this.actualElements.map(
@@ -389,14 +349,11 @@ export class ReplaceChildrenStream<TDomain> extends ChildrenStream<TDomain> {
         )
         const newVirtualDOMs = newData.map((d) => this.vDomMap(d))
         const rendered = newVirtualDOMs.map((vDOM) => render(vDOM))
-        const addedRefElem = newData.map(
-            (d, i) =>
-                new RefElement<TDomain>({
-                    domainData: d,
-                    virtualDOM: newVirtualDOMs[i],
-                    element: rendered[i],
-                }),
-        )
+        const addedRefElem = newData.map((d, i) => ({
+            domainData: d,
+            virtualDOM: newVirtualDOMs[i],
+            element: rendered[i],
+        }))
         addedRefElem.forEach((ref) => this.addChildRef(parentElement, ref))
 
         const deletedRefElem = this.actualElements.filter((candidate) =>
@@ -412,7 +369,7 @@ export class ReplaceChildrenStream<TDomain> extends ChildrenStream<TDomain> {
             ...addedRefElem,
         ]
 
-        return new RenderingUpdate(addedRefElem, [], deletedRefElem)
+        return { added: addedRefElem, updated: [], removed: deletedRefElem }
     }
 
     private isNotInList(list: TDomain[], candidate: TDomain): boolean {
@@ -422,28 +379,84 @@ export class ReplaceChildrenStream<TDomain> extends ChildrenStream<TDomain> {
         )
     }
 }
+/**
+ * Option definition for the function {@link childrenFromStore$}.
+ *
+ * @category Reactive Children
+ */
+export type ChildrenFromStoreOption<TDomain> = ChildrenUpdateTrait<TDomain> &
+    OrderingTrait<TDomain> &
+    ComparisonTrait<TDomain>
 
 /**
- * ## childrenWithReplace$
- *
- * Creation function companion of [[ReplaceChildrenStream$]].
- *
- * @param stream$ The stream of array of domain data
- * @param vDomMap The mapping between DomainData and [[VirtualDOM]]
- * @param options
- * -    parent: [[HTMLElement$]] parent element
- * -    update: description of the update using [[RenderingUpdate]]
- * @returns
- * @template TDomain Domain data type
+ * @ignore
+ * @hidden
+ * @deprecated use childrenFromStore$
  */
 export function childrenWithReplace$<TDomain>(
     stream$: Observable<TDomain[]>,
     vDomMap: (tDomain: TDomain, ...args) => VirtualDOM,
-    options: TOptionsWithComparison<TDomain> = {},
-): ReplaceChildrenStream<TDomain> {
-    return new ReplaceChildrenStream<TDomain>(
+    options: ChildrenFromStoreOption<TDomain> = {},
+): FromStoreChildrenStream$<TDomain> {
+    return new FromStoreChildrenStream$<TDomain>(
         stream$,
         (data: TDomain, ...args) => vDomMap(data, ...args),
         options,
+    )
+}
+
+/**
+ * Use case: when the emitting `source$` of the array of domain data recycle some of its element.
+ *
+ * For instance:
+ *
+ * ```typescript
+ * class DomainData{
+ *    constructor( public readonly value: string){}
+ * }
+ * let hello = new DomainData("hello")
+ * let world = new DomainData("world")
+ * let foo = new DomainData("foo")
+ * let stream$ = new BehaviorSubject<DomainData[]>([hello, world])
+ * let vDOM = {
+ *    children: childrenWithReplace$(
+ *        stream$,
+ *        (data: DomainData) => ({innerText: data.value})
+ *    )
+ * }
+ * body.appendChild(render(vDOM))
+ * //<div>
+ * //    <div> hello </div>
+ * //    <div> world </div>
+ * //</div>
+ * stream$.next([hello, foo])
+ * //<div>
+ * //    <div> hello </div>
+ * //    <div> foo </div>
+ * //</div>
+ * ```
+ * The key points in the above example is that when *stream$.next([hello, foo])* is called:
+ * -    ```<div> hello </div>``` was not re-rendered
+ * -    ```<div> world </div>``` has been removed
+ * -    ```<div> foo </div>``` has been added
+ * -    the policy does domain data comparison (to identify which elements are new or old) using reference by default,
+ * a custom comparison operator can also be supplied.
+ *
+ * @param stream$ The stream of array of domain data
+ * @param vDomMap The mapping between one DomainData and corresponding {@link VirtualDOM}
+ * @param option
+ * @template TDomain Domain data type
+ * @category Reactive Children
+ * @category Entry Points
+ */
+export function childrenFromStore$<TDomain>(
+    stream$: Observable<TDomain[]>,
+    vDomMap: (tDomain: TDomain, ...args) => VirtualDOM,
+    option: ChildrenFromStoreOption<TDomain> = {},
+): FromStoreChildrenStream$<TDomain> {
+    return new FromStoreChildrenStream$<TDomain>(
+        stream$,
+        (data: TDomain, ...args) => vDomMap(data, ...args),
+        option,
     )
 }

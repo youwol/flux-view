@@ -1,130 +1,17 @@
-/**
- * # Introduction
- *
- * ## VirtualDom & rendering
- *
- * The [[ VirtualDOM | virtual DOM]] is described by a JSON data-structure that mimics the structure of an HTML Node.
- * The benefit of using this (virtual) description is that it allows using [RxJs Observables](https://rxjs-dev.firebaseapp.com/guide/observable)
- * where in a regular description only plain values are accepted.
- *
- *
- * To turn a vDOM into a regular HTMLElement, use the function **render**:
-
- *```typescript
- * import { interval } from 'rxjs';
- * import { map, take } from 'rxjs/operators';
- * import { render, attr$ } from '@youwol/flux-view'
- *
- *
- * const nCount = 10
- * // timer$: tick 10 times every seconds
- * const timer$ = interval(1000).pipe(
- *     take(nCount),
- *     map( tick => nCount - tick)
- * )
- *
- * let vDom = {
- *     tag:'div',
- *     innerText: 'count down:',
- *     children:[
- *         {   tag:'div',
- *             innerText: attr$(
- *                 // input stream (aka domain stream)
- *                 timer$,
- *                // rendering mapping
- *                (countDown:number) => `Remaining: ${countDown} s`
- *             )
- *        }
- *     ]
- * }
- * let div : HTMLElement = render(vDom)
- * ```
- *
- *
- * ## **attr$**, **child$** and **children** functions
- *
- * The functions [[attr$]], [[child$]], and  [[children$]] functions are actually the same,
- * they differ only by their usages (a definition).
-
-> The [[children$]] function is not efficient in terms of rendering. When performance matters, the function
-> [[advancedChildren$]] should be used.
-
-* It follows this common type's definition (the third arguments is optional):
-* ```typescript
-*function (
-*    stream$: Observable<TData>,
-*    viewMap: (TData) => TResult,
-*    {
-*        untilFirst,
-*        wrapper,
-*        sideEffects
-*    }:
-*    {   untilFirst?: TResult,
-*        wrapper?: (TResult) => TResult,
-*        sideEffects?: (TData, HTMLElement) => void
-*    } = {},
-*)
-```
-where:
-- **stream$** is the domain's data stream defined as a RxJS observable
-- **viewMap** is a function that convert the domain's data to a vDOM attribute.
-In the case of the function *attr$*, *TResult* is the type of the target attribute.
-In the case of the function *child$*, *TResult* is *VirtualDOM*.
-In the case of the function *children$*, *TResult* is *Array\<VirtualDOM\>*.
-- **untilFirst** is the data that will be used until the first emitted element in *stream$* is obtained. If not provided, the attribute/child does not exist until first emission.
-    In such case, using a *BehaviorSubject* of RxJS (observable that directly emit a predefined value) is an alternative that can also be used.
-
-```typescript
- * let vDom = {
- *   tag:'div', innerText: 'count down:',
- *   children:[
- *       {   tag:'div',
- *           innerText: attr$(
- *               timer$,
- *               ( countDown:number ) => `Remaining: ${countDown} s`,
- *               { untilFirst: "Waiting first count down..."}
- *           )
- *       }
- *   ]
-*}
-
-```
-- **wrapper** is a function that is used to alter the data returned by **viewMap**. it is often used to factorize part of the viewMap function that are 'constant' with respect to the data in **stream$**.
-For instance the following code factorizes the class *count-down-item*:
-```typescript
-* let vDom = {
-*    tag:'div', innerText: 'count down:',
-*    children:[
-*        {   tag:'div',
-*            class:  attr$(
-*                timer$,
-*                ( countDown:number ) => countDown <5 ? 'text-red' : 'text-green',
-*                { wrapper: (classColor) => `count-down-item ${classColor}`}
-*            ),
-*            innerText: attr$( timer$, (countDown:number) => `${countDown} s`)
-*        }
-*    ]
-* }
-```
-- **sideEffects** is a function that provides a handle to execute side effects once the
-attribute/child has been set/added; both the domain's data and the rendered HTMLElement are provided to this function.
-
- *
- * @module stream$
- */
-
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { VirtualDOM } from './interface'
 
 /**
- * A RxJs observable that represents a DOM's attribute, child or children.
+ * A RxJs observable that represents a DOM's attribute ({@link attr$}), child ({@link child$}) or children ({@link children$}).
  *
  * @param TDomain the domain data type
  * @param TDom the DOM data type: either :
- *     - [[AttributeType]] for attributes (see [[attr$]])
- *     - [[VirtualDOM]] for child (see [[child$]])
- *     - Array<[[VirtualDOM]]> for children (see [[children$]])
+ *     - {@link AttributeType} for attributes
+ *     - {@link VirtualDOM} for child
+ *     - list of {@link VirtualDOM}> for children
+ *
+ * @category Advanced
  */
 export class Stream$<TDomain, TDom = TDomain> {
     ClassType = 'Stream$'
@@ -162,7 +49,7 @@ export class Stream$<TDomain, TDom = TDomain> {
     }
 
     /**
-     * Implementation function that supposed to be called only by [[HTMLElement$]].
+     * Implementation function that supposed to be called only by {@link HTMLElement$}.
      */
     subscribe(realizeDom: (tDom: TDom, ...args) => TDom, ...withData) {
         const mappedSource$: Observable<[TDom, TDomain]> = this.source$.pipe(
@@ -194,48 +81,9 @@ export function instanceOfStream$<TDomain, TDom = TDomain>(
 }
 
 /**
- * Create a stream of DOM understandable element (attribute, child or children) from a RxJS observable.
- * It is usually called indirectly using [[attr$]], [[child$]] or [[children$]].
+ * Type alias for attributes in {@link VirtualDOM}.
  *
- * @param source$  domain's data stream defined as a RxJS observable
- * @param vDomMap function that convert the domain's data to a vDOM attribute:
- * -    in the case of the function [[attr$]], *TDom* is [[AttributeType]].
- * -    in the case of the function [[child$]], *TDom* is [[VirtualDOM]].
- * -    in the case of the function [[children$]], *TDom* is Array<[[VirtualDOM]]>.
- * @param untilFirst is the data that will be used until the first emitted element in *stream$* is obtained.
- *  If not provided, the attribute/child does not exist until first emission.
- *  In such case, using a *BehaviorSubject* of RxJS (observable that directly emit a predefined value) is an alternative that can also be used.
- * @param wrapper is a function that is used to alter the data returned by *vDomMap*.
- * It is often used to factorize part of the viewMap function that are 'constant' with respect to the data in $stream$*
- * @param sideEffects is a function that provides a handle to execute side effects once the
- * attribute/child as been set/added; both the domain's data and the rendered HTMLElement are provided to this function.
- * For instance, a use case would be to focus an input after being dynamically added to the DOM.
- * @returns a stream usable in [[VirtualDOM]]
- */
-export function stream$<
-    TDomain,
-    TDom extends AttributeType | VirtualDOM | Array<VirtualDOM>,
->(
-    source$: Observable<TDomain>,
-    vDomMap: (tDomain: TDomain, ...args) => TDom,
-    {
-        untilFirst,
-        wrapper,
-        sideEffects,
-    }: {
-        untilFirst?: TDom
-        wrapper?: (tDom: TDom) => TDom
-        sideEffects?: (tDomain: TDomain, tDom: TDom) => void
-    } = {},
-) {
-    return new Stream$<TDomain, TDom>(
-        source$,
-        (data: TDomain, ...args) => vDomMap(data, ...args),
-        { untilFirst, wrapper, sideEffects },
-    )
-}
-/**
- * Type alias for attributes in [[VirtualDOM]]
+ * @category Reactive Attribute
  */
 export type AttributeType =
     | number
@@ -244,7 +92,32 @@ export type AttributeType =
     | { [key: string]: number | string | boolean }
 
 /**
- * Type specialization of [[stream$]] for TDom = [[VirtualDOM]]
+ * Option definition for the function {@link child$}.
+ *
+ * @category Reactive Child
+ */
+export type ChildOption<TDomain> = {
+    /**
+     * Virtual DOM to display before any item have been emitted from the `source$` used in {@link child$}.
+     */
+    untilFirst?: VirtualDOM
+    /**
+     * @param tDom Virtual DOM returned by the mapping function in {@link child$}
+     * @return actual Virtual DOM to use in the rendering (serves as factorizing some final transformations).
+     */
+    wrapper?: (tDom: VirtualDOM) => VirtualDOM
+    /**
+     * Execute side effects once the element has been updated.
+     *
+     * @param tDomain value of the domain data
+     * @param vDom final virtual DOM value
+     */
+    sideEffects?: (tDomain: TDomain, vDom: VirtualDOM) => void
+}
+
+/**
+ *
+ * Defines a reactive child to be used within {@link VirtualDOM}.
  *
  * ``` typescript
  * let domain$ : Observable<{name:string}>
@@ -262,11 +135,51 @@ export type AttributeType =
  *     )
  * }
  * ```
+ *
+ * @param source$ source observable of domain data
+ * @param mappingFct mapping function to {@link VirtualDOM}
+ * @param option: options
+ * @template TDomain type of the domain data
+ * @category Reactive Child
+ * @category Entry Points
  */
-export const child$ = stream$
+export function child$<TDomain>(
+    source$: Observable<TDomain>,
+    mappingFct: (tDomain: TDomain) => VirtualDOM,
+    option: ChildOption<TDomain> = {},
+) {
+    return new Stream$<TDomain, VirtualDOM>(
+        source$,
+        (data: TDomain) => mappingFct(data),
+        option,
+    )
+}
 
 /**
- * Type specialization of [[stream$]] for TDom = [[AttributeType]]
+ * Option definition for the function {@link attr$}.
+ *
+ * @category Reactive Attribute
+ */
+export type AttrOption<TDomain, TAttr = AttributeType> = {
+    /**
+     * Value of the attribute to use before any item have been emitted from the `source$` used in {@link attr$}.
+     */
+    untilFirst?: TAttr
+    /**
+     * @param attr Attribute value returned by the mapping function in {@link attr$}
+     * @return actual attribute value to use in the rendering (serves as factorizing some final transformations).
+     */
+    wrapper?: (attr: TAttr) => TAttr
+    /**
+     * Execute side effects once the attribute has been updated.
+     *
+     * @param tDomain value of the domain data
+     * @param vDom final attribute value
+     */
+    sideEffects?: (tDomain: TDomain, tDom: TAttr) => void
+}
+/**
+ * Defines a reactive attribute to be used within {@link VirtualDOM}.
  *
  * ``` typescript
  * let domain$ : Observable<{name:string}>
@@ -283,10 +196,57 @@ export const child$ = stream$
  *      )
  * }
  * ```
+ * @param source$ source observable of domain data
+ * @param mappingFct mapping function to {@link AttributeType}
+ * @param option: options
+ * @template TDomain type of the domain data
+ * @template TAttr type of the attribute
+ * @category Reactive Attribute
+ * @category Entry Points
  */
-export const attr$ = stream$
+export function attr$<TDomain, TAttr = AttributeType>(
+    source$: Observable<TDomain>,
+    mappingFct: (tDomain: TDomain) => TAttr,
+    option: AttrOption<TDomain, TAttr> = {},
+) {
+    return new Stream$<TDomain, TAttr>(
+        source$,
+        (data: TDomain) => mappingFct(data),
+        option,
+    )
+}
 
-/** Type specialization of [[stream$]] for TDom = Array<[[VirtualDOM]]>
+/**
+ *
+ * Option definition for the function {@link children$}.
+ *
+ * @category Reactive Children
+ */
+export type ChildrenOption<TDomain> = {
+    /**
+     * List of the {@link VirtualDOM} to use before any item have been emitted from the `source$` used in {@link children$}.
+     */
+    untilFirst?: VirtualDOM[]
+    /**
+     * @param vDOMs List of the {@link VirtualDOM} value returned by the mapping function in {@link attr$}
+     * @return actual list of {@link VirtualDOM} to use in the rendering (serves as factorizing some final transformations).
+     */
+    wrapper?: (vDOMs: VirtualDOM[]) => VirtualDOM[]
+    /**
+     * Execute side effects once the list of {@link VirtualDOM} has been updated.
+     *
+     * @param tDomain value of the domain data
+     * @param vDom final list of {@link VirtualDOM}
+     */
+    sideEffects?: (tDomain: TDomain, vDOMs: VirtualDOM[]) => void
+}
+
+/**
+ *
+ * Defines a reactive list of children to be used within {@link VirtualDOM}.
+ * This function trigger a complete refresh at each emission of `source$`: all actual children are removed,
+ * and all children returned by `mappingFct` are created.
+ * Better optimized behaviors are proposed in {@link childrenAppendOnly$} and {@link childrenFromStore$}
  *
  * ``` typescript
  * let domain$ : Observable<{name:string}[]>
@@ -301,9 +261,21 @@ export const attr$ = stream$
  * }
  * ```
  *
- * > In the above example, each time the domain$ observable emit new values,
- * > all the children of the *parent-element* are first deleted, then the new children are
- * > created and inserted. Quite often it is possible to use a more efficient approach,
- * > see [[advancedChildren$]].
+ * @param source$ source observable of domain data
+ * @param mappingFct mapping function to a list of {@link VirtualDOM}
+ * @param option: options
+ * @template TDomain type of the domain data
+ * @category Reactive Children
+ * @category Entry Points
  */
-export const children$ = stream$
+export function children$<TDomain>(
+    source$: Observable<TDomain>,
+    mappingFct: (tDomain: TDomain) => VirtualDOM[],
+    option: ChildrenOption<TDomain> = {},
+) {
+    return new Stream$<TDomain, VirtualDOM[]>(
+        source$,
+        (data: TDomain) => mappingFct(data),
+        option,
+    )
+}

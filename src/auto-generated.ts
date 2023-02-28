@@ -27,16 +27,15 @@ const exportedSymbols = {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
-const mainEntry : Object = {
+const mainEntry : {entryFile: string,loadDependencies:string[]} = {
     "entryFile": "index.ts",
     "loadDependencies": [
         "rxjs"
     ]
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
-const secondaryEntries : Object = {}
+const secondaryEntries : {[k:string]:{entryFile: string, name: string, loadDependencies:string[]}}= {}
+
 const entries = {
      '@youwol/flux-view': 'index.ts',
     ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/flux-view/${e.name}`]:e.entryFile}), {})
@@ -44,7 +43,7 @@ const entries = {
 export const setup = {
     name:'@youwol/flux-view',
         assetId:'QHlvdXdvbC9mbHV4LXZpZXc=',
-    version:'1.0.4',
+    version:'1.1.0',
     shortDescription:"Tiny library to render HTML documents using reactive programing primitives.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/flux-view',
     npmPackage:'https://www.npmjs.com/package/@youwol/flux-view',
@@ -55,16 +54,20 @@ export const setup = {
     externals,
     exportedSymbols,
     entries,
+    secondaryEntries,
     getDependencySymbolExported: (module:string) => {
         return `${exportedSymbols[module].exportedSymbol}_APIv${exportedSymbols[module].apiKey}`
     },
 
-    installMainModule: ({cdnClient, installParameters}:{cdnClient, installParameters?}) => {
+    installMainModule: ({cdnClient, installParameters}:{
+        cdnClient:{install:(unknown) => Promise<Window>},
+        installParameters?
+    }) => {
         const parameters = installParameters || {}
         const scripts = parameters.scripts || []
         const modules = [
             ...(parameters.modules || []),
-            ...mainEntry['loadDependencies'].map( d => `${d}#${runTimeDependencies.externals[d]}`)
+            ...mainEntry.loadDependencies.map( d => `${d}#${runTimeDependencies.externals[d]}`)
         ]
         return cdnClient.install({
             ...parameters,
@@ -74,20 +77,24 @@ export const setup = {
             return window[`@youwol/flux-view_APIv1`]
         })
     },
-    installAuxiliaryModule: ({name, cdnClient, installParameters}:{name: string, cdnClient, installParameters?}) => {
+    installAuxiliaryModule: ({name, cdnClient, installParameters}:{
+        name: string,
+        cdnClient:{install:(unknown) => Promise<Window>},
+        installParameters?
+    }) => {
         const entry = secondaryEntries[name]
+        if(!entry){
+            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
+        }
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/flux-view#1.0.4~dist/@youwol/flux-view/${entry.name}.js`
+            `@youwol/flux-view#1.1.0~dist/@youwol/flux-view/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
             ...entry.loadDependencies.map( d => `${d}#${runTimeDependencies.externals[d]}`)
         ]
-        if(!entry){
-            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
-        }
         return cdnClient.install({
             ...parameters,
             modules,
@@ -95,5 +102,13 @@ export const setup = {
         }).then(() => {
             return window[`@youwol/flux-view/${entry.name}_APIv1`]
         })
+    },
+    getCdnDependencies(name?: string){
+        if(name && !secondaryEntries[name]){
+            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
+        }
+        const deps = name ? secondaryEntries[name].loadDependencies : mainEntry.loadDependencies
+
+        return deps.map( d => `${d}#${runTimeDependencies.externals[d]}`)
     }
 }

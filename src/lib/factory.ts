@@ -6,7 +6,6 @@
  * -    basefont: (HTMLBaseFontElement)
  *
  */
-
 export const CustomElementsMap = {
     a: HTMLAnchorElement,
     abbr: HTMLElement,
