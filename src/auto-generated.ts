@@ -3,7 +3,9 @@ const runTimeDependencies = {
     "externals": {
         "rxjs": "^6.5.5"
     },
-    "includedInBundle": {}
+    "includedInBundle": {
+        "@ungap/custom-elements": "1.2.0"
+    }
 }
 const externals = {
     "rxjs": {
