@@ -21,6 +21,11 @@ template = Template(
         runTime=RunTimeDeps(
             externals={
                 "rxjs": "^6.5.5"
+            },
+            includedInBundle={
+                # polyfill for WebKt based browsers (e.g. Safari)
+                # see https://github.com/WebKit/standards-positions/issues/97
+                "@ungap/custom-elements": "1.2.0"
             }
         ),
         devTime={

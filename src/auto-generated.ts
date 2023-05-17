@@ -3,7 +3,9 @@ const runTimeDependencies = {
     "externals": {
         "rxjs": "^6.5.5"
     },
-    "includedInBundle": {}
+    "includedInBundle": {
+        "@ungap/custom-elements": "1.2.0"
+    }
 }
 const externals = {
     "rxjs": {
@@ -43,7 +45,7 @@ const entries = {
 export const setup = {
     name:'@youwol/flux-view',
         assetId:'QHlvdXdvbC9mbHV4LXZpZXc=',
-    version:'1.1.0',
+    version:'1.1.1',
     shortDescription:"Tiny library to render HTML documents using reactive programing primitives.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/flux-view',
     npmPackage:'https://www.npmjs.com/package/@youwol/flux-view',
@@ -89,7 +91,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/flux-view#1.1.0~dist/@youwol/flux-view/${entry.name}.js`
+            `@youwol/flux-view#1.1.1~dist/@youwol/flux-view/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),

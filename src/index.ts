@@ -1,3 +1,7 @@
+// Polyfill for WebKit regarding Customized built-in elements.
+// Import's side effect is the installation of the polyfill if needed.
+import '@ungap/custom-elements'
+
 export {
     attr$,
     child$,
