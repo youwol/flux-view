@@ -47,7 +47,7 @@ export const setup = {
         assetId:'QHlvdXdvbC9mbHV4LXZpZXc=',
     version:'1.1.1',
     shortDescription:"Tiny library to render HTML documents using reactive programing primitives.",
-    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/flux-view',
+    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/flux-view&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/flux-view',
     sourceGithub:'https://github.com/youwol/flux-view',
     userGuide:'https://l.youwol.com/doc/@youwol/flux-view',
@@ -62,7 +62,7 @@ export const setup = {
     },
 
     installMainModule: ({cdnClient, installParameters}:{
-        cdnClient:{install:(unknown) => Promise<Window>},
+        cdnClient:{install:(unknown) => Promise<WindowOrWorkerGlobalScope>},
         installParameters?
     }) => {
         const parameters = installParameters || {}
@@ -81,7 +81,7 @@ export const setup = {
     },
     installAuxiliaryModule: ({name, cdnClient, installParameters}:{
         name: string,
-        cdnClient:{install:(unknown) => Promise<Window>},
+        cdnClient:{install:(unknown) => Promise<WindowOrWorkerGlobalScope>},
         installParameters?
     }) => {
         const entry = secondaryEntries[name]

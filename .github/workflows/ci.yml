@@ -10,4 +10,4 @@ on:
 jobs:
   nestor_ci:
     name: Typescript
-    uses: youwol/nestor/.github/workflows/typescript-ci.yml@v1
+    uses: youwol/nestor/.github/workflows/typescript-ci.yaml@v3
