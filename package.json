@@ -1,7 +1,7 @@
 {
     "name": "@youwol/flux-view",
     "description": "Tiny library to render HTML documents using reactive programing primitives.",
-    "version": "1.1.1",
+    "version": "1.1.2-wip",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/flux-view#README.md",
     "main": "dist/@youwol/flux-view.js",
@@ -51,9 +51,10 @@
         "rxjs": "^6.5.5",
         "@ungap/custom-elements": "1.2.0"
     },
-    "youwol": {
-        "cdnDependencies": {
+    "webpm": {
+        "dependencies": {
             "rxjs": "^6.5.5"
-        }
+        },
+        "aliases": []
     }
 }
