@@ -155,11 +155,7 @@ export abstract class ChildrenStream$<TDomain> {
                     return this.update(parentElement, domains)
                 }),
             )
-            .subscribe(
-                (updates) =>
-                    this.sideEffects &&
-                    this.sideEffects(parentElement, updates),
-            )
+            .subscribe((updates) => this.sideEffects?.(parentElement, updates))
     }
 
     protected addChildRef(
