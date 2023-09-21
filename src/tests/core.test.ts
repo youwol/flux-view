@@ -563,6 +563,9 @@ test('advancedChildren$ append only with sort', () => {
 
     const vDom = {
         id: 'browser',
+        style: {
+            display: 'flex',
+        },
         children: childrenAppendOnly$(
             array_data$.pipe(tag('children$')),
             (data) => view(data),
@@ -573,13 +576,14 @@ test('advancedChildren$ append only with sort', () => {
     }
 
     const check = (root, data, className) => {
-        const _items = Array.from(root.children).map(
-            (item: VirtualDOM) => item.innerText,
+        const items = Array.from(root.children).sort(
+            (a: HTMLElement, b: HTMLElement) =>
+                parseInt(a.style.order) - parseInt(b.style.order),
         )
-        expect(root.children).toHaveLength(data.length)
+        expect(items).toHaveLength(data.length)
         data.forEach((d, i) => {
-            expect(root.children[i]['innerText']).toEqual(d)
-            expect(root.children[i]['classList'].toString()).toEqual(className)
+            expect(items[i]['innerText']).toEqual(d)
+            expect(items[i]['classList'].toString()).toEqual(className)
         })
     }
 

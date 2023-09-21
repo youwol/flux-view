@@ -374,6 +374,10 @@ export class FromStoreChildrenStream$<
         deletedRefElem.forEach((ref) => this.removeChildRef(ref))
         const deletedData = deletedRefElem.map((ref) => ref.domainData)
 
+        if (addedRefElem.length === 0 && deletedRefElem.length === 0) {
+            // it may be the case that just the order as changed
+            this.reorder(parentElement)
+        }
         this.actualElements = [
             ...this.actualElements.filter((candidate) =>
                 this.isNotInList(deletedData, candidate.domainData),
