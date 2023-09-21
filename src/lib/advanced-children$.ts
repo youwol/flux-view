@@ -163,22 +163,38 @@ export abstract class ChildrenStream$<TDomain> {
         ref: RefElement<TDomain>,
     ) {
         this.children.push(ref)
-        if (this.orderOperator) {
-            this.children.sort((a, b) =>
-                this.orderOperator(a.domainData, b.domainData),
-            )
-        }
-        const rank = this.children.indexOf(ref) + 1
-        if (rank == this.children.length) {
-            parentElement.appendChild(ref.element)
-        } else {
-            parentElement.insertBefore(ref.element, this.children[rank].element)
-        }
+        parentElement.appendChild(ref.element)
+        this.reorder(parentElement)
     }
 
     protected removeChildRef(ref: RefElement<TDomain>) {
         this.children.splice(this.children.indexOf(ref), 1)
         ref.element.remove()
+    }
+
+    protected reorder(parentElement: HTMLElement$) {
+        if (!this.orderOperator) {
+            return
+        }
+        const parentStyle = window.getComputedStyle(parentElement)
+        const display = parentStyle.getPropertyValue('display')
+        if (display !== 'flex' && display !== 'grid') {
+            console.error(
+                'To enable dynamic re-ordering of elements in flux-view, parent element should have the css property ' +
+                    "'display' set to 'flex' or 'grid'.",
+                parentElement,
+            )
+        }
+        // We don't sort in place: we want the VirtualDom children to be aligned with the real ones.
+        // Ordering just affects the display property 'order'.
+        const sorted = new Array(...this.children)
+            .sort((a, b) => this.orderOperator(a.domainData, b.domainData))
+            .map(({ element }) => element as HTMLElement)
+
+        new Array(...parentElement.children).forEach(
+            (elem: HTMLElement) =>
+                (elem.style.order = `${sorted.indexOf(elem)}`),
+        )
     }
 }
 
