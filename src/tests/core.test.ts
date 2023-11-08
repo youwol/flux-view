@@ -25,11 +25,11 @@ function getOpenSubscriptions(): { [key: string]: unknown } {
     const snapshotPlugin = spy.find(SnapshotPlugin)
 
     const snapshot = snapshotPlugin['snapshotAll']()
-    const matched = Array.from(snapshot.observables.values()).filter(function (
-        observableSnapshot,
-    ) {
-        return Match.matches(observableSnapshot['observable'], /.+/)
-    })
+    const matched = Array.from(snapshot.observables.values()).filter(
+        function (observableSnapshot) {
+            return Match.matches(observableSnapshot['observable'], /.+/)
+        },
+    )
 
     return matched
         .map((match) => {
