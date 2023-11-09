@@ -8,6 +8,6 @@ on:
       - main
 
 jobs:
-  nestor_ci:
+  nestor_typescript_ci:
     name: Typescript
     uses: youwol/nestor/.github/workflows/typescript-ci.yaml@v3
