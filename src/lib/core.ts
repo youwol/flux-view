@@ -1,7 +1,6 @@
-import { Subscription } from 'rxjs'
 import { instanceOfChildrenStream$ } from './advanced-children$'
 import { CustomElementsMap } from './factory'
-import { VirtualDOM } from './interface'
+import { VirtualDOM, Subscription } from './interface'
 import { AttributeType, instanceOfStream$, Stream$ } from './stream$'
 
 export const apiVersion = '1'

@@ -26,18 +26,18 @@ template = Template(
     author=pkg_json["author"],
     dependencies=Dependencies(
         runTime=RunTimeDeps(
-            externals={"rxjs": "^6.5.5"},
+            externals={},
             includedInBundle={
                 # polyfill for WebKt based browsers (e.g. Safari)
                 # see https://github.com/WebKit/standards-positions/issues/97
                 "@ungap/custom-elements": "1.2.0"
             },
         ),
-        devTime={"rxjs-spy": "7.5.3"},
+        devTime={"rxjs-spy": "7.5.3", "rxjs": "^6.5.5"},
     ),
     userGuide=True,
     bundles=Bundles(
-        mainModule=MainModule(entryFile="index.ts", loadDependencies=["rxjs"])
+        mainModule=MainModule(entryFile="index.ts", loadDependencies=[])
     ),
 )
 
