@@ -1,5 +1,19 @@
+import type {
+    Observable as ObservableRxjs,
+    Subscription as SubscriptionRxjs,
+} from 'rxjs'
 declare class ChildrenStream$<_T> {}
 declare class HTMLElement$ {}
+
+/**
+ * Required interface for Rx concept of 'Observable', as defined by RxJS.
+ */
+export type Observable<T> = Pick<ObservableRxjs<T>, 'subscribe'>
+
+/**
+ * Required interface for Rx concept of 'Subscription', as defined by RxJS.
+ */
+export type Subscription = Pick<SubscriptionRxjs, 'unsubscribe'>
 
 /**
  * A VirtualDOM is an HTMLElement described as a javascript object containing the properties:

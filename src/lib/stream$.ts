@@ -1,6 +1,4 @@
-import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
-import { VirtualDOM } from './interface'
+import { VirtualDOM, Observable } from './interface'
 
 /**
  * A RxJs observable that represents a DOM's attribute ({@link attr$}), child ({@link child$}) or children ({@link children$}).
@@ -52,14 +50,10 @@ export class Stream$<TDomain, TDom = TDomain> {
      * Implementation function that supposed to be called only by {@link HTMLElement$}.
      */
     subscribe(realizeDom: (tDom: TDom, ...args) => TDom, ...withData) {
-        const mappedSource$: Observable<[TDom, TDomain]> = this.source$.pipe(
-            map((d: TDomain) => [this.vDomMap(d, ...withData), d]),
-        )
-
         this.untilFirst && this.finalize(realizeDom, this.untilFirst, undefined)
 
-        return mappedSource$.subscribe(([v, d]: [TDom, TDomain]) => {
-            this.finalize(realizeDom, v, d)
+        return this.source$.subscribe((d: TDomain) => {
+            this.finalize(realizeDom, this.vDomMap(d, ...withData), d)
         })
     }
 

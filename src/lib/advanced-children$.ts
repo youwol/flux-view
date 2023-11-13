@@ -1,7 +1,5 @@
-import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
 import { HTMLElement$, render } from './core'
-import { VirtualDOM } from './interface'
+import { VirtualDOM, Observable } from './interface'
 
 /**
  * Specifies the side effects associated to an update of children.
@@ -149,13 +147,10 @@ export abstract class ChildrenStream$<TDomain> {
      * Only for internal use (within {@link HTMLElement$}), should not actually be exposed.
      */
     subscribe(parentElement: HTMLElement$) {
-        return this.stream$
-            .pipe(
-                map((domains: TDomain[]) => {
-                    return this.update(parentElement, domains)
-                }),
-            )
-            .subscribe((updates) => this.sideEffects?.(parentElement, updates))
+        return this.stream$.subscribe((domains: TDomain[]) => {
+            const updates = this.update(parentElement, domains)
+            this.sideEffects?.(parentElement, updates)
+        })
     }
 
     protected addChildRef(
