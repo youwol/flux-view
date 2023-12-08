@@ -33,7 +33,11 @@ template = Template(
                 "@ungap/custom-elements": "1.2.0"
             },
         ),
-        devTime={"rxjs-spy": "7.5.3", "rxjs": "^6.5.5"},
+        devTime={
+            "rxjs-spy": "7.5.3",
+            "rxjs": "^6.5.5",
+            "@youwol/rx-vdom": "^1.0.1"
+        },
     ),
     userGuide=True,
     bundles=Bundles(
