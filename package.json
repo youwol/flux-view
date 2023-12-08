@@ -1,7 +1,7 @@
 {
     "name": "@youwol/flux-view",
     "description": "Tiny library to render HTML documents using reactive programing primitives.",
-    "version": "1.2.1-wip",
+    "version": "1.2.2-wip",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/flux-view#README.md",
     "main": "dist/@youwol/flux-view.js",
@@ -33,6 +33,7 @@
     "devDependencies": {
         "rxjs-spy": "7.5.3",
         "rxjs": "^6.5.5",
+        "@youwol/rx-vdom": "^1.0.1",
         "@types/jest": "^29.5.6",
         "@types/node": "^18.9.1",
         "@types/webpack": "^5.28.0",
@@ -42,10 +43,10 @@
         "@youwol/tsconfig": "1.0.0",
         "del-cli": "^5.1.0",
         "isomorphic-fetch": "^3.0.0",
-        "ts-loader": "^9.5.0",
-        "ts-node": "^10.9.1",
+        "ts-loader": "9.5.0",
+        "ts-node": "10.9.1",
         "typedoc": "^0.25.2",
-        "typescript": "^5.2.2",
+        "typescript": "5.2.2",
         "webpack": "^5.89.0",
         "webpack-bundle-analyzer": "^4.9.1",
         "webpack-cli": "5.1.4"

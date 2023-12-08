@@ -1239,6 +1239,15 @@
     prettier "^3.0.3"
     prettier-plugin-properties "^0.3.0"
 
+"@youwol/rx-vdom@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@youwol/rx-vdom/-/rx-vdom-1.0.1.tgz#061a7c69bb59ac7cbf862e4f0d8d121fa252211a"
+  integrity sha512-aMXoPn6YFNiTm00OiRSCY8JJMltq8EotIoAUGOskgXf5S1mRcSJEo2SeIKz6xOKv9GRXe+//ThyCOwq+KAcGDQ==
+  dependencies:
+    "@ungap/custom-elements" "1.2.0"
+    conditional-type-checks "^1.0.6"
+    csstype "^2.6.0"
+
 "@youwol/tsconfig@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@youwol/tsconfig/-/tsconfig-1.0.0.tgz#76e8569781dc4bdc53f27dc0b4f3cd6e17e1bd52"
@@ -1757,6 +1766,11 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==
 
+conditional-type-checks@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/conditional-type-checks/-/conditional-type-checks-1.0.6.tgz#8b857895d624cdb982bc970bd3b318093e44d213"
+  integrity sha512-3vyi+yNcmKq+xl1sTX7Ta+4pUvjusMYbC6FSbrS6YJV8TI51wiRn24u4bfdFVhDKKH5GtpKQzxW7bqXbPWllgQ==
+
 convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.9.0.tgz#7faae62353fb4213366d0ca98358d22e8368b05f"
@@ -1810,6 +1824,11 @@ cssstyle@^2.3.0:
   integrity sha512-AZL67abkUzIuvcHqk7c09cezpGNcxUxU4Ioi/05xHk4DQeTkWmGYftIE6ctU6AEt+Gn4n1lDStOtj7FKycP71A==
   dependencies:
     cssom "~0.3.6"
+
+csstype@^2.6.0:
+  version "2.6.21"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.21.tgz#2efb85b7cc55c80017c66a5ad7cbd931fda3a90e"
+  integrity sha512-Z1PhmomIfypOpoMjRQB70jfvy/wxT50qW08YXO5lMIJkrdq4yOTR+AW7FqutScmB9NkLwxo+jU+kZLbofZZq/w==
 
 data-urls@^3.0.2:
   version "3.0.2"
@@ -4690,7 +4709,7 @@ ts-jest@^29.1.1:
     semver "^7.5.3"
     yargs-parser "^21.0.1"
 
-ts-loader@^9.5.0:
+ts-loader@9.5.0:
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-9.5.0.tgz#f0a51dda37cc4d8e43e6cb14edebbc599b0c3aa2"
   integrity sha512-LLlB/pkB4q9mW2yLdFMnK3dEHbrBjeZTYguaaIfusyojBgAGf5kF+O6KcWqiGzWqHk0LBsoolrp4VftEURhybg==
@@ -4701,7 +4720,7 @@ ts-loader@^9.5.0:
     semver "^7.3.4"
     source-map "^0.7.4"
 
-ts-node@^10.9.1:
+ts-node@10.9.1:
   version "10.9.1"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.9.1.tgz#e73de9102958af9e1f0b168a6ff320e25adcff4b"
   integrity sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==
@@ -4818,7 +4837,7 @@ typedoc@^0.25.2:
     minimatch "^9.0.3"
     shiki "^0.14.1"
 
-typescript@^5.2.2:
+typescript@5.2.2:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
   integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==

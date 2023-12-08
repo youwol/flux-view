@@ -2,6 +2,7 @@ import { instanceOfChildrenStream$ } from './advanced-children$'
 import { CustomElementsMap } from './factory'
 import { VirtualDOM, Subscription } from './interface'
 import { AttributeType, instanceOfStream$, Stream$ } from './stream$'
+import { applyRxVdomMapper } from './rx-vdom-compatibility'
 
 export const apiVersion = '1'
 /**
@@ -87,6 +88,8 @@ function ReactiveTrait<T extends Constructor<HTMLElement>>(Base: T) {
             if (!this.vDom) {
                 return
             }
+            applyRxVdomMapper(this.vDom)
+
             const attributes = Object.entries(this.vDom).filter(
                 ([k, v]) => k != 'children' && !instanceOfStream$(v),
             )
