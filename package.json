@@ -1,7 +1,7 @@
 {
     "name": "@youwol/flux-view",
     "description": "Tiny library to render HTML documents using reactive programing primitives.",
-    "version": "1.2.1-wip",
+    "version": "1.2.1",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/flux-view#README.md",
     "main": "dist/@youwol/flux-view.js",
