@@ -1,11 +1,5 @@
 import { VirtualDOM } from './interface'
 import {
-    RxChildren,
-    RxChild,
-    ChildrenPolicy,
-    RxAttribute,
-} from '@youwol/rx-vdom'
-import {
     childrenAppendOnly$,
     ChildrenAppendOnlyOption,
     childrenFromStore$,
@@ -19,6 +13,28 @@ import {
     children$,
     ChildrenOption,
 } from './stream$'
+import { Observable } from 'rxjs'
+
+// Following types are simplified type definition coming from rx-vdom
+// Dependency rx-vdom is not used because:
+// *  it would imply circular dependency rx-vdom -> flux-view -> rx-vdom
+// *  consuming projects of flux-view would need to add rx-vdom as dependency
+
+type ChildrenPolicy = 'append' | 'replace' | 'sync'
+
+type RxChildren<T extends ChildrenPolicy> = {
+    policy: T
+    source$: Observable<unknown[]>
+    vdomMap: () => unknown[]
+}
+type RxChild = {
+    source$: Observable<unknown>
+    vdomMap: () => unknown
+}
+type RxAttribute = {
+    source$: Observable<unknown>
+    vdomMap: () => unknown
+}
 
 function isRxChildren<Policy extends ChildrenPolicy>(
     v: unknown,
