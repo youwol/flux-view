@@ -22,7 +22,7 @@ const entries = {
 export const setup = {
     name:'@youwol/flux-view',
         assetId:'QHlvdXdvbC9mbHV4LXZpZXc=',
-    version:'1.2.2-wip',
+    version:'1.2.2',
     shortDescription:"Tiny library to render HTML documents using reactive programing primitives.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/flux-view&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/flux-view',
@@ -68,7 +68,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/flux-view#1.2.2-wip~dist/@youwol/flux-view/${entry.name}.js`
+            `@youwol/flux-view#1.2.2~dist/@youwol/flux-view/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
