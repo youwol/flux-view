@@ -33,7 +33,6 @@
     "devDependencies": {
         "rxjs-spy": "7.5.3",
         "rxjs": "^6.5.5",
-        "@youwol/rx-vdom": "^1.0.1",
         "@types/jest": "^29.5.6",
         "@types/node": "^18.9.1",
         "@types/webpack": "^5.28.0",
