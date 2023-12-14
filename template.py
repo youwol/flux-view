@@ -35,8 +35,7 @@ template = Template(
         ),
         devTime={
             "rxjs-spy": "7.5.3",
-            "rxjs": "^6.5.5",
-            "@youwol/rx-vdom": "^1.0.1"
+            "rxjs": "^6.5.5"
         },
     ),
     userGuide=True,
